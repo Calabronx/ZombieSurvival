@@ -1,19 +1,30 @@
 #include "Game.h"
 
+#include<iostream>
+
 const float Game::PlayerSpeed = 100.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
 	: mWindow(sf::VideoMode(640, 480), "TestVentana")
 	, mPlayer()
+	, mTexture()
 	, mIsMovingUp(false)
 	, mIsMovingDown(false)
 	, mIsMovingRight(false)
 	, mIsMovingLeft(false)
 {
-	mPlayer.setRadius(40.f);
-	mPlayer.setPosition(100.f, 100.f);
-	mPlayer.setFillColor(sf::Color::Cyan);
+	if (!mTexture.loadFromFile("resources/textures/handgun/idle/survivor-idle_handgun_0.png"))
+	{
+		std::cout << "Error al cargar la textura survivor-idle_handgun_0.png" << std::endl;
+	}
+
+	mPlayer.setTexture(mTexture);
+	mPlayer.setPosition(100.0f, 100.0f);
+	mPlayer.setScale(sf::Vector2f(0.50f, 0.50f));
+
+	sf::Vector2f scale = mPlayer.getScale();
+	std::cout << "sprite scale: " << scale.x << " " << scale.y << std::endl;
 }
 
 void Game::run()
