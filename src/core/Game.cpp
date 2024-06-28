@@ -1,9 +1,22 @@
 #include "Game.h"
+#include "../util/FileSystem.h"
 
 #include<iostream>
 
 const float Game::PlayerSpeed = 100.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
+
+
+namespace Textures
+{
+	enum ID
+	{
+		Survivor,
+		Zombie
+	};
+}
+
+static FileSystem<sf::Texture, Textures::ID> textures;
 
 Game::Game()
 	: mWindow(sf::VideoMode(640, 480), "TestVentana")
@@ -14,12 +27,17 @@ Game::Game()
 	, mIsMovingRight(false)
 	, mIsMovingLeft(false)
 {
-	if (!mTexture.loadFromFile("resources/textures/handgun/idle/survivor-idle_handgun_0.png"))
+
+	try {
+		textures.load(Textures::Survivor, "resources/textures/handgun/idle/survivor-idle_handgun_0.png");
+	}
+	catch (std::runtime_error& e)
 	{
-		std::cout << "Error al cargar la textura survivor-idle_handgun_0.png" << std::endl;
+
+		std::cout << "Error al cargar la textura survivor-idle_handgun_0.png" << e.what() << std::endl;
 	}
 
-	mPlayer.setTexture(mTexture);
+	mPlayer.setTexture(textures.get(Textures::Survivor));
 	mPlayer.setPosition(100.0f, 100.0f);
 	mPlayer.setScale(sf::Vector2f(0.50f, 0.50f));
 

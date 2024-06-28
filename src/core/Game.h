@@ -1,4 +1,7 @@
 #pragma once
+#ifndef GAME_H
+#define GAME_H
+
 #include<SFML/Graphics.hpp>
 
 class Game
@@ -26,3 +29,4 @@ private:
 
 };
 
+#endif // !GAME_H
