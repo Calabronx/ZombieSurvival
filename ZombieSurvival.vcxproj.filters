@@ -22,6 +22,12 @@
     <Filter Include="Source Files\src\util">
       <UniqueIdentifier>{4b01e3ed-2b2e-4f70-bff6-2817078243c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\entity">
+      <UniqueIdentifier>{e3a1ef29-2935-4c71-b696-c0aa8414b61d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\ecs">
+      <UniqueIdentifier>{d6fb435c-e7ca-4110-a717-427c4b045c5d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\Game.cpp">
@@ -30,6 +36,15 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\entity\Entity.cpp">
+      <Filter>Source Files\src\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\Character.cpp">
+      <Filter>Source Files\src\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\SceneNode.cpp">
+      <Filter>Source Files\src\ecs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\Game.h">
@@ -37,6 +52,15 @@
     </ClInclude>
     <ClInclude Include="src\util\FileSystem.h">
       <Filter>Source Files\src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\Entity.h">
+      <Filter>Source Files\src\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\Character.h">
+      <Filter>Source Files\src\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\SceneNode.h">
+      <Filter>Source Files\src\ecs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

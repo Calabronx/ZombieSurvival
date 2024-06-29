@@ -149,9 +149,15 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\core\Game.cpp" />
+    <ClCompile Include="src\ecs\SceneNode.cpp" />
+    <ClCompile Include="src\entity\Entity.cpp" />
+    <ClCompile Include="src\entity\Character.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\Game.h" />
+    <ClInclude Include="src\ecs\SceneNode.h" />
+    <ClInclude Include="src\entity\Entity.h" />
+    <ClInclude Include="src\entity\Character.h" />
     <ClInclude Include="src\util\FileSystem.h" />
   </ItemGroup>
   <ItemGroup>
