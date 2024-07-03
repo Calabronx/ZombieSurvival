@@ -3,6 +3,7 @@
 #define GAME_H
 
 #include<SFML/Graphics.hpp>
+#include "../world/GameWorld.h"
 
 class Game
 {
@@ -17,6 +18,8 @@ private:
 private:
 	static const float			PlayerSpeed;
 	static const sf::Time	TimePerFrame;
+
+	GameWorld		mWorld;
 
 	sf::RenderWindow mWindow;
 	sf::Texture		mTexture;

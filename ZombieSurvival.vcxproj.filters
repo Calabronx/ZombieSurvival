@@ -28,6 +28,9 @@
     <Filter Include="Source Files\src\ecs">
       <UniqueIdentifier>{d6fb435c-e7ca-4110-a717-427c4b045c5d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\world">
+      <UniqueIdentifier>{c3b38fd9-b155-4fd2-b7e7-d5776359e157}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\Game.cpp">
@@ -45,6 +48,12 @@
     <ClCompile Include="src\ecs\SceneNode.cpp">
       <Filter>Source Files\src\ecs</Filter>
     </ClCompile>
+    <ClCompile Include="src\world\GameWorld.cpp">
+      <Filter>Source Files\src\world</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\SpriteNode.cpp">
+      <Filter>Source Files\src\ecs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\Game.h">
@@ -60,6 +69,15 @@
       <Filter>Source Files\src\entity</Filter>
     </ClInclude>
     <ClInclude Include="src\ecs\SceneNode.h">
+      <Filter>Source Files\src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\ResourceIdentifiers.h">
+      <Filter>Source Files\src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\GameWorld.h">
+      <Filter>Source Files\src\world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\SpriteNode.h">
       <Filter>Source Files\src\ecs</Filter>
     </ClInclude>
   </ItemGroup>

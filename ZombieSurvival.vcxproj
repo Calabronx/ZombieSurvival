@@ -150,15 +150,20 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\core\Game.cpp" />
     <ClCompile Include="src\ecs\SceneNode.cpp" />
+    <ClCompile Include="src\ecs\SpriteNode.cpp" />
     <ClCompile Include="src\entity\Entity.cpp" />
     <ClCompile Include="src\entity\Character.cpp" />
+    <ClCompile Include="src\world\GameWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\Game.h" />
     <ClInclude Include="src\ecs\SceneNode.h" />
+    <ClInclude Include="src\ecs\SpriteNode.h" />
     <ClInclude Include="src\entity\Entity.h" />
     <ClInclude Include="src\entity\Character.h" />
     <ClInclude Include="src\util\FileSystem.h" />
+    <ClInclude Include="src\util\ResourceIdentifiers.h" />
+    <ClInclude Include="src\world\GameWorld.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\util\FileSystem.inl" />

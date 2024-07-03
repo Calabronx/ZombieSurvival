@@ -6,43 +6,16 @@
 const float Game::PlayerSpeed = 100.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 
-
-namespace Textures
-{
-	enum ID
-	{
-		Survivor,
-		Zombie
-	};
-}
-
-static FileSystem<sf::Texture, Textures::ID> textures;
-
 Game::Game()
-	: mWindow(sf::VideoMode(640, 480), "TestVentana")
-	, mPlayer()
+	: mWindow(sf::VideoMode(640, 480), "TestVentana", sf::Style::Close)
+	, mWorld(mWindow)
+	//, mPlayer()
 	, mTexture()
 	, mIsMovingUp(false)
 	, mIsMovingDown(false)
 	, mIsMovingRight(false)
 	, mIsMovingLeft(false)
 {
-
-	try {
-		textures.load(Textures::Survivor, "resources/textures/handgun/idle/survivor-idle_handgun_0.png");
-	}
-	catch (std::runtime_error& e)
-	{
-
-		std::cout << "Error al cargar la textura survivor-idle_handgun_0.png" << e.what() << std::endl;
-	}
-
-	mPlayer.setTexture(textures.get(Textures::Survivor));
-	mPlayer.setPosition(100.0f, 100.0f);
-	mPlayer.setScale(sf::Vector2f(0.50f, 0.50f));
-
-	sf::Vector2f scale = mPlayer.getScale();
-	std::cout << "sprite scale: " << scale.x << " " << scale.y << std::endl;
 }
 
 void Game::run()
@@ -87,24 +60,27 @@ void Game::processEvents()
 
 void Game::update(sf::Time elapsedTime)
 {
-	sf::Vector2f movement(0.0f, 0.0f);
+	//sf::Vector2f movement(0.0f, 0.0f);
 
-	if (mIsMovingUp)
-		movement.y -= PlayerSpeed;
-	if (mIsMovingDown)
-		movement.y += PlayerSpeed;
-	if (mIsMovingLeft)
-		movement.x -= PlayerSpeed;
-	if (mIsMovingRight)
-		movement.x += PlayerSpeed;
+	//if (mIsMovingUp)
+	//	movement.y -= PlayerSpeed;
+	//if (mIsMovingDown)
+	//	movement.y += PlayerSpeed;
+	//if (mIsMovingLeft)
+	//	movement.x -= PlayerSpeed;
+	//if (mIsMovingRight)
+	//	movement.x += PlayerSpeed;
 
-	mPlayer.move(movement * elapsedTime.asSeconds());
+	//mPlayer.move(movement * elapsedTime.asSeconds());
+	mWorld.update(elapsedTime);
 }
 
 void Game::render()
 {
 	mWindow.clear();
-	mWindow.draw(mPlayer);
+	mWorld.draw();
+
+	mWindow.setView(mWindow.getDefaultView());
 	mWindow.display();
 }
 
