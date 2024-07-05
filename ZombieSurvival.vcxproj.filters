@@ -31,6 +31,12 @@
     <Filter Include="Source Files\src\world">
       <UniqueIdentifier>{c3b38fd9-b155-4fd2-b7e7-d5776359e157}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\input">
+      <UniqueIdentifier>{50c14045-832d-4588-b8d2-9a62552961ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\input\command">
+      <UniqueIdentifier>{eef9cd42-f47d-46cb-b164-90ae753bd16d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\Game.cpp">
@@ -53,6 +59,15 @@
     </ClCompile>
     <ClCompile Include="src\ecs\SpriteNode.cpp">
       <Filter>Source Files\src\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input\command\Command.cpp">
+      <Filter>Source Files\src\input\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input\command\CommandQueue.cpp">
+      <Filter>Source Files\src\input\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input\InputHandler.cpp">
+      <Filter>Source Files\src\input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +94,18 @@
     </ClInclude>
     <ClInclude Include="src\ecs\SpriteNode.h">
       <Filter>Source Files\src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\input\command\Command.h">
+      <Filter>Source Files\src\input\command</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\Category.h">
+      <Filter>Source Files\src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\input\command\CommandQueue.h">
+      <Filter>Source Files\src\input\command</Filter>
+    </ClInclude>
+    <ClInclude Include="src\input\InputHandler.h">
+      <Filter>Source Files\src\input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

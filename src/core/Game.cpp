@@ -8,18 +8,23 @@ const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 Game::Game()
 	: mWindow(sf::VideoMode(640, 480), "TestGame", sf::Style::Close)
 	, mWorld(mWindow)
-	, mIsPaused(false)
 {
 }
 
-void Game::processEvents()
+void Game::processInput()
 {
+    CommandQueue& commands = mWorld.getCommandQueue();
+
 	sf::Event event;
 	while (mWindow.pollEvent(event))
 	{
+        mPlayer.handleEvent(event, commands);
+
 		if (event.type == sf::Event::Closed)
 			mWindow.close();
 	}
+
+    mPlayer.handleRealTimeInput(commands);
 }
 
 void Game::run()
@@ -33,7 +38,7 @@ void Game::run()
 		while (lastTimeUpdated > TimePerFrame)
 		{
 			lastTimeUpdated -= TimePerFrame;
-			processEvents();
+			processInput();
 			update(TimePerFrame);
 		}
 		render();

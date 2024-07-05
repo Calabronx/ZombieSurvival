@@ -9,6 +9,7 @@
 #include "../util/ResourceIdentifiers.h"
 #include "../ecs/SceneNode.h"
 #include "../entity/Character.h"
+#include "../input/command/CommandQueue.h"
 
 namespace sf
 {
@@ -21,6 +22,8 @@ class GameWorld : sf::NonCopyable
 		explicit GameWorld(sf::RenderWindow& window);
 		void update(sf::Time dt);
 		void draw();
+
+        CommandQueue& getCommandQueue();
 
 	private:
 		void loadTextures();
@@ -45,7 +48,8 @@ class GameWorld : sf::NonCopyable
 		sf::FloatRect	mWorldBounds;
 		sf::Vector2f	mSpawnPosition;
 		float mScrollSpeed;
-		Character*		mPlayerSurvivor;
+		Character*		    mPlayerSurvivor;
+        CommandQueue    mCommandQueue;
 
 
 };

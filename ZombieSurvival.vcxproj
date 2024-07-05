@@ -153,6 +153,9 @@
     <ClCompile Include="src\ecs\SpriteNode.cpp" />
     <ClCompile Include="src\entity\Entity.cpp" />
     <ClCompile Include="src\entity\Character.cpp" />
+    <ClCompile Include="src\input\command\Command.cpp" />
+    <ClCompile Include="src\input\command\CommandQueue.cpp" />
+    <ClCompile Include="src\input\InputHandler.cpp" />
     <ClCompile Include="src\world\GameWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +164,10 @@
     <ClInclude Include="src\ecs\SpriteNode.h" />
     <ClInclude Include="src\entity\Entity.h" />
     <ClInclude Include="src\entity\Character.h" />
+    <ClInclude Include="src\input\command\Command.h" />
+    <ClInclude Include="src\input\command\CommandQueue.h" />
+    <ClInclude Include="src\input\InputHandler.h" />
+    <ClInclude Include="src\util\Category.h" />
     <ClInclude Include="src\util\FileSystem.h" />
     <ClInclude Include="src\util\ResourceIdentifiers.h" />
     <ClInclude Include="src\world\GameWorld.h" />
