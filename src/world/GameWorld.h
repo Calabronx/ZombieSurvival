@@ -44,7 +44,7 @@ class GameWorld : sf::NonCopyable
 
 		sf::FloatRect	mWorldBounds;
 		sf::Vector2f	mSpawnPosition;
-		/*float mScrollSpeed;*/
+		float mScrollSpeed;
 		Character*		mPlayerSurvivor;
 
 
