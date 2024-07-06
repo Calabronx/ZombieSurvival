@@ -7,42 +7,99 @@
 
 struct SurvivorMover
 {
-    SurvivorMover(float vx, float vy)
-    : velocity(vx, vy)
-    {
-    }
+	SurvivorMover(float vx, float vy)
+		: velocity(vx, vy)
+	{
+	}
 
-    void operator() (Character& character, sf::Time) const
-    {
-        character.move(velocity);
-    }
+	void operator() (Character& character, sf::Time) const
+	{
+		character.moveEntity(velocity);
+	}
 
-    sf::Vector2f velocity;
+	sf::Vector2f velocity;
 };
+
+InputHandler::InputHandler()
+{
+	mKeyBinding[sf::Keyboard::Left] = MoveLeft;
+	mKeyBinding[sf::Keyboard::Right] = MoveRight;
+	mKeyBinding[sf::Keyboard::Up] = MoveUp;
+	mKeyBinding[sf::Keyboard::Down] = MoveDown;
+
+	initializeActions();
+
+	for (auto& pair : mActionBinding)
+		pair.second.category = Category::PlayerSurvivor;
+}
 
 void InputHandler::handleEvent(const sf::Event& event, CommandQueue& commands)
 {
-    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
-    {
-        Command output;
-        output.category = Category::PlayerSurvivor;
-        output.action = [](SceneNode& s, sf::Time)
-        {
-            std::cout << s.getPosition().x << "," << s.getPosition().y << "\n";
-        };
-        commands.push(output);
-    }
+	if (event.type == sf::Event::KeyPressed)
+	{
+		// check if pressed key appears in key binding, trigger command if so
+		auto found = mKeyBinding.find(event.key.code);
+		if(found != mKeyBinding.end() && !isRealtimeAction(found->second))
+			commands.push(mActionBinding[found->second]);
+	}
 }
 
 void InputHandler::handleRealTimeInput(CommandQueue& commands)
 {
-    const float playerSpeed = 30.f;
+	for (auto pair : mKeyBinding)
+	{
+		if (sf::Keyboard::isKeyPressed(pair.first) && isRealtimeAction(pair.second))
+			commands.push(mActionBinding[pair.second]);
+	}
+}
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-    {
-        Command moveLeft;
-        moveLeft.category = Category::PlayerSurvivor;
-        moveLeft.action = derivedAction<Character>(SurvivorMover(-playerSpeed, 0.f));
-        commands.push(moveLeft);
-    }
+void InputHandler::initializeActions()
+{
+	const float playerSpeed = 200.f;
+
+	mActionBinding[MoveLeft].action = derivedAction<Character>(SurvivorMover(-playerSpeed, 0.f));
+	mActionBinding[MoveRight].action = derivedAction<Character>(SurvivorMover(+playerSpeed, 0.f));
+	mActionBinding[MoveUp].action = derivedAction<Character>(SurvivorMover(0.f, -playerSpeed));
+	mActionBinding[MoveDown].action = derivedAction<Character>(SurvivorMover(0.f, +playerSpeed));
+}
+
+bool InputHandler::isRealtimeAction(Action action)
+{
+	switch (action)
+	{
+			case MoveLeft:
+			case MoveRight:
+			case MoveDown:
+			case MoveUp:
+					return true;
+			default:
+					return false;
+	}
+}
+
+
+void InputHandler::assignKey(Action action, sf::Keyboard::Key key)
+{
+	// Remove all keys that already map to action
+	for (auto it = mKeyBinding.begin(); it != mKeyBinding.end(); )
+	{
+		if (it->second == action)
+			mKeyBinding.erase(it++);
+		else
+			++it;
+	}
+
+	// Insert new binding
+	mKeyBinding[key] = action;
+}
+
+sf::Keyboard::Key InputHandler::getAssignedKey(Action action) const
+{
+	for (auto pair : mKeyBinding)
+	{
+		if (pair.second == action)
+				return pair.first;
+	}
+
+	return sf::Keyboard::Unknown;
 }

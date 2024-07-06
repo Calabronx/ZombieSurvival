@@ -26,27 +26,22 @@ GameWorld::GameWorld(sf::RenderWindow& window)
 void GameWorld::update(sf::Time dt)
 {
     //mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
+    mPlayerSurvivor->setVelocity(0.f, 0.f);
 
-    sf::Vector2f position = mPlayerSurvivor->getPosition();
-    sf::Vector2f velocity = mPlayerSurvivor->getVelocity();
+    // Forward commands to the scene graph
+    while (!mCommandQueue.isEmpty())
+        mSceneGraph.onCommand(mCommandQueue.pop(), dt);
 
-    if (position.x <= mWorldBounds.left + 150.f || position.x >= mWorldBounds.left + mWorldBounds.width - 150.f)
-    {
-        velocity.x = -velocity.x;
-        mPlayerSurvivor->setVelocity(velocity);
-    }
+    adaptPlayerVelocity();
 
     // hackear el mouse en el centro de la pantalla, deberia mantenerlo dentro del tamaño de la pantalla misma
     /*sf::Vector2i windowCenter(mWindow.getSize() / 2u);
     sf::Vector2i mousePosition = sf::Mouse::getPosition(mWindow);
     sf::Vector2i delta = windowCenter - mousePosition;
     sf::Mouse::setPosition(windowCenter, mWindow);*/
-
-    // Forward commands to the scene graph
-    while (!mCommandQueue.isEmpty())
-        mSceneGraph.onCommand(mCommandQueue.pop(), dt);
-
+    
     mSceneGraph.update(dt);
+    adaptPlayerPosition();
 }
 
 void GameWorld::draw()
@@ -91,4 +86,27 @@ void GameWorld::buildScene()
     mPlayerSurvivor->setVelocity(0.f, 0.f);
     mPlayerSurvivor->setScale(sf::Vector2f(0.400f, 0.400f));
     mSceneLayers[Land]->attachChild(std::move(player));
+}
+
+void GameWorld::adaptPlayerPosition()
+{
+    sf::FloatRect viewBounds(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
+    const float borderDistance = 40.f;
+
+    sf::Vector2f position = mPlayerSurvivor->getPosition();
+    position.x = std::max(position.x, viewBounds.left + borderDistance);
+    position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
+    position.y = std::max(position.y, viewBounds.top + borderDistance);
+    position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
+    mPlayerSurvivor->setPosition(position);
+}
+
+void GameWorld::adaptPlayerVelocity()
+{
+    sf::Vector2f velocity = mPlayerSurvivor->getVelocity();
+
+    if (velocity.x != 0.f && velocity.y != 0.f)
+        mPlayerSurvivor->setVelocity(velocity / std::sqrt(2.f));
+
+    mPlayerSurvivor->move(sf::Vector2f(0.f,0.f));
 }
