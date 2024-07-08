@@ -25,7 +25,7 @@ GameWorld::GameWorld(sf::RenderWindow& window)
 
 void GameWorld::update(sf::Time dt)
 {
-    //mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
+    /*mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());*/
     mPlayerSurvivor->setVelocity(0.f, 0.f);
 
     // Forward commands to the scene graph
@@ -34,12 +34,8 @@ void GameWorld::update(sf::Time dt)
 
     adaptPlayerVelocity();
 
-    // hackear el mouse en el centro de la pantalla, deberia mantenerlo dentro del tamaño de la pantalla misma
-    /*sf::Vector2i windowCenter(mWindow.getSize() / 2u);
-    sf::Vector2i mousePosition = sf::Mouse::getPosition(mWindow);
-    sf::Vector2i delta = windowCenter - mousePosition;
-    sf::Mouse::setPosition(windowCenter, mWindow);*/
-    
+    adaptPlayerDirection();
+
     mSceneGraph.update(dt);
     adaptPlayerPosition();
 }
@@ -92,13 +88,14 @@ void GameWorld::adaptPlayerPosition()
 {
     sf::FloatRect viewBounds(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
     const float borderDistance = 40.f;
-
     sf::Vector2f position = mPlayerSurvivor->getPosition();
-    position.x = std::max(position.x, viewBounds.left + borderDistance);
-    position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
-    position.y = std::max(position.y, viewBounds.top + borderDistance);
-    position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
-    mPlayerSurvivor->setPosition(position);
+    //position.x = std::max(position.x, viewBounds.left + borderDistance);
+    //position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
+    //position.y = std::max(position.y, viewBounds.top + borderDistance);
+    //position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
+    //sf::Vector2f view(mWorldView.getCenter().x, mWorldView.getCenter().y);
+    //mWorldView.move(view);
+    //mPlayerSurvivor->setPosition(position);
 }
 
 void GameWorld::adaptPlayerVelocity()
@@ -109,4 +106,15 @@ void GameWorld::adaptPlayerVelocity()
         mPlayerSurvivor->setVelocity(velocity / std::sqrt(2.f));
 
     mPlayerSurvivor->move(sf::Vector2f(0.f,0.f));
+}
+
+void GameWorld::adaptPlayerDirection()
+{
+    // adaptar la direccion del jugador o el aim en base a la posicion del cursor en el juego
+    const int ROTATION_DEGREE = 360;
+    sf::Vector2i playerPosition(mPlayerSurvivor->getPosition().x, mPlayerSurvivor->getPosition().y);
+    sf::Vector2i mousePosition = sf::Mouse::getPosition(mWindow);
+    sf::Vector2f mouseWorldPosition = mWindow.mapPixelToCoords(mousePosition, mWorldView);
+    float mouseAngle = -atan2f(mouseWorldPosition.x - playerPosition.x, mouseWorldPosition.y - playerPosition.y) * ROTATION_DEGREE / 3.14159; // angle in degrees of rotation of sprite
+    mPlayerSurvivor->setDirectionAngle(mouseAngle);
 }

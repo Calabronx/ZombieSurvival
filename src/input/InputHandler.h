@@ -15,7 +15,8 @@ public:
         MoveLeft,
         MoveRight,
         MoveUp,
-        MoveDown
+        MoveDown,
+        MoveAim
     };
 
 public:
@@ -34,6 +35,7 @@ private:
 
 private:
     std::map<sf::Keyboard::Key, Action> mKeyBinding;
+    std::map<sf::Mouse::Button, Action> mMouseBinding;
     std::map<Action, Command>           mActionBinding;
 };
 #endif // ! INPUT_HANDLER_H

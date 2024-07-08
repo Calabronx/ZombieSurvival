@@ -31,6 +31,7 @@ class GameWorld : sf::NonCopyable
 
 		void adaptPlayerPosition();
 		void adaptPlayerVelocity();
+		void adaptPlayerDirection();
 
 	private:
 		enum Layer

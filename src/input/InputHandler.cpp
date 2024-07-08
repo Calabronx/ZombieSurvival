@@ -22,10 +22,10 @@ struct SurvivorMover
 
 InputHandler::InputHandler()
 {
-	mKeyBinding[sf::Keyboard::Left] = MoveLeft;
-	mKeyBinding[sf::Keyboard::Right] = MoveRight;
-	mKeyBinding[sf::Keyboard::Up] = MoveUp;
-	mKeyBinding[sf::Keyboard::Down] = MoveDown;
+	mKeyBinding[sf::Keyboard::A] = MoveLeft;
+	mKeyBinding[sf::Keyboard::D] = MoveRight;
+	mKeyBinding[sf::Keyboard::W] = MoveUp;
+	mKeyBinding[sf::Keyboard::S] = MoveDown;
 
 	initializeActions();
 
@@ -41,6 +41,10 @@ void InputHandler::handleEvent(const sf::Event& event, CommandQueue& commands)
 		auto found = mKeyBinding.find(event.key.code);
 		if(found != mKeyBinding.end() && !isRealtimeAction(found->second))
 			commands.push(mActionBinding[found->second]);
+	}
+
+	if (event.type == sf::Event::MouseMoved) {
+		commands.push(mActionBinding[MoveAim]);
 	}
 }
 
@@ -61,6 +65,7 @@ void InputHandler::initializeActions()
 	mActionBinding[MoveRight].action = derivedAction<Character>(SurvivorMover(+playerSpeed, 0.f));
 	mActionBinding[MoveUp].action = derivedAction<Character>(SurvivorMover(0.f, -playerSpeed));
 	mActionBinding[MoveDown].action = derivedAction<Character>(SurvivorMover(0.f, +playerSpeed));
+	mActionBinding[MoveAim].action = derivedAction<Character>([](Character& c, sf::Time) { c.moveAim(); });
 }
 
 bool InputHandler::isRealtimeAction(Action action)
@@ -71,6 +76,7 @@ bool InputHandler::isRealtimeAction(Action action)
 			case MoveRight:
 			case MoveDown:
 			case MoveUp:
+			case MoveAim:
 					return true;
 			default:
 					return false;

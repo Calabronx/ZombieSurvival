@@ -9,6 +9,7 @@ Game::Game()
 	: mWindow(sf::VideoMode(640, 480), "TestGame", sf::Style::Close)
 	, mWorld(mWindow)
 {
+	//mWindow.setMouseCursorVisible(false);
 }
 
 void Game::processInput()
