@@ -10,7 +10,7 @@ GameWorld::GameWorld(sf::RenderWindow& window)
     , mTextures()
     , mSceneGraph()
     , mSceneLayers()
-    , mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 2000.f)
+    , mWorldBounds(0.f, 0.f, mWorldView.getSize().x + 5000.f, 5000.f)
     , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
     , mScrollSpeed(-50.f)
     , mPlayerSurvivor(nullptr)
@@ -89,13 +89,35 @@ void GameWorld::adaptPlayerPosition()
     sf::FloatRect viewBounds(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
     const float borderDistance = 40.f;
     sf::Vector2f position = mPlayerSurvivor->getPosition();
-    //position.x = std::max(position.x, viewBounds.left + borderDistance);
-    //position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
-    //position.y = std::max(position.y, viewBounds.top + borderDistance);
-    //position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
+
+    if (position.x > mWorldBounds.getSize().x || position.x < 0 || position.y > mWorldBounds.getSize().y || position.y < 0) {
+        std::cout << "out of bounds" << std::endl;
+        // el jugador es mantenido dentro de los limites del juego
+        position.x = std::max(position.x, viewBounds.left + borderDistance);
+        position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
+        position.y = std::max(position.y, viewBounds.top + borderDistance);
+        position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
+        //mPlayerSurvivor->stop(true);
+    }
+    else {
+        // la camara sigue al jugador
+        position.x = std::max(position.x, mWorldView.getCenter().x);
+        position.x = std::min(position.x, mWorldView.getCenter().x);
+        position.y = std::max(position.y, mWorldView.getCenter().y);
+        position.y = std::min(position.y, mWorldView.getCenter().y);
+        sf::Vector2f delta(mPlayerSurvivor->getVelocity().x * 0.10, mPlayerSurvivor->getVelocity().y * 0.10);
+        mWorldView.move(sf::Vector2f(delta));
+        //mPlayerSurvivor->stop(false);
+    }
+
+
+
     //sf::Vector2f view(mWorldView.getCenter().x, mWorldView.getCenter().y);
     //mWorldView.move(view);
     //mPlayerSurvivor->setPosition(position);
+    //std::cout << "pos: " << position.x << " " << position.y << std::endl;
+    mPlayerSurvivor->setPosition(position);
+
 }
 
 void GameWorld::adaptPlayerVelocity()
@@ -104,6 +126,14 @@ void GameWorld::adaptPlayerVelocity()
 
     if (velocity.x != 0.f && velocity.y != 0.f)
         mPlayerSurvivor->setVelocity(velocity / std::sqrt(2.f));
+
+
+
+
+    //std::cout << "view: " << mWorldView.getCenter().x << " " << mWorldView.getCenter().y << std::endl;
+    //std::cout << "bounds: " << mWorldBounds.getSize().x << " " << mWorldBounds.getSize().y << std::endl;
+    
+
 
     mPlayerSurvivor->move(sf::Vector2f(0.f,0.f));
 }

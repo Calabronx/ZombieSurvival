@@ -10,6 +10,7 @@ class Entity : public SceneNode
 	public:
 		void setVelocity(sf::Vector2f velocity);
 		void setVelocity(float vx, float vy);
+		void stop(bool isStop);
 		sf::Vector2f getVelocity() const;
 		void moveEntity(sf::Vector2f velocity);
 		void moveEntity(float vx, float vy);
@@ -19,6 +20,7 @@ private:
 
 	private:
 		sf::Vector2f mVelocity;
+		bool		 mEntityStop;
 };
 #endif // !ENTITY_H
 

@@ -11,6 +11,11 @@ void Entity::setVelocity(float vx, float vy)
 	mVelocity.y = vy;
 }
 
+void Entity::stop(bool isStop)
+{
+	mEntityStop = isStop;
+}
+
 sf::Vector2f Entity::getVelocity() const
 {
 	return mVelocity;
@@ -18,7 +23,8 @@ sf::Vector2f Entity::getVelocity() const
 
 void Entity::moveEntity(sf::Vector2f velocity)
 {
-	mVelocity += velocity;
+	if(!mEntityStop)
+		mVelocity += velocity;
 }
 
 void Entity::moveEntity(float vx, float vy)
