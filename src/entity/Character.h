@@ -26,6 +26,8 @@ public:
 	void setDirectionAngle(float angle);
 	void moveAim();
 
+	sf::FloatRect getBoundingRect() const;
+
 
 private:
 		Type			mType;

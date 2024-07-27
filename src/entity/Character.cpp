@@ -57,3 +57,8 @@ void Character::moveAim()
 {
 	setRotation(mDirectionAngle);
 }
+
+sf::FloatRect Character::getBoundingRect() const
+{
+	return getWorldTransform().transformRect(mSprite.getGlobalBounds());
+}
