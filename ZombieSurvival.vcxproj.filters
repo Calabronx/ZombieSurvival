@@ -37,11 +37,14 @@
     <Filter Include="Source Files\src\input\command">
       <UniqueIdentifier>{eef9cd42-f47d-46cb-b164-90ae753bd16d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\state_machine">
+      <UniqueIdentifier>{728ef0a6-8dea-4f0f-9736-c8b49a695b54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\state_machine\states">
+      <UniqueIdentifier>{a7c08862-227e-4667-9ea2-8c3304c0896e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\core\Game.cpp">
-      <Filter>Source Files\src\core</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
@@ -69,11 +72,29 @@
     <ClCompile Include="src\input\InputHandler.cpp">
       <Filter>Source Files\src\input</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\Application.cpp">
+      <Filter>Source Files\src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\state_machine\states\GameState.cpp">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\state_machine\states\MenuState.cpp">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\state_machine\states\PauseState.cpp">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\state_machine\states\TitleState.cpp">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\state_machine\State.cpp">
+      <Filter>Source Files\src\state_machine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\state_machine\StateStack.cpp">
+      <Filter>Source Files\src\state_machine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\core\Game.h">
-      <Filter>Source Files\src\core</Filter>
-    </ClInclude>
     <ClInclude Include="src\util\FileSystem.h">
       <Filter>Source Files\src\util</Filter>
     </ClInclude>
@@ -106,6 +127,30 @@
     </ClInclude>
     <ClInclude Include="src\input\InputHandler.h">
       <Filter>Source Files\src\input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Application.h">
+      <Filter>Source Files\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\states\GameState.h">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\states\MenuState.h">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\states\PauseState.h">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\states\TitleState.h">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\State.h">
+      <Filter>Source Files\src\state_machine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\StateIdentifiers.h">
+      <Filter>Source Files\src\state_machine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\StateStack.h">
+      <Filter>Source Files\src\state_machine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

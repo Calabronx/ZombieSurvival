@@ -148,7 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="src\core\Game.cpp" />
+    <ClCompile Include="src\core\Application.cpp" />
     <ClCompile Include="src\ecs\SceneNode.cpp" />
     <ClCompile Include="src\ecs\SpriteNode.cpp" />
     <ClCompile Include="src\entity\Entity.cpp" />
@@ -156,10 +156,16 @@
     <ClCompile Include="src\input\command\Command.cpp" />
     <ClCompile Include="src\input\command\CommandQueue.cpp" />
     <ClCompile Include="src\input\InputHandler.cpp" />
+    <ClCompile Include="src\state_machine\State.cpp" />
+    <ClCompile Include="src\state_machine\StateStack.cpp" />
+    <ClCompile Include="src\state_machine\states\GameState.cpp" />
+    <ClCompile Include="src\state_machine\states\MenuState.cpp" />
+    <ClCompile Include="src\state_machine\states\PauseState.cpp" />
+    <ClCompile Include="src\state_machine\states\TitleState.cpp" />
     <ClCompile Include="src\world\GameWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\core\Game.h" />
+    <ClInclude Include="src\core\Application.h" />
     <ClInclude Include="src\ecs\SceneNode.h" />
     <ClInclude Include="src\ecs\SpriteNode.h" />
     <ClInclude Include="src\entity\Entity.h" />
@@ -167,6 +173,13 @@
     <ClInclude Include="src\input\command\Command.h" />
     <ClInclude Include="src\input\command\CommandQueue.h" />
     <ClInclude Include="src\input\InputHandler.h" />
+    <ClInclude Include="src\state_machine\State.h" />
+    <ClInclude Include="src\state_machine\StateIdentifiers.h" />
+    <ClInclude Include="src\state_machine\StateStack.h" />
+    <ClInclude Include="src\state_machine\states\GameState.h" />
+    <ClInclude Include="src\state_machine\states\MenuState.h" />
+    <ClInclude Include="src\state_machine\states\PauseState.h" />
+    <ClInclude Include="src\state_machine\states\TitleState.h" />
     <ClInclude Include="src\util\Category.h" />
     <ClInclude Include="src\util\FileSystem.h" />
     <ClInclude Include="src\util\ResourceIdentifiers.h" />

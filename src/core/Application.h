@@ -5,12 +5,13 @@
 #include<SFML/Graphics.hpp>
 #include "../world/GameWorld.h"
 #include "../input/InputHandler.h"
+#include "../state_machine/StateStack.h"
 
-class Game
+class Application
 {
 
 public:
-	Game();
+	Application();
 	void run();
 
 private:
@@ -18,12 +19,16 @@ private:
 	void	update(sf::Time elapsedTime);
 	void	render();
 
+	void	registerStates();
 private:
 	static const sf::Time		TimePerFrame;
 
 	sf::RenderWindow    mWindow;
 	GameWorld		    mWorld;
-    InputHandler        mPlayer;
+	TextureHolder		mTextures;
+    InputHandler			mPlayer;
+
+	StateStack				mStateStack;
 };
 
 #endif // !GAME_H
