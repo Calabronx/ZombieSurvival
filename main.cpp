@@ -1,10 +1,10 @@
 #include <SFML/Graphics.hpp>
 
-#include "src/core/Game.h"
+#include "src/core/Application.h"
 
 
 int main()
 {
-	Game game;
+	Application game;
 	game.run();
 }

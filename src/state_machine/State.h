@@ -4,9 +4,16 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
-#include "StateStack.h"
+#include "StateIdentifiers.h"
 #include "../util/ResourceIdentifiers.h"
-#include "../input/InputHandler.h"
+
+namespace sf
+{
+	class RenderWindow;
+}
+
+class StateStack;
+class InputHandler;
 
 class State
 {

@@ -16,6 +16,7 @@ Application::Application()
 	, mStateStack(State::Context(mWindow, mTextures, mPlayer))
 {
 	//mWindow.setMouseCursorVisible(false);
+	//mWindow.setKeyRepeatEnabled(false);
 	registerStates();
 	mStateStack.pushState(States::Title);
 }
@@ -29,13 +30,13 @@ void Application::processInput()
 	{
 		mStateStack.handleEvent(event);
 
-		mPlayer.handleEvent(event, commands);
+		//mPlayer.handleEvent(event, commands);
 
 		if (event.type == sf::Event::Closed)
 			mWindow.close();
 	}
 
-	mPlayer.handleRealTimeInput(commands);
+	//mPlayer.handleRealTimeInput(commands);
 }
 
 void Application::run()
@@ -60,7 +61,7 @@ void Application::run()
 void Application::update(sf::Time elapsedTime)
 {
 	mStateStack.update(elapsedTime);
-	mWorld.update(elapsedTime);
+	//mWorld.update(elapsedTime);
 }
 
 void Application::render()
