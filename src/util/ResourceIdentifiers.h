@@ -5,6 +5,7 @@
 namespace sf
 {
 	class Texture;
+	class Font;
 }
 
 namespace Textures
@@ -13,7 +14,16 @@ namespace Textures
 	{
 		Survivor,
 		Zombie,
-		Background
+		Background,
+		TitleScreen
+	};
+}
+
+namespace Fonts
+{
+	enum ID
+	{
+		Main,
 	};
 }
 
@@ -22,5 +32,6 @@ template <typename Resource, typename Identifier>
 class FileSystem;
 
 typedef FileSystem<sf::Texture, Textures::ID> TextureHolder;
+typedef FileSystem<sf::Font, Fonts::ID>			FontHolder;
 
 #endif // !RESOURCEIDENTIFIERS_H

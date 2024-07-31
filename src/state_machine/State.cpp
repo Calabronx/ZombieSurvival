@@ -1,9 +1,10 @@
 #include "State.h"
 #include "StateStack.h"
 
-State::Context::Context(sf::RenderWindow& window, TextureHolder& textures, InputHandler& inputPlayer)
+State::Context::Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, InputHandler& inputPlayer)
 	: window(&window)
 	, textures(&textures)
+	, fonts(&fonts)
 	, inputPlayer(&inputPlayer)
 {
 }
@@ -38,3 +39,4 @@ State::Context State::getContext() const
 {
 	return mContext;
 }
+

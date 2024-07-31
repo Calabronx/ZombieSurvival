@@ -93,6 +93,9 @@
     <ClCompile Include="src\state_machine\StateStack.cpp">
       <Filter>Source Files\src\state_machine</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\Utility.cpp">
+      <Filter>Source Files\src\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\FileSystem.h">
@@ -152,9 +155,15 @@
     <ClInclude Include="src\state_machine\StateStack.h">
       <Filter>Source Files\src\state_machine</Filter>
     </ClInclude>
+    <ClInclude Include="src\util\Utility.h">
+      <Filter>Source Files\src\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\util\FileSystem.inl">
+      <Filter>Source Files\src\util</Filter>
+    </None>
+    <None Include="src\util\Utility.inl">
       <Filter>Source Files\src\util</Filter>
     </None>
   </ItemGroup>

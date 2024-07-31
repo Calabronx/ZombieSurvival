@@ -13,10 +13,14 @@ const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 Application::Application()
 	: mWindow(sf::VideoMode(640, 480), "TestApplication", sf::Style::Close)
 	, mWorld(mWindow)
-	, mStateStack(State::Context(mWindow, mTextures, mPlayer))
+	, mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayer))
 {
+
 	//mWindow.setMouseCursorVisible(false);
 	//mWindow.setKeyRepeatEnabled(false);
+	mFonts.load(Fonts::Main, "resources/Sansation.ttf");
+	mTextures.load(Textures::TitleScreen, "resources/textures/Tiles/TitleScreen.png");
+
 	registerStates();
 	mStateStack.pushState(States::Title);
 }
@@ -79,6 +83,6 @@ void Application::registerStates()
 	mStateStack.registerState<TitleState>(States::Title);
 	mStateStack.registerState<MenuState>(States::Menu);
 	mStateStack.registerState<GameState>(States::Game);
-	mStateStack.registerState<PauseState>(States::Pause);
+	//mStateStack.registerState<PauseState>(States::Pause);
 }
 

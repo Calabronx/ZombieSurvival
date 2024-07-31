@@ -20,11 +20,11 @@ class State
 public:
 	typedef std::unique_ptr<State> Ptr;
 	struct Context {
-		Context(sf::RenderWindow& window, TextureHolder& textures, InputHandler& inputPlayer);
-		//Context(sf::RenderWindow& window,TextureHolder& textures,FontHolder& fonts,InputHandler& inputPlayer); utilizar cuando defina una lista con las fuentes 
+		Context(sf::RenderWindow& window,TextureHolder& textures,FontHolder& fonts,InputHandler& inputPlayer);
 
 		sf::RenderWindow*	window;
 		TextureHolder*		textures;
+		FontHolder*			fonts;
 		InputHandler*		inputPlayer;
 	};
 

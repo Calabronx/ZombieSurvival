@@ -162,6 +162,7 @@
     <ClCompile Include="src\state_machine\states\MenuState.cpp" />
     <ClCompile Include="src\state_machine\states\PauseState.cpp" />
     <ClCompile Include="src\state_machine\states\TitleState.cpp" />
+    <ClCompile Include="src\util\Utility.cpp" />
     <ClCompile Include="src\world\GameWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -183,10 +184,12 @@
     <ClInclude Include="src\util\Category.h" />
     <ClInclude Include="src\util\FileSystem.h" />
     <ClInclude Include="src\util\ResourceIdentifiers.h" />
+    <ClInclude Include="src\util\Utility.h" />
     <ClInclude Include="src\world\GameWorld.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\util\FileSystem.inl" />
+    <None Include="src\util\Utility.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
