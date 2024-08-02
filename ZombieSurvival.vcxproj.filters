@@ -96,6 +96,12 @@
     <ClCompile Include="src\util\Utility.cpp">
       <Filter>Source Files\src\util</Filter>
     </ClCompile>
+    <ClCompile Include="src\state_machine\states\LoadingState.cpp">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\state_machine\ParallelTask.cpp">
+      <Filter>Source Files\src\state_machine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\FileSystem.h">
@@ -157,6 +163,12 @@
     </ClInclude>
     <ClInclude Include="src\util\Utility.h">
       <Filter>Source Files\src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\states\LoadingState.h">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\ParallelTask.h">
+      <Filter>Source Files\src\state_machine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

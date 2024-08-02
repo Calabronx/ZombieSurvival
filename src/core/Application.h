@@ -3,9 +3,9 @@
 #define GAME_H
 
 #include<SFML/Graphics.hpp>
-#include "../world/GameWorld.h"
 #include "../input/InputHandler.h"
 #include "../state_machine/StateStack.h"
+#include "../util/FileSystem.h"
 
 class Application
 {
@@ -24,7 +24,6 @@ private:
 	static const sf::Time		TimePerFrame;
 
 	sf::RenderWindow    mWindow;
-	GameWorld		    mWorld;
 	TextureHolder		mTextures;
 	FontHolder			mFonts;
     InputHandler			mPlayer;

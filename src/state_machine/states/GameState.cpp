@@ -1,10 +1,12 @@
 #include "GameState.h"
+#include <iostream>
 
 GameState::GameState(StateStack& stack, Context context)
     : State(stack, context)
     , mWorld(*context.window)
     , mPlayer(*context.inputPlayer)
 {
+    std::cout << "Game State started" << std::endl;
 }
 
 void GameState::draw()

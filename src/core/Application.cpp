@@ -12,7 +12,9 @@ const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
 	: mWindow(sf::VideoMode(640, 480), "TestApplication", sf::Style::Close)
-	, mWorld(mWindow)
+	, mTextures()
+	, mFonts()
+	, mPlayer()
 	, mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayer))
 {
 
@@ -27,20 +29,15 @@ Application::Application()
 
 void Application::processInput()
 {
-	CommandQueue& commands = mWorld.getCommandQueue();
-
 	sf::Event event;
 	while (mWindow.pollEvent(event))
 	{
 		mStateStack.handleEvent(event);
 
-		//mPlayer.handleEvent(event, commands);
-
 		if (event.type == sf::Event::Closed)
 			mWindow.close();
 	}
 
-	//mPlayer.handleRealTimeInput(commands);
 }
 
 void Application::run()
@@ -56,7 +53,11 @@ void Application::run()
 			lastTimeUpdated -= TimePerFrame;
 			processInput();
 			update(TimePerFrame);
+
+			if (mStateStack.isEmpty())
+				mWindow.close();
 		}
+
 		render();
 	}
 }
@@ -65,13 +66,11 @@ void Application::run()
 void Application::update(sf::Time elapsedTime)
 {
 	mStateStack.update(elapsedTime);
-	//mWorld.update(elapsedTime);
 }
 
 void Application::render()
 {
 	mWindow.clear();
-	mWorld.draw();
 	mStateStack.draw();
 
 	mWindow.setView(mWindow.getDefaultView());
@@ -83,6 +82,6 @@ void Application::registerStates()
 	mStateStack.registerState<TitleState>(States::Title);
 	mStateStack.registerState<MenuState>(States::Menu);
 	mStateStack.registerState<GameState>(States::Game);
-	//mStateStack.registerState<PauseState>(States::Pause);
+	mStateStack.registerState<PauseState>(States::Pause);
 }
 
