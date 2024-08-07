@@ -16,7 +16,7 @@ void Entity::destroy()
 
 int Entity::getHitpoints() const
 {
-	return 0;
+	return mHitpoints;
 }
 
 bool Entity::isDestroyed() const
