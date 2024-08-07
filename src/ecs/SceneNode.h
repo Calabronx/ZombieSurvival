@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <vector>
+#include "../input/command/CommandQueue.h"
 
 struct Command;
 
@@ -19,7 +20,7 @@ public:
 	void	attachChild(Ptr child);
 	Ptr		detachChild(const SceneNode& node);
 
-	void	update(sf::Time dt);
+	void	update(sf::Time dt, CommandQueue& commands);
 
 
 	sf::Vector2f getWorldPosition() const;
@@ -30,8 +31,8 @@ public:
     virtual unsigned int getCategory() const;
 
 private:
-	virtual void		updateCurrent(sf::Time dt);
-	void					updateChildren(sf::Time dt);
+	virtual void		updateCurrent(sf::Time dt, CommandQueue& commands);
+	void					updateChildren(sf::Time dt, CommandQueue& commands);
 
 	virtual void		draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 	virtual void		drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;

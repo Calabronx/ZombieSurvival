@@ -4,9 +4,10 @@
 #include <iostream>
 #include <memory>
 
-GameWorld::GameWorld(sf::RenderWindow& window)
+GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 	: mWindow(window)
 	, mWorldView(window.getDefaultView())
+	, mFonts(fonts)
 	, mTextures()
 	, mSceneGraph()
 	, mSceneLayers()
@@ -36,7 +37,7 @@ void GameWorld::update(sf::Time dt)
 
 	adaptPlayerDirection();
 
-	mSceneGraph.update(dt);
+	mSceneGraph.update(dt, mCommandQueue);
 	adaptPlayerPosition();
 }
 
@@ -76,7 +77,7 @@ void GameWorld::buildScene()
 	mSceneLayers[Background]->attachChild(std::move(backgroundSprite));
 
 	// agregar jugador a la escena
-	std::unique_ptr<Character> player(new Character(Character::Survivor, mTextures));
+	std::unique_ptr<Character> player(new Character(Character::Survivor, mTextures, mFonts));
 	mPlayerSurvivor = player.get();
 	mPlayerSurvivor->setPosition(mSpawnPosition);
 	mPlayerSurvivor->setVelocity(0.f, 0.f);

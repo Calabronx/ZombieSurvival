@@ -151,6 +151,8 @@
     <ClCompile Include="src\core\Application.cpp" />
     <ClCompile Include="src\ecs\SceneNode.cpp" />
     <ClCompile Include="src\ecs\SpriteNode.cpp" />
+    <ClCompile Include="src\ecs\TextNode.cpp" />
+    <ClCompile Include="src\entity\data\DataTables.cpp" />
     <ClCompile Include="src\entity\Entity.cpp" />
     <ClCompile Include="src\entity\Character.cpp" />
     <ClCompile Include="src\input\command\Command.cpp" />
@@ -171,6 +173,8 @@
     <ClInclude Include="src\core\Application.h" />
     <ClInclude Include="src\ecs\SceneNode.h" />
     <ClInclude Include="src\ecs\SpriteNode.h" />
+    <ClInclude Include="src\ecs\TextNode.h" />
+    <ClInclude Include="src\entity\data\DataTables.h" />
     <ClInclude Include="src\entity\Entity.h" />
     <ClInclude Include="src\entity\Character.h" />
     <ClInclude Include="src\input\command\Command.h" />

@@ -43,6 +43,9 @@
     <Filter Include="Source Files\src\state_machine\states">
       <UniqueIdentifier>{a7c08862-227e-4667-9ea2-8c3304c0896e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\entity\data">
+      <UniqueIdentifier>{434d98ed-f798-4276-b712-87e6c563f246}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -101,6 +104,12 @@
     </ClCompile>
     <ClCompile Include="src\state_machine\ParallelTask.cpp">
       <Filter>Source Files\src\state_machine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\data\DataTables.cpp">
+      <Filter>Source Files\src\entity\data</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\TextNode.cpp">
+      <Filter>Source Files\src\ecs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +178,12 @@
     </ClInclude>
     <ClInclude Include="src\state_machine\ParallelTask.h">
       <Filter>Source Files\src\state_machine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\data\DataTables.h">
+      <Filter>Source Files\src\entity\data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\TextNode.h">
+      <Filter>Source Files\src\ecs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

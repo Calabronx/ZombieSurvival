@@ -19,7 +19,7 @@ namespace sf
 class GameWorld : sf::NonCopyable
 {
 	public:
-		explicit GameWorld(sf::RenderWindow& window);
+		explicit GameWorld(sf::RenderWindow& window, FontHolder& fonts);
 		void update(sf::Time dt);
 		void draw();
 
@@ -45,6 +45,7 @@ class GameWorld : sf::NonCopyable
 		sf::RenderWindow& mWindow;
 		sf::View			mWorldView;
 		TextureHolder		mTextures;
+		FontHolder&			mFonts;
 
 		SceneNode			mSceneGraph;
 		std::array<SceneNode*, LayerCount>	mSceneLayers;

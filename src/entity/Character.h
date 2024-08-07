@@ -7,19 +7,21 @@
 #include <SFML/System/Vector2.hpp>
 
 #include "Entity.h"
+#include "../input/command/CommandQueue.h"
 #include "../util/ResourceIdentifiers.h"
+#include "../ecs/TextNode.h"
 
 class Character : public Entity
 {
 	public:
 		enum Type {
 			Survivor,
-			Zombie
+			Zombie,
+			TypeCount,
 		};
 
 	public:
-		explicit Character(Type type, const TextureHolder& textures);
-		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+		explicit Character(Type type, const TextureHolder& textures, const FontHolder& fonts);
         virtual unsigned int getCategory() const;
 
 public:
@@ -28,12 +30,20 @@ public:
 
 	sf::FloatRect getBoundingRect() const;
 
+private:
+		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+		virtual void updateCurrent(sf::Time dt, CommandQueue&);
+
+		void		 updateTexts();
+
 
 private:
 		Type			mType;
 		sf::Sprite		mSprite;
 		sf::Vector2f	mCenter;
 		float			mDirectionAngle;
+
+		TextNode*		mHealthDisplay;
 };
 #endif // !SURVIVOR_H
 
