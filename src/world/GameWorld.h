@@ -41,6 +41,19 @@ class GameWorld : sf::NonCopyable
 			LayerCount
 		};
 
+		struct SpawnPoint
+		{
+			SpawnPoint(Character::Type type, float x, float y)
+				: type(type)
+				, x(x)
+				, y(y)
+			{
+			}
+			Character::Type type;
+			float x;
+			float y;
+		};
+
 	private:
 		sf::RenderWindow& mWindow;
 		sf::View			mWorldView;
