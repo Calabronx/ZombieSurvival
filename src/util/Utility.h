@@ -13,8 +13,12 @@ namespace sf
 template <typename T>
 std::string toString(const T& value);
 
+float toRadian(float degree);
+float toDegree(float radian);
+
 void centerOrigin(sf::Sprite& sprite);
 void centerOrigin(sf::Text& text);
+
 
 #include "../util/Utility.inl"
 
