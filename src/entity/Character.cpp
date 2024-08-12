@@ -52,10 +52,33 @@ void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) c
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
+	updateMovementPattern(dt);
 	Entity::updateCurrent(dt, commands);
 
 	// update texts
 	updateTexts();
+}
+
+void Character::updateMovementPattern(sf::Time dt)
+{
+	const std::vector<Direction>& directions = Table[mType].directions;
+	if (!directions.empty())
+	{
+		float distanceToTravel = directions[mDirectionIndex].distance;
+		if (mTravelledDistance > distanceToTravel)
+		{
+			mDirectionIndex = (mDirectionIndex + 1) % directions.size();
+			mTravelledDistance = 0.f;
+		}
+
+		float radians = toRadian(directions[mDirectionIndex].angle + 90.f);
+		float vx = getMaxSpeed() * std::cos(radians);
+		float vy = getMaxSpeed() * std::sin(radians);
+
+		setVelocity(vx, vy);
+
+		mTravelledDistance += getMaxSpeed() * dt.asSeconds();
+	}
 }
 
 void Character::updateTexts()
@@ -85,6 +108,11 @@ void Character::setDirectionAngle(float angle)
 void Character::moveAim()
 {
 	setRotation(mDirectionAngle);
+}
+
+float Character::getMaxSpeed() const
+{
+	return Table[mType].speed;
 }
 
 sf::FloatRect Character::getBoundingRect() const

@@ -28,11 +28,15 @@ public:
 	void setDirectionAngle(float angle);
 	void moveAim();
 
+	float getMaxSpeed() const;
+
 	sf::FloatRect getBoundingRect() const;
 
 private:
 		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 		virtual void updateCurrent(sf::Time dt, CommandQueue&);
+
+		void updateMovementPattern(sf::Time dt);
 
 		void		 updateTexts();
 
@@ -42,7 +46,8 @@ private:
 		sf::Sprite		mSprite;
 		sf::Vector2f	mCenter;
 		float			mDirectionAngle;
-
+		int				mDirectionIndex;
+		int				mTravelledDistance;
 		TextNode*		mHealthDisplay;
 };
 #endif // !SURVIVOR_H

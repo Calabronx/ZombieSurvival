@@ -12,6 +12,10 @@ std::vector<CharacterData> initializeCharacterData()
     data[Character::Zombie].hitpoints = 20;
     data[Character::Zombie].speed = 80.f;
     data[Character::Zombie].texture = Textures::Zombie;
+    data[Character::Zombie].directions.push_back(Direction(45, 80));
+    data[Character::Zombie].directions.push_back(Direction(-45, 160));
+    data[Character::Zombie].directions.push_back(Direction(45, 80));
+
 
 
     return data;
