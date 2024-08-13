@@ -28,10 +28,16 @@ class GameWorld : sf::NonCopyable
 	private:
 		void loadTextures();
 		void buildScene();
+		void addEnemies();
+		void addEnemy(Character::Type type, float relX, float relY);
+		void spawnEnemies();
 
 		void adaptPlayerPosition();
 		void adaptPlayerVelocity();
 		void adaptPlayerDirection();
+
+		sf::FloatRect getViewBounds() const;
+		sf::FloatRect getBattlefieldBounds() const;
 
 	private:
 		enum Layer
@@ -68,6 +74,7 @@ class GameWorld : sf::NonCopyable
 		float mScrollSpeed;
 		Character*		    mPlayerSurvivor;
         CommandQueue    mCommandQueue;
+		std::vector<SpawnPoint> mEnemySpawnPoints;
 
 
 };

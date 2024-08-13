@@ -15,6 +15,7 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 	, mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
 	, mScrollSpeed(-50.f)
 	, mPlayerSurvivor(nullptr)
+	, mEnemySpawnPoints()
 {
 	loadTextures();
 	buildScene();
@@ -37,6 +38,8 @@ void GameWorld::update(sf::Time dt)
 
 	adaptPlayerDirection();
 
+	spawnEnemies();
+
 	mSceneGraph.update(dt, mCommandQueue);
 	adaptPlayerPosition();
 }
@@ -55,6 +58,8 @@ CommandQueue& GameWorld::getCommandQueue()
 void GameWorld::loadTextures()
 {
 	mTextures.load(Textures::Survivor, "resources/textures/handgun/idle/survivor-idle_handgun_0.png");
+	//mTextures.load(Textures::Zombie, "resources/textures/zombiebasic.png");
+	mTextures.load(Textures::Zombie, "resources/textures/zombiebasic_first.png");
 	mTextures.load(Textures::Background, "resources/textures/Tiles/Desert.png");
 }
 
@@ -83,6 +88,44 @@ void GameWorld::buildScene()
 	mPlayerSurvivor->setVelocity(0.f, 0.f);
 	mPlayerSurvivor->setScale(sf::Vector2f(0.400f, 0.400f));
 	mSceneLayers[Land]->attachChild(std::move(player));
+
+	addEnemies();
+}
+
+void GameWorld::addEnemies()
+{
+	addEnemy(Character::Zombie, 320.f, 5.f);
+	addEnemy(Character::Zombie, 0.f, 1400.f);
+	addEnemy(Character::Zombie, 0.f, 600.f);
+
+	std::sort(mEnemySpawnPoints.begin(), mEnemySpawnPoints.end(), [](SpawnPoint lhs, SpawnPoint rhs)
+		{
+			return lhs.y < rhs.y;
+		});
+}
+
+void GameWorld::addEnemy(Character::Type type, float relX, float relY)
+{
+	SpawnPoint spawn(type, mSpawnPosition.x + relX, mSpawnPosition.y + relY);
+	mEnemySpawnPoints.push_back(spawn);
+}
+
+void GameWorld::spawnEnemies()
+{
+	while (!mEnemySpawnPoints.empty() && mEnemySpawnPoints.back().y > getBattlefieldBounds().top)
+	{
+		SpawnPoint spawn = mEnemySpawnPoints.back();
+
+		std::unique_ptr<Character> enemy(new Character(spawn.type, mTextures, mFonts));
+		enemy->setPosition(spawn.x, spawn.y);
+		enemy->setScale(sf::Vector2f(0.400f, 0.400f));
+		//enemy->setRotation(180.f); usar para modificar la rotacion del enemigo
+
+		mSceneLayers[Land]->attachChild(std::move(enemy));
+
+		mEnemySpawnPoints.pop_back();
+
+	}
 }
 
 void GameWorld::adaptPlayerPosition()
@@ -173,4 +216,18 @@ void GameWorld::adaptPlayerDirection()
 	sf::Vector2f mouseWorldPosition = mWindow.mapPixelToCoords(mousePosition, mWorldView);
 	float mouseAngle = -atan2f(mouseWorldPosition.x - playerPosition.x, mouseWorldPosition.y - playerPosition.y) * ROTATION_DEGREE / 3.14159; // angle in degrees of rotation of sprite
 	mPlayerSurvivor->setDirectionAngle(mouseAngle);
+}
+
+sf::FloatRect GameWorld::getViewBounds() const
+{
+	return sf::FloatRect();
+}
+
+sf::FloatRect GameWorld::getBattlefieldBounds() const
+{
+	// Devuelve los bounds de la vista del juego, deberia adaptarlo para que los enemigos salgan en distintas posiciones fuera de la vista
+	sf::FloatRect bounds = getViewBounds();
+	//bounds.top -= 100.f;
+	//bounds.height += 100.f;
+	return bounds;
 }
