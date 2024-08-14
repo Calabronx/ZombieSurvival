@@ -28,6 +28,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mSprite(textures.get(toTextureId(type)))
 	, mDirectionAngle(0.0f)
 	, mHealthDisplay(nullptr)
+	, mZombieTargetDirection()
 {
 	sf::FloatRect bounds = mSprite.getLocalBounds();
 	mSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
@@ -53,6 +54,22 @@ void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) c
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	updateMovementPattern(dt);
+
+	if (getCategory() == Category::Zombie)
+	{
+		if (isChasing())
+		{
+			const float approachRate = 200.f;
+
+			sf::Vector2f newVelocity = unitVector(approachRate * dt.asSeconds() * mZombieTargetDirection + getVelocity());
+			newVelocity *= getMaxSpeed();
+			float angle = std::atan2(newVelocity.y, newVelocity.x);
+
+			setRotation(toDegree(angle) + 90.f);
+			setVelocity(newVelocity);
+		}
+	}
+
 	Entity::updateCurrent(dt, commands);
 
 	// update texts
@@ -118,4 +135,20 @@ float Character::getMaxSpeed() const
 sf::FloatRect Character::getBoundingRect() const
 {
 	return getWorldTransform().transformRect(mSprite.getGlobalBounds());
+}
+
+void Character::guideTowardsPlayer(sf::Vector2f position)
+{
+	if (mType != Type::Zombie)
+	{
+		return;
+	}
+
+	mZombieTargetDirection = unitVector(position - getWorldPosition());
+	//setVelocity(mZombieTargetDirection);
+}
+
+bool Character::isChasing() const
+{
+	return mType == Zombie;
 }

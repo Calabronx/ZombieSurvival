@@ -21,7 +21,7 @@ int Entity::getHitpoints() const
 
 bool Entity::isDestroyed() const
 {
-	return false;
+	return mHitpoints <= 0;
 }
 
 void Entity::setVelocity(sf::Vector2f velocity)

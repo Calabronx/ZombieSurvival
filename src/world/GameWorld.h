@@ -31,6 +31,7 @@ class GameWorld : sf::NonCopyable
 		void addEnemies();
 		void addEnemy(Character::Type type, float relX, float relY);
 		void spawnEnemies();
+		void enemiesChaseIfClose();
 
 		void adaptPlayerPosition();
 		void adaptPlayerVelocity();
@@ -75,6 +76,7 @@ class GameWorld : sf::NonCopyable
 		Character*		    mPlayerSurvivor;
         CommandQueue    mCommandQueue;
 		std::vector<SpawnPoint> mEnemySpawnPoints;
+		std::vector<Character*> mActiveEnemies;
 
 
 };

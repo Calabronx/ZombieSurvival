@@ -1,8 +1,10 @@
 #include "GameWorld.h"
 #include "../ecs/SpriteNode.h"
+#include "../util/Category.h"
 
 #include <iostream>
 #include <memory>
+#include "../util/Utility.h"
 
 GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 	: mWindow(window)
@@ -16,6 +18,7 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 	, mScrollSpeed(-50.f)
 	, mPlayerSurvivor(nullptr)
 	, mEnemySpawnPoints()
+	, mActiveEnemies()
 {
 	loadTextures();
 	buildScene();
@@ -30,6 +33,8 @@ void GameWorld::update(sf::Time dt)
 	/*mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());*/
 	mPlayerSurvivor->setVelocity(0.f, 0.f);
 
+	std::cout << "ZOMBIES ALIVE: " << mActiveEnemies.size() << std::endl;
+	enemiesChaseIfClose();
 	// Forward commands to the scene graph
 	while (!mCommandQueue.isEmpty())
 		mSceneGraph.onCommand(mCommandQueue.pop(), dt);
@@ -39,6 +44,7 @@ void GameWorld::update(sf::Time dt)
 	adaptPlayerDirection();
 
 	spawnEnemies();
+
 
 	mSceneGraph.update(dt, mCommandQueue);
 	adaptPlayerPosition();
@@ -118,14 +124,57 @@ void GameWorld::spawnEnemies()
 
 		std::unique_ptr<Character> enemy(new Character(spawn.type, mTextures, mFonts));
 		enemy->setPosition(spawn.x, spawn.y);
-		enemy->setScale(sf::Vector2f(0.400f, 0.400f));
+		enemy->setVelocity(20.f, 20.f);
+		//enemy->setScale(sf::Vector2f(0.400f, 0.400f));
 		//enemy->setRotation(180.f); usar para modificar la rotacion del enemigo
 
+		mActiveEnemies.push_back(enemy.get());
 		mSceneLayers[Land]->attachChild(std::move(enemy));
 
 		mEnemySpawnPoints.pop_back();
 
 	}
+}
+
+void GameWorld::enemiesChaseIfClose()
+{
+	// Setup command that stores all enemies in mActiveEnemies
+	Command enemyCollector;
+	enemyCollector.category = Category::Zombie;
+	enemyCollector.action = derivedAction<Character>([this](Character& enemy, sf::Time)
+		{
+			if (!enemy.isDestroyed())
+				mActiveEnemies.push_back(&enemy);
+		});
+
+	Command enemyChase;
+	enemyChase.category = Category::Zombie;
+	enemyChase.action = derivedAction<Character>([this](Character& enemyChaser, sf::Time)
+		{
+			if (!enemyChaser.isChasing())
+				return;
+
+			float minDistance = std::numeric_limits<float>::max();
+			Character* closestEnemy = nullptr;
+
+			for (Character* zombie : mActiveEnemies)
+			{
+				float enemyDistance = distance(*mPlayerSurvivor, *zombie);
+
+				if (enemyDistance < minDistance)
+				{
+					closestEnemy = zombie;
+					minDistance = enemyDistance;
+				}
+			}
+
+			if (closestEnemy)
+				enemyChaser.guideTowardsPlayer(mPlayerSurvivor->getWorldPosition());
+		});
+
+	mCommandQueue.push(enemyCollector);
+	mCommandQueue.push(enemyChase);
+	mActiveEnemies.clear();
 }
 
 void GameWorld::adaptPlayerPosition()

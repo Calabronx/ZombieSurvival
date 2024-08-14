@@ -32,6 +32,10 @@ public:
 
 	sf::FloatRect getBoundingRect() const;
 
+	// zombie only methods
+	void guideTowardsPlayer(sf::Vector2f position);
+	bool isChasing() const;
+
 private:
 		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 		virtual void updateCurrent(sf::Time dt, CommandQueue&);
@@ -49,6 +53,7 @@ private:
 		int				mDirectionIndex;
 		int				mTravelledDistance;
 		TextNode*		mHealthDisplay;
+		sf::Vector2f	mZombieTargetDirection;
 };
 #endif // !SURVIVOR_H
 

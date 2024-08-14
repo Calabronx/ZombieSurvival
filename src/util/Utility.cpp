@@ -4,6 +4,7 @@
 #include <SFML/Graphics/Text.hpp>
 
 #include <cmath>
+#include <cassert>
 
 float toRadian(float degree)
 {
@@ -13,6 +14,22 @@ float toRadian(float degree)
 float toDegree(float radian)
 {
 	return 180.f / 3.141592653589793238462643383f * radian;
+}
+
+float length(sf::Vector2f vector)
+{
+	return std::sqrt(vector.x * vector.x + vector.y * vector.y);
+}
+
+float distance(const SceneNode& lhs, const SceneNode& rhs)
+{
+	return length(lhs.getWorldPosition() - rhs.getWorldPosition());
+}
+
+sf::Vector2f unitVector(sf::Vector2f vector)
+{
+	assert(vector != sf::Vector2f(0.f, 0.f));
+	return vector / length(vector);
 }
 
 void centerOrigin(sf::Sprite& sprite)
