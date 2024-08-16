@@ -22,10 +22,12 @@ struct SurvivorMover
 
 InputHandler::InputHandler()
 {
+	// Set initial key bindings
 	mKeyBinding[sf::Keyboard::A] = MoveLeft;
 	mKeyBinding[sf::Keyboard::D] = MoveRight;
 	mKeyBinding[sf::Keyboard::W] = MoveUp;
 	mKeyBinding[sf::Keyboard::S] = MoveDown;
+	mMouseBinding[sf::Mouse::Left] = Fire;
 
 	initializeActions();
 
@@ -38,9 +40,17 @@ void InputHandler::handleEvent(const sf::Event& event, CommandQueue& commands)
 	if (event.type == sf::Event::KeyPressed)
 	{
 		// check if pressed key appears in key binding, trigger command if so
-		auto found = mKeyBinding.find(event.key.code);
-		if(found != mKeyBinding.end() && !isRealtimeAction(found->second))
-			commands.push(mActionBinding[found->second]);
+		auto foundKey = mKeyBinding.find(event.key.code);
+		if (foundKey != mKeyBinding.end() && !isRealtimeAction(foundKey->second))
+			commands.push(mActionBinding[foundKey->second]);
+
+	}
+
+	if (event.type == sf::Event::MouseButtonPressed)
+	{
+		auto foundMouse = mMouseBinding.find(event.mouseButton.button);
+		if (foundMouse != mMouseBinding.end() && !isRealtimeAction(foundMouse->second))
+			commands.push(mActionBinding[foundMouse->second]);
 	}
 
 	if (event.type == sf::Event::MouseMoved) {
@@ -55,6 +65,12 @@ void InputHandler::handleRealTimeInput(CommandQueue& commands)
 		if (sf::Keyboard::isKeyPressed(pair.first) && isRealtimeAction(pair.second))
 			commands.push(mActionBinding[pair.second]);
 	}
+
+	for (auto pair : mMouseBinding)
+	{
+		if (sf::Mouse::isButtonPressed(pair.first) && isRealtimeAction(pair.second))
+			commands.push(mActionBinding[pair.second]);
+	}
 }
 
 void InputHandler::initializeActions()
@@ -66,20 +82,22 @@ void InputHandler::initializeActions()
 	mActionBinding[MoveUp].action = derivedAction<Character>(SurvivorMover(0.f, -playerSpeed));
 	mActionBinding[MoveDown].action = derivedAction<Character>(SurvivorMover(0.f, +playerSpeed));
 	mActionBinding[MoveAim].action = derivedAction<Character>([](Character& c, sf::Time) { c.moveAim(); });
+	mActionBinding[Fire].action = derivedAction<Character>([](Character& c, sf::Time) { c.fire();  });
 }
 
 bool InputHandler::isRealtimeAction(Action action)
 {
 	switch (action)
 	{
-			case MoveLeft:
-			case MoveRight:
-			case MoveDown:
-			case MoveUp:
-			case MoveAim:
-					return true;
-			default:
-					return false;
+	case MoveLeft:
+	case MoveRight:
+	case MoveDown:
+	case MoveUp:
+	case MoveAim:
+	case Fire:
+		return true;
+	default:
+		return false;
 	}
 }
 
@@ -104,7 +122,7 @@ sf::Keyboard::Key InputHandler::getAssignedKey(Action action) const
 	for (auto pair : mKeyBinding)
 	{
 		if (pair.second == action)
-				return pair.first;
+			return pair.first;
 	}
 
 	return sf::Keyboard::Unknown;

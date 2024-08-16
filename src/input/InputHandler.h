@@ -16,7 +16,8 @@ public:
         MoveRight,
         MoveUp,
         MoveDown,
-        MoveAim
+        MoveAim,
+        Fire,
     };
 
 public:

@@ -10,6 +10,7 @@
 #include "../input/command/CommandQueue.h"
 #include "../util/ResourceIdentifiers.h"
 #include "../ecs/TextNode.h"
+#include "Projectile.h"
 
 class Character : public Entity
 {
@@ -36,6 +37,8 @@ public:
 	void guideTowardsPlayer(sf::Vector2f position);
 	bool isChasing() const;
 
+	void fire();
+
 private:
 		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 		virtual void updateCurrent(sf::Time dt, CommandQueue&);
@@ -43,17 +46,28 @@ private:
 		void updateMovementPattern(sf::Time dt);
 
 		void		 updateTexts();
+		void		 checkProjectileLaunch(sf::Time dt, CommandQueue& commands);
+
+		void		 createBullets(SceneNode& node, const TextureHolder& textures) const;
+		void		 createProjectile(SceneNode& node, Projectile::Type type, float xOffset, float yOffset, const TextureHolder& textures) const;
 
 
 private:
 		Type			mType;
 		sf::Sprite		mSprite;
+		Command			mFireCommand;
 		sf::Vector2f	mCenter;
 		float			mDirectionAngle;
+		float			mTravelledDistance;
+
 		int				mDirectionIndex;
-		int				mTravelledDistance;
+		int				mFireRateLevel;
+		int				mSpreadLevel;
+
 		TextNode*		mHealthDisplay;
 		sf::Vector2f	mZombieTargetDirection;
+		sf::Time		mFireCountdown;
+		bool			mIsFiring;
 };
 #endif // !SURVIVOR_H
 

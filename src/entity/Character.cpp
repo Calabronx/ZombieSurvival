@@ -29,15 +29,27 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mDirectionAngle(0.0f)
 	, mHealthDisplay(nullptr)
 	, mZombieTargetDirection()
+	, mIsFiring(false)
+	, mFireCommand()
+	, mFireRateLevel(1)
+	, mSpreadLevel(1)
+	, mTravelledDistance(0.f)
+	, mDirectionIndex(0)
 {
 	sf::FloatRect bounds = mSprite.getLocalBounds();
 	mSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
 	sf::Vector2f center(bounds.left + bounds.width / 2.0f, bounds.top + bounds.height / 2.0f);
 	mCenter = center;
 
-	if (type == Survivor)
+	if (getCategory() == Category::PlayerSurvivor) {
 		setRotation(mDirectionAngle);
 
+		mFireCommand.category = Category::SceneLandLayer;
+		mFireCommand.action = [this, &textures](SceneNode& node, sf::Time)
+		{
+			createBullets(node, textures);
+		};
+	}
 	std::unique_ptr<TextNode> healthDisplay(new TextNode(fonts, ""));
 	mHealthDisplay = healthDisplay.get();
 	attachChild(std::move(healthDisplay));
@@ -69,6 +81,9 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 			setVelocity(newVelocity);
 		}
 	}
+
+	// check if bullets are fired
+	checkProjectileLaunch(dt, commands);
 
 	Entity::updateCurrent(dt, commands);
 
@@ -103,6 +118,56 @@ void Character::updateTexts()
 	mHealthDisplay->setString(toString(getHitpoints()) + " HP");
 	mHealthDisplay->setPosition(0.f, 95.f);
 	mHealthDisplay->setRotation(-getRotation());
+}
+
+void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
+{
+	if (mIsFiring && mFireCountdown <= sf::Time::Zero)
+	{
+		commands.push(mFireCommand);
+		mFireCountdown += sf::seconds(1.f / (mFireRateLevel + 1));
+		mIsFiring = false;
+	}
+	else if (mFireCountdown > sf::Time::Zero)
+	{
+		mFireCountdown -= dt;
+	}
+}
+
+void Character::createBullets(SceneNode& node, const TextureHolder& textures) const
+{
+	Projectile::Type type = Projectile::HandgunBullet;
+
+	switch (mSpreadLevel)
+	{
+			case 1:
+				createProjectile(node, type, 0.0f, 0.5f, textures);
+				break;
+
+			case 2:
+				createProjectile(node, type, -0.33f, 0.33f, textures);
+				createProjectile(node, type, +0.33f, 0.33f, textures);
+				break;
+
+			case 3:
+				createProjectile(node, type, -0.5f, 0.33f, textures);
+				createProjectile(node, type,  0.0f, 0.5f,  textures);
+				createProjectile(node, type, +0.5f, 0.33f, textures);
+				break;
+	}
+}
+
+void Character::createProjectile(SceneNode& node, Projectile::Type type, float xOffset, float yOffset, const TextureHolder& textures) const
+{
+	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
+
+	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
+	sf::Vector2f velocity(0, projectile->getMaxSpeed());
+
+	float sign = -1.f;
+	projectile->setPosition(getWorldPosition() + offset * sign);
+	projectile->setVelocity(velocity * sign);
+	node.attachChild(std::move(projectile));
 }
 
 unsigned int Character::getCategory() const
@@ -145,10 +210,17 @@ void Character::guideTowardsPlayer(sf::Vector2f position)
 	}
 
 	mZombieTargetDirection = unitVector(position - getWorldPosition());
-	//setVelocity(mZombieTargetDirection);
 }
 
 bool Character::isChasing() const
 {
 	return mType == Zombie;
+}
+
+void Character::fire()
+{
+	if (Table[mType].fireInterval != sf::Time::Zero)
+		mIsFiring = true;
+
+	std::cout << "fire" << std::endl;
 }

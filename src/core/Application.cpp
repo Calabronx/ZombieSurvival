@@ -19,7 +19,7 @@ Application::Application()
 {
 
 	//mWindow.setMouseCursorVisible(false);
-	//mWindow.setKeyRepeatEnabled(false);
+	mWindow.setKeyRepeatEnabled(false);
 	mFonts.load(Fonts::Main, "resources/Sansation.ttf");
 	mTextures.load(Textures::TitleScreen, "resources/textures/Tiles/TitleScreen.png");
 

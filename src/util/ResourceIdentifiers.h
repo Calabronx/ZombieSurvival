@@ -15,7 +15,9 @@ namespace Textures
 		Survivor,
 		Zombie,
 		Background,
-		TitleScreen
+		TitleScreen,
+		HandgunBullet,
+		ShotgunBullet
 	};
 }
 

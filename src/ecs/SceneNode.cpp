@@ -43,7 +43,7 @@ void SceneNode::onCommand(const Command& command, sf::Time dt)
 
 unsigned int SceneNode::getCategory() const
 {
-    return Category::Scene;
+    return Category::SceneLandLayer;
 }
 
 sf::Vector2f SceneNode::getWorldPosition() const

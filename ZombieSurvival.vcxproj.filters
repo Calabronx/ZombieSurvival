@@ -111,6 +111,9 @@
     <ClCompile Include="src\ecs\TextNode.cpp">
       <Filter>Source Files\src\ecs</Filter>
     </ClCompile>
+    <ClCompile Include="src\entity\Projectile.cpp">
+      <Filter>Source Files\src\entity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\FileSystem.h">
@@ -184,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="src\ecs\TextNode.h">
       <Filter>Source Files\src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\Projectile.h">
+      <Filter>Source Files\src\entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

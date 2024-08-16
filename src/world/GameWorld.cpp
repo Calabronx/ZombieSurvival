@@ -30,7 +30,7 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 
 void GameWorld::update(sf::Time dt)
 {
-	/*mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());*/
+	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
 	mPlayerSurvivor->setVelocity(0.f, 0.f);
 
 	std::cout << "ZOMBIES ALIVE: " << mActiveEnemies.size() << std::endl;
@@ -66,6 +66,7 @@ void GameWorld::loadTextures()
 	mTextures.load(Textures::Survivor, "resources/textures/handgun/idle/survivor-idle_handgun_0.png");
 	//mTextures.load(Textures::Zombie, "resources/textures/zombiebasic.png");
 	mTextures.load(Textures::Zombie, "resources/textures/zombiebasic_first.png");
+	mTextures.load(Textures::HandgunBullet, "resources/textures/bullets/Bullet.png");
 	mTextures.load(Textures::Background, "resources/textures/Tiles/Desert.png");
 }
 
@@ -125,7 +126,6 @@ void GameWorld::spawnEnemies()
 		std::unique_ptr<Character> enemy(new Character(spawn.type, mTextures, mFonts));
 		enemy->setPosition(spawn.x, spawn.y);
 		enemy->setVelocity(20.f, 20.f);
-		//enemy->setScale(sf::Vector2f(0.400f, 0.400f));
 		//enemy->setRotation(180.f); usar para modificar la rotacion del enemigo
 
 		mActiveEnemies.push_back(enemy.get());
