@@ -26,7 +26,12 @@ class Character : public Entity
         virtual unsigned int getCategory() const;
 
 public:
-	void setDirectionAngle(float angle);
+	void	setDirectionAngle(float angle);
+	void	setMousePosition(sf::Vector2f mousePosition);
+	float	getDirectionAngle() const;
+
+	
+
 	void moveAim();
 
 	float getMaxSpeed() const;
@@ -68,6 +73,7 @@ private:
 		sf::Vector2f	mZombieTargetDirection;
 		sf::Time		mFireCountdown;
 		bool			mIsFiring;
+		sf::Vector2f	mMousePosition;
 };
 #endif // !SURVIVOR_H
 

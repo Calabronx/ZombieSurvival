@@ -160,13 +160,18 @@ void Character::createBullets(SceneNode& node, const TextureHolder& textures) co
 void Character::createProjectile(SceneNode& node, Projectile::Type type, float xOffset, float yOffset, const TextureHolder& textures) const
 {
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
-
 	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
-	sf::Vector2f velocity(0, projectile->getMaxSpeed());
+	sf::Vector2f mouseWorldPosition = mMousePosition;
+	float sign = -0.30f;
 
-	float sign = -1.f;
 	projectile->setPosition(getWorldPosition() + offset * sign);
-	projectile->setVelocity(velocity * sign);
+	float mouseAngle = std::atan2(mMousePosition.y - projectile->getPosition().y, mMousePosition.x - projectile->getPosition().x);
+	float bulletRotation = std::atan2(mMousePosition.y, mMousePosition.x);
+
+	projectile->setVelocity(sf::Vector2f(projectile->getMaxSpeed() * std::cos(mouseAngle), projectile->getMaxSpeed() * std::sin(mouseAngle)));
+	projectile->setRotation(toRadian(bulletRotation)); // falta ajustar el angulo perfecto acorde al cursor, solo en y+/y- la bala va derecha segun el angulo
+	//std::cout << "MOUSE VEC (X: " << mouseWorldPosition.x << ",Y: " << mouseWorldPosition.y << ")" << std::endl;
+	//std::cout << "BULLET VEC TRAYECTORY (X: " << projectile->getVelocity().x << ",Y: " << projectile->getVelocity().y << ")" << std::endl;
 	node.attachChild(std::move(projectile));
 }
 
@@ -186,6 +191,17 @@ void Character::setDirectionAngle(float angle)
 {
 	mDirectionAngle = angle;
 }
+
+void Character::setMousePosition(sf::Vector2f mousePosition)
+{
+	mMousePosition = mousePosition;
+}
+
+float Character::getDirectionAngle() const
+{
+	return getRotation();
+}
+
 
 void Character::moveAim()
 {
@@ -222,5 +238,5 @@ void Character::fire()
 	if (Table[mType].fireInterval != sf::Time::Zero)
 		mIsFiring = true;
 
-	std::cout << "fire" << std::endl;
+	//std::cout << "fire" << std::endl;
 }

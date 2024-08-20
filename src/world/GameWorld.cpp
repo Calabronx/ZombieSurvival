@@ -25,15 +25,18 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 
 	mWorldView.setCenter(mSpawnPosition);
 
-	std::cout << "SPAWN  X : " << mSpawnPosition.x << "  Y: " << mSpawnPosition.y << std::endl;
 }
+	//std::cout << "SPAWN  X : " << mSpawnPosition.x << "  Y: " << mSpawnPosition.y << std::endl;
 
 void GameWorld::update(sf::Time dt)
 {
 	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
 	mPlayerSurvivor->setVelocity(0.f, 0.f);
 
-	std::cout << "ZOMBIES ALIVE: " << mActiveEnemies.size() << std::endl;
+	//std::cout << "ZOMBIES ALIVE: " << mActiveEnemies.size() << std::endl;
+	//std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;
+	/*std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;*/
+	//std::cout << "PY VEC (X: " << mPlayerSurvivor->getPosition().x << ",Y: " << mPlayerSurvivor->getPosition().y << ")" << std::endl;
 	enemiesChaseIfClose();
 	// Forward commands to the scene graph
 	while (!mCommandQueue.isEmpty())
@@ -264,7 +267,10 @@ void GameWorld::adaptPlayerDirection()
 	sf::Vector2i mousePosition = sf::Mouse::getPosition(mWindow);
 	sf::Vector2f mouseWorldPosition = mWindow.mapPixelToCoords(mousePosition, mWorldView);
 	float mouseAngle = -atan2f(mouseWorldPosition.x - playerPosition.x, mouseWorldPosition.y - playerPosition.y) * ROTATION_DEGREE / 3.14159; // angle in degrees of rotation of sprite
+	mPlayerSurvivor->setMousePosition(mouseWorldPosition);
 	mPlayerSurvivor->setDirectionAngle(mouseAngle);
+
+	/*std::cout << "MOUSE VEC (X: " << mousePosition.x << ",Y: " << mousePosition.y << ")" << std::endl;*/
 }
 
 sf::FloatRect GameWorld::getViewBounds() const
