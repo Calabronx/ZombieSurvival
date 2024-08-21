@@ -31,6 +31,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mZombieTargetDirection()
 	, mIsFiring(false)
 	, mFireCommand()
+	, mFireCountdown(sf::Time::Zero)
 	, mFireRateLevel(1)
 	, mSpreadLevel(1)
 	, mTravelledDistance(0.f)
@@ -125,12 +126,13 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	if (mIsFiring && mFireCountdown <= sf::Time::Zero)
 	{
 		commands.push(mFireCommand);
-		mFireCountdown += sf::seconds(1.f / (mFireRateLevel + 1));
+		mFireCountdown += Table[mType].fireInterval / (mFireRateLevel + 1.f);
 		mIsFiring = false;
 	}
 	else if (mFireCountdown > sf::Time::Zero)
 	{
 		mFireCountdown -= dt;
+		mIsFiring = false;
 	}
 }
 
