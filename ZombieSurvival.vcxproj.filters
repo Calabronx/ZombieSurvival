@@ -114,6 +114,9 @@
     <ClCompile Include="src\entity\Projectile.cpp">
       <Filter>Source Files\src\entity</Filter>
     </ClCompile>
+    <ClCompile Include="src\entity\Pickup.cpp">
+      <Filter>Source Files\src\entity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\FileSystem.h">
@@ -189,6 +192,9 @@
       <Filter>Source Files\src\ecs</Filter>
     </ClInclude>
     <ClInclude Include="src\entity\Projectile.h">
+      <Filter>Source Files\src\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\Pickup.h">
       <Filter>Source Files\src\entity</Filter>
     </ClInclude>
   </ItemGroup>

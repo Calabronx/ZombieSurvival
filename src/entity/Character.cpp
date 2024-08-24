@@ -13,11 +13,11 @@ Textures::ID toTextureId(Character::Type type)
 {
 	switch (type)
 	{
-			case Character::Survivor:
-				return Textures::Survivor;
+	case Character::Survivor:
+		return Textures::Survivor;
 
-			case Character::Zombie:
-				return Textures::Zombie;
+	case Character::Zombie:
+		return Textures::Zombie;
 	}
 	return Textures::Survivor;
 }
@@ -36,8 +36,10 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mSpreadLevel(1)
 	, mTravelledDistance(0.f)
 	, mDirectionIndex(0)
+	, mGunPosition()
 {
 	sf::FloatRect bounds = mSprite.getLocalBounds();
+	//sf::FloatRect gun = bounds.top + bounds.left;
 	mSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
 	sf::Vector2f center(bounds.left + bounds.width / 2.0f, bounds.top + bounds.height / 2.0f);
 	mCenter = center;
@@ -50,6 +52,8 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		{
 			createBullets(node, textures);
 		};
+
+		mGunPosition = sf::Vector2f(0.f, mSprite.getOrigin().y - bounds.top);
 	}
 	std::unique_ptr<TextNode> healthDisplay(new TextNode(fonts, ""));
 	mHealthDisplay = healthDisplay.get();
@@ -139,54 +143,70 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 void Character::createBullets(SceneNode& node, const TextureHolder& textures) const
 {
 	Projectile::Type type = Projectile::HandgunBullet;
+	createProjectile(node, type, -0.2f, 0.0f, textures);
+	//switch (mSpreadLevel)
+	//{
+	//		case 1:
+	//			createProjectile(node, type, 0.0f, 0.5f, textures);
+	//			break;
 
-	switch (mSpreadLevel)
-	{
-			case 1:
-				createProjectile(node, type, 0.0f, 0.5f, textures);
-				break;
+	//		case 2:
+	//			createProjectile(node, type, -0.33f, 0.33f, textures);
+	//			createProjectile(node, type, +0.33f, 0.33f, textures);
+	//			break;
 
-			case 2:
-				createProjectile(node, type, -0.33f, 0.33f, textures);
-				createProjectile(node, type, +0.33f, 0.33f, textures);
-				break;
-
-			case 3:
-				createProjectile(node, type, -0.5f, 0.33f, textures);
-				createProjectile(node, type,  0.0f, 0.5f,  textures);
-				createProjectile(node, type, +0.5f, 0.33f, textures);
-				break;
-	}
+	//		case 3:
+	//			createProjectile(node, type, -0.5f, 0.33f, textures);
+	//			createProjectile(node, type,  0.0f, 0.5f,  textures);
+	//			createProjectile(node, type, +0.5f, 0.33f, textures);
+	//			break;
+	//}
 }
 
 void Character::createProjectile(SceneNode& node, Projectile::Type type, float xOffset, float yOffset, const TextureHolder& textures) const
 {
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
-	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
+	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height); 
+	//std::cout << "TOP SPRITE " << mSprite.getGlobalBounds().top << std::endl;
+	//sf::Vector2f gun(xOffset, yOffset);
+	float angleRadians = toRadian(mSprite.getRotation());
+	sf::Vector2f center(mSprite.getGlobalBounds().width / 2.f, mSprite.getGlobalBounds().height / 2.f);
+	sf::Vector2f rotatedOffset;
+	rotatedOffset.x = offset.x * std::cos(angleRadians) - std::sin(angleRadians);
+	rotatedOffset.y = offset.x * std::cos(angleRadians) - std::sin(angleRadians);
+
+	sf::Vector2f projectilePosition = getWorldPosition() + center + rotatedOffset;
+
 	sf::Vector2f mouseWorldPosition = mMousePosition;
 	float sign = -0.30f;
 
 	projectile->setPosition(getWorldPosition() + offset * sign);
+	//projectile->setPosition(projectilePosition);
+	std::cout << "BULLET VEC SHOOT POS (X: " << projectile->getPosition().x << ",Y: " << projectile->getPosition().y << ")" << std::endl;
 	float mouseAngle = std::atan2(mMousePosition.y - projectile->getPosition().y, mMousePosition.x - projectile->getPosition().x);
 	float bulletRotation = std::atan2(mMousePosition.y, mMousePosition.x);
 
+	float mouse = std::atan2(mouseWorldPosition.y, mouseWorldPosition.x);
+	float degrees = toDegree(mouseAngle) + 90;
+
 	projectile->setVelocity(sf::Vector2f(projectile->getMaxSpeed() * std::cos(mouseAngle), projectile->getMaxSpeed() * std::sin(mouseAngle)));
-	projectile->setRotation(toRadian(bulletRotation)); // falta ajustar el angulo perfecto acorde al cursor, solo en y+/y- la bala va derecha segun el angulo
-	//std::cout << "MOUSE VEC (X: " << mouseWorldPosition.x << ",Y: " << mouseWorldPosition.y << ")" << std::endl;
+	projectile->setRotation(degrees); // falta ajustar el angulo perfecto acorde al cursor, solo en y+/y- la bala va derecha segun el angulo
+	projectile->setScale(0.019999f, 0.2f);
+	std::cout << "MOUSE VEC (X: " << mouseWorldPosition.x << ",Y: " << mouseWorldPosition.y << ")" << std::endl;
 	//std::cout << "BULLET VEC TRAYECTORY (X: " << projectile->getVelocity().x << ",Y: " << projectile->getVelocity().y << ")" << std::endl;
 	node.attachChild(std::move(projectile));
 }
 
 unsigned int Character::getCategory() const
 {
-    switch (mType)
-    {
-        case Survivor:
-            return Category::PlayerSurvivor;
+	switch (mType)
+	{
+	case Survivor:
+		return Category::PlayerSurvivor;
 
-        default:
-            return Category::Zombie;
-    }
+	default:
+		return Category::Zombie;
+	}
 }
 
 void Character::setDirectionAngle(float angle)
@@ -220,6 +240,17 @@ sf::FloatRect Character::getBoundingRect() const
 	return getWorldTransform().transformRect(mSprite.getGlobalBounds());
 }
 
+sf::Vector2f Character::getGunPosition() const
+{
+	float angleRad = toRadian(getRotation());
+	sf::Vector2f offset(mSprite.getGlobalBounds().width, mSprite.getGlobalBounds().height);
+
+	sf::Vector2f gunOffset(mSprite.getPosition().x * cos(angleRad) - mSprite.getPosition().y * sin(angleRad),
+						  mGunPosition.x * sin(angleRad) * mGunPosition.y * cos(angleRad));
+
+	return getPosition() + gunOffset;
+}
+
 void Character::guideTowardsPlayer(sf::Vector2f position)
 {
 	if (mType != Type::Zombie)
@@ -233,6 +264,18 @@ void Character::guideTowardsPlayer(sf::Vector2f position)
 bool Character::isChasing() const
 {
 	return mType == Zombie;
+}
+
+void Character::increaseFireRate()
+{
+	if (mFireRateLevel < 10)
+		++mFireRateLevel;
+}
+
+void Character::increaseSpread()
+{
+	if (mSpreadLevel < 3)
+		++mSpreadLevel;
 }
 
 void Character::fire()

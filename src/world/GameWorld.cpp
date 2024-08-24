@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include "../util/Utility.h"
+#include "../entity/Pickup.h"
 
 GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 	: mWindow(window)
@@ -36,7 +37,7 @@ void GameWorld::update(sf::Time dt)
 	//std::cout << "ZOMBIES ALIVE: " << mActiveEnemies.size() << std::endl;
 	//std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;
 	/*std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;*/
-	//std::cout << "PY VEC (X: " << mPlayerSurvivor->getPosition().x << ",Y: " << mPlayerSurvivor->getPosition().y << ")" << std::endl;
+	std::cout << "PY VEC (X: " << mPlayerSurvivor->getPosition().x << ",Y: " << mPlayerSurvivor->getPosition().y << ")" << std::endl;
 	enemiesChaseIfClose();
 	// Forward commands to the scene graph
 	while (!mCommandQueue.isEmpty())
@@ -66,11 +67,16 @@ CommandQueue& GameWorld::getCommandQueue()
 
 void GameWorld::loadTextures()
 {
-	mTextures.load(Textures::Survivor, "resources/textures/handgun/idle/survivor-idle_handgun_0.png");
+	//mTextures.load(Textures::Survivor, "resources/textures/handgun/idle/survivor-idle_handgun_0.png");
+	mTextures.load(Textures::Survivor, "resources/textures/rifle/idle/survivor-idle_rifle_0.png");
 	//mTextures.load(Textures::Zombie, "resources/textures/zombiebasic.png");
 	mTextures.load(Textures::Zombie, "resources/textures/zombiebasic_first.png");
 	mTextures.load(Textures::HandgunBullet, "resources/textures/bullets/Bullet.png");
 	mTextures.load(Textures::Background, "resources/textures/Tiles/Desert.png");
+
+	mTextures.load(Textures::HealthRefill, "resources/textures/HealthRefill.png");
+	mTextures.load(Textures::FireRate, "resources/textures/FireRate.png");
+	mTextures.load(Textures::FireSpread, "resources/textures/FireSpread.png");
 }
 
 void GameWorld::buildScene()
@@ -91,12 +97,23 @@ void GameWorld::buildScene()
 	backgroundSprite->setPosition(mWorldBounds.left, mWorldBounds.top);
 	mSceneLayers[Background]->attachChild(std::move(backgroundSprite));
 
+
+	std::unique_ptr<Pickup> healthItem(new Pickup(Pickup::HealthRefill, mTextures));
+	healthItem->setPosition(0.f, 0.f);
+
+	mSceneLayers[Land]->attachChild(std::move(healthItem));
+
 	// agregar jugador a la escena
 	std::unique_ptr<Character> player(new Character(Character::Survivor, mTextures, mFonts));
 	mPlayerSurvivor = player.get();
 	mPlayerSurvivor->setPosition(mSpawnPosition);
 	mPlayerSurvivor->setVelocity(0.f, 0.f);
 	mPlayerSurvivor->setScale(sf::Vector2f(0.400f, 0.400f));
+
+	//mPlayerSurvivor->setRotation(
+	//MOUSE VEC (X: 320,Y: 192)
+	sf::FloatRect gun(mPlayerSurvivor->getGunPosition(), sf::Vector2f(4, 2));
+	//mPlayerSurvivor->attachChild(gun);
 	mSceneLayers[Land]->attachChild(std::move(player));
 
 	addEnemies();
@@ -262,15 +279,25 @@ void GameWorld::adaptPlayerVelocity()
 void GameWorld::adaptPlayerDirection()
 {
 	// adaptar la direccion del jugador o el aim en base a la posicion del cursor en el juego
+	sf::Time dt;
 	const int ROTATION_DEGREE = 360;
 	sf::Vector2i playerPosition(mPlayerSurvivor->getPosition().x, mPlayerSurvivor->getPosition().y);
 	sf::Vector2i mousePosition = sf::Mouse::getPosition(mWindow);
 	sf::Vector2f mouseWorldPosition = mWindow.mapPixelToCoords(mousePosition, mWorldView);
-	float mouseAngle = -atan2f(mouseWorldPosition.x - playerPosition.x, mouseWorldPosition.y - playerPosition.y) * ROTATION_DEGREE / 3.14159; // angle in degrees of rotation of sprite
-	mPlayerSurvivor->setMousePosition(mouseWorldPosition);
-	mPlayerSurvivor->setDirectionAngle(mouseAngle);
 
-	/*std::cout << "MOUSE VEC (X: " << mousePosition.x << ",Y: " << mousePosition.y << ")" << std::endl;*/
+	float mouseAngle = -atan2(mouseWorldPosition.x - playerPosition.x, mouseWorldPosition.y - playerPosition.y); // angle in degrees of rotation of sprite
+	float rotate = mouseAngle;
+
+	float mouse = std::atan2(mouseWorldPosition.y, mouseWorldPosition.x);
+	float degrees = toDegree(mouseAngle) + 90.f;
+	
+	mPlayerSurvivor->setMousePosition(mouseWorldPosition);
+	//mPlayerSurvivor->setDirectionAngle(mouseAngle);
+	mPlayerSurvivor->setRotation(degrees);
+
+	//std::cout << "MOUSE VEC (X: " << mousePosition.x << ",Y: " << mousePosition.y << ")" << std::endl;
+	//std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;
+	//std::cout << "MOUSE ROTATION : " << mouseAngle << std::endl;
 }
 
 sf::FloatRect GameWorld::getViewBounds() const

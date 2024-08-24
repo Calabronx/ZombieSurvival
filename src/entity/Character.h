@@ -37,10 +37,14 @@ public:
 	float getMaxSpeed() const;
 
 	sf::FloatRect getBoundingRect() const;
+	sf::Vector2f getGunPosition() const;
 
 	// zombie only methods
 	void guideTowardsPlayer(sf::Vector2f position);
 	bool isChasing() const;
+
+	void	increaseFireRate();
+	void	increaseSpread();
 
 	void fire();
 
@@ -74,6 +78,7 @@ private:
 		sf::Time		mFireCountdown;
 		bool			mIsFiring;
 		sf::Vector2f	mMousePosition;
+		sf::Vector2f	mGunPosition;
 };
 #endif // !SURVIVOR_H
 

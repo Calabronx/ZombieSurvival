@@ -3,9 +3,11 @@
 #define DATA_TABLES_H
 
 #include "../../util/ResourceIdentifiers.h"
+#include "../Character.h"
 
 #include <SFML/System/Time.hpp>
 #include <vector>
+#include <functional>
 
 struct Direction
 {
@@ -35,8 +37,15 @@ struct ProjectileData
 	Textures::ID	texture;
 };
 
+struct PickupData
+{
+	std::function<void(Character&)> action;
+	Textures::ID							texture;
+};
+
 std::vector<CharacterData> initializeCharacterData();
 std::vector<ProjectileData> initializeProjectileData();
+std::vector<PickupData> initializePickupData();
 #endif // !DATA_TABLES_H
 
 

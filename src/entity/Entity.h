@@ -14,7 +14,9 @@ class Entity : public SceneNode
 			void		destroy();
 
 			int			getHitpoints() const;
-			bool		isDestroyed() const;
+
+			void		heal(int points);
+
 
 			void		setVelocity(sf::Vector2f velocity);
 			void		setVelocity(float vx, float vy);
@@ -22,6 +24,7 @@ class Entity : public SceneNode
 			sf::Vector2f getVelocity() const;
 			void		moveEntity(sf::Vector2f velocity);
 			void		moveEntity(float vx, float vy);
+			virtual bool		isDestroyed() const;
 
 	private:
 

@@ -17,7 +17,10 @@ namespace Textures
 		Background,
 		TitleScreen,
 		HandgunBullet,
-		ShotgunBullet
+		ShotgunBullet,
+		HealthRefill,
+		FireSpread,
+		FireRate
 	};
 }
 

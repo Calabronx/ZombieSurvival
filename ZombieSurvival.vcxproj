@@ -155,6 +155,7 @@
     <ClCompile Include="src\entity\data\DataTables.cpp" />
     <ClCompile Include="src\entity\Entity.cpp" />
     <ClCompile Include="src\entity\Character.cpp" />
+    <ClCompile Include="src\entity\Pickup.cpp" />
     <ClCompile Include="src\entity\Projectile.cpp" />
     <ClCompile Include="src\input\command\Command.cpp" />
     <ClCompile Include="src\input\command\CommandQueue.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="src\entity\data\DataTables.h" />
     <ClInclude Include="src\entity\Entity.h" />
     <ClInclude Include="src\entity\Character.h" />
+    <ClInclude Include="src\entity\Pickup.h" />
     <ClInclude Include="src\entity\Projectile.h" />
     <ClInclude Include="src\input\command\Command.h" />
     <ClInclude Include="src\input\command\CommandQueue.h" />

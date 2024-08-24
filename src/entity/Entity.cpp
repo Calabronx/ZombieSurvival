@@ -24,6 +24,13 @@ bool Entity::isDestroyed() const
 	return mHitpoints <= 0;
 }
 
+void Entity::heal(int points)
+{
+	assert(points > 0);
+
+	mHitpoints += points;
+}
+
 void Entity::setVelocity(sf::Vector2f velocity)
 {
 	mVelocity = velocity;
