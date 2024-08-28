@@ -32,6 +32,7 @@ class GameWorld : sf::NonCopyable
 		void addEnemy(Character::Type type, float relX, float relY);
 		void spawnEnemies();
 		void enemiesChaseIfClose();
+		void destroyEntitiesOutsideView();
 
 		void adaptPlayerPosition();
 		void adaptPlayerVelocity();
@@ -40,6 +41,9 @@ class GameWorld : sf::NonCopyable
 		sf::FloatRect getViewBounds() const;
 		sf::FloatRect getBattlefieldBounds() const;
 
+		//bool matchesCategories(SceneNode::Pair& colliders, Category::Type type1, Category::Type type2);
+
+		void handleCollisions();
 	private:
 		enum Layer
 		{

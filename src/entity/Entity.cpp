@@ -8,10 +8,14 @@ Entity::Entity(int hitpoints)
 
 void Entity::damage(int points)
 {
+	assert(points > 0);
+
+	mHitpoints -= points;
 }
 
 void Entity::destroy()
 {
+	mHitpoints = 0;
 }
 
 int Entity::getHitpoints() const

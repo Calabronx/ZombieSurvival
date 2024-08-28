@@ -22,7 +22,7 @@ Projectile::Projectile(Type type, const TextureHolder& textures)
 unsigned int Projectile::getCategory() const
 {
     //if (mType == HandgunBullet || mType == ShotgunBullet) // originalmente en el diseño, este if validaba que el tipo de projectil sea aliado o enemigo ( en un juego de aviones)
-    return Category::SurvivorProjectile;
+    return Category::Projectile;
 }
 
 sf::FloatRect Projectile::getBoundingRect() const

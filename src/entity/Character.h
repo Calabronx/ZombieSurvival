@@ -51,6 +51,7 @@ public:
 private:
 		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 		virtual void updateCurrent(sf::Time dt, CommandQueue&);
+		virtual bool		isMarkedForRemoval() const;
 
 		void updateMovementPattern(sf::Time dt);
 
@@ -76,9 +77,11 @@ private:
 		TextNode*		mHealthDisplay;
 		sf::Vector2f	mZombieTargetDirection;
 		sf::Time		mFireCountdown;
-		bool			mIsFiring;
 		sf::Vector2f	mMousePosition;
 		sf::Vector2f	mGunPosition;
+
+		bool			mIsFiring;
+		bool			mIsMarkedForRemoval;
 };
 #endif // !SURVIVOR_H
 

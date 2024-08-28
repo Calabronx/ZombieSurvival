@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <vector>
+#include <set>
 #include "../input/command/CommandQueue.h"
 
 struct Command;
@@ -15,6 +16,7 @@ class SceneNode : public sf::Transformable, public sf::Drawable, private sf::Non
 {
 public:
 	typedef std::unique_ptr<SceneNode> Ptr;
+	typedef std::pair<SceneNode*, SceneNode*> Pair;
 	
 public:
 	void	attachChild(Ptr child);
@@ -29,6 +31,15 @@ public:
 
     void    onCommand(const Command& command, sf::Time dt);
     virtual unsigned int getCategory() const;
+
+	void	checkNodeCollision(SceneNode& node, std::set<Pair>& collisionPairs);
+	void	checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& collisionPairs);
+
+	void removeWrecks();
+
+	virtual sf::FloatRect getBoundingRect() const;
+	virtual bool isMarkedForRemoval() const;
+	virtual bool isDestroyed() const;
 
 private:
 	virtual void		updateCurrent(sf::Time dt, CommandQueue& commands);
@@ -45,5 +56,7 @@ private:
 	std::vector<Ptr>	mChildren;
 	SceneNode*			mParent;
 };
+
+bool collision(const SceneNode& lhs, const SceneNode& rhs);
 #endif // !SCENENODE_H
 

@@ -30,6 +30,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mHealthDisplay(nullptr)
 	, mZombieTargetDirection()
 	, mIsFiring(false)
+	, mIsMarkedForRemoval(false)
 	, mFireCommand()
 	, mFireCountdown(sf::Time::Zero)
 	, mFireRateLevel(1)
@@ -70,6 +71,12 @@ void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) c
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
+	if (isDestroyed())
+	{
+		mIsMarkedForRemoval = true;
+		return;
+	}
+
 	updateMovementPattern(dt);
 
 	if (getCategory() == Category::Zombie)
@@ -94,6 +101,11 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 	// update texts
 	updateTexts();
+}
+
+bool Character::isMarkedForRemoval() const
+{
+	return mIsMarkedForRemoval;
 }
 
 void Character::updateMovementPattern(sf::Time dt)
@@ -182,7 +194,7 @@ void Character::createProjectile(SceneNode& node, Projectile::Type type, float x
 
 	projectile->setPosition(getWorldPosition() + offset * sign);
 	//projectile->setPosition(projectilePosition);
-	std::cout << "BULLET VEC SHOOT POS (X: " << projectile->getPosition().x << ",Y: " << projectile->getPosition().y << ")" << std::endl;
+	//std::cout << "BULLET VEC SHOOT POS (X: " << projectile->getPosition().x << ",Y: " << projectile->getPosition().y << ")" << std::endl;
 	float mouseAngle = std::atan2(mMousePosition.y - projectile->getPosition().y, mMousePosition.x - projectile->getPosition().x);
 	float bulletRotation = std::atan2(mMousePosition.y, mMousePosition.x);
 
@@ -192,7 +204,7 @@ void Character::createProjectile(SceneNode& node, Projectile::Type type, float x
 	projectile->setVelocity(sf::Vector2f(projectile->getMaxSpeed() * std::cos(mouseAngle), projectile->getMaxSpeed() * std::sin(mouseAngle)));
 	projectile->setRotation(degrees); // falta ajustar el angulo perfecto acorde al cursor, solo en y+/y- la bala va derecha segun el angulo
 	projectile->setScale(0.019999f, 0.2f);
-	std::cout << "MOUSE VEC (X: " << mouseWorldPosition.x << ",Y: " << mouseWorldPosition.y << ")" << std::endl;
+	//std::cout << "MOUSE VEC (X: " << mouseWorldPosition.x << ",Y: " << mouseWorldPosition.y << ")" << std::endl;
 	//std::cout << "BULLET VEC TRAYECTORY (X: " << projectile->getVelocity().x << ",Y: " << projectile->getVelocity().y << ")" << std::endl;
 	node.attachChild(std::move(projectile));
 }

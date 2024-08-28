@@ -27,17 +27,19 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 	mWorldView.setCenter(mSpawnPosition);
 
 }
-	//std::cout << "SPAWN  X : " << mSpawnPosition.x << "  Y: " << mSpawnPosition.y << std::endl;
+//std::cout << "SPAWN  X : " << mSpawnPosition.x << "  Y: " << mSpawnPosition.y << std::endl;
 
 void GameWorld::update(sf::Time dt)
 {
 	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
 	mPlayerSurvivor->setVelocity(0.f, 0.f);
 
+	destroyEntitiesOutsideView();
+
 	//std::cout << "ZOMBIES ALIVE: " << mActiveEnemies.size() << std::endl;
 	//std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;
 	/*std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;*/
-	std::cout << "PY VEC (X: " << mPlayerSurvivor->getPosition().x << ",Y: " << mPlayerSurvivor->getPosition().y << ")" << std::endl;
+	//std::cout << "PY VEC (X: " << mPlayerSurvivor->getPosition().x << ",Y: " << mPlayerSurvivor->getPosition().y << ")" << std::endl;
 	enemiesChaseIfClose();
 	// Forward commands to the scene graph
 	while (!mCommandQueue.isEmpty())
@@ -47,6 +49,9 @@ void GameWorld::update(sf::Time dt)
 
 	adaptPlayerDirection();
 
+	handleCollisions();
+
+	mSceneGraph.removeWrecks();
 	spawnEnemies();
 
 
@@ -290,7 +295,7 @@ void GameWorld::adaptPlayerDirection()
 
 	float mouse = std::atan2(mouseWorldPosition.y, mouseWorldPosition.x);
 	float degrees = toDegree(mouseAngle) + 90.f;
-	
+
 	mPlayerSurvivor->setMousePosition(mouseWorldPosition);
 	//mPlayerSurvivor->setDirectionAngle(mouseAngle);
 	mPlayerSurvivor->setRotation(degrees);
@@ -302,7 +307,7 @@ void GameWorld::adaptPlayerDirection()
 
 sf::FloatRect GameWorld::getViewBounds() const
 {
-	return sf::FloatRect();
+	return sf::FloatRect(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
 }
 
 sf::FloatRect GameWorld::getBattlefieldBounds() const
@@ -313,3 +318,76 @@ sf::FloatRect GameWorld::getBattlefieldBounds() const
 	//bounds.height += 100.f;
 	return bounds;
 }
+
+bool matchesCategories(SceneNode::Pair& colliders, Category::Type type1, Category::Type type2)
+{
+	unsigned int category1 = colliders.first->getCategory();
+	unsigned int category2 = colliders.second->getCategory();
+
+	if (type1 & category1 && type2 & category2)
+	{
+		return true;
+	}
+	else if (type1 & category2 && type2 & category1)
+	{
+		std::swap(colliders.first, colliders.second);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void GameWorld::handleCollisions()
+{
+	std::set<SceneNode::Pair> collisionPairs;
+	mSceneGraph.checkSceneCollision(mSceneGraph, collisionPairs);
+
+	// Deberia hacer este codigo recursivo en lugar de iterativo, revisar pag 196 del libro sflm gamedev
+	for (SceneNode::Pair pair : collisionPairs)
+	{
+		if (matchesCategories(pair, Category::PlayerSurvivor, Category::Zombie))
+		{
+			auto& player = static_cast<Character&>(*pair.first);
+			auto& zombie = static_cast<Character&>(*pair.second);
+
+			player.damage(zombie.getHitpoints());
+			std::cout << "Zombie collision with player " << std::endl;
+		}
+		else if (matchesCategories(pair, Category::PlayerSurvivor, Category::Pickup))
+		{
+			auto& player = static_cast<Character&>(*pair.first);
+			auto& pickup = static_cast<Pickup&>(*pair.second);
+
+			pickup.apply(player);
+			pickup.destroy();
+		}
+		else if (matchesCategories(pair, Category::Zombie, Category::Projectile))
+		{
+			auto& zombie = static_cast<Character&>(*pair.first);
+			auto& projectile = static_cast<Projectile&>(*pair.second);
+
+			zombie.damage(projectile.getDamage());
+			projectile.destroy();
+			std::cout << zombie.getHitpoints() << " HP of zombie" << std::endl;
+
+		}
+	}
+}
+
+void GameWorld::destroyEntitiesOutsideView()
+{
+	Command command;
+	command.category = Category::Projectile;
+	command.action = derivedAction<Entity>([this](Entity& e, sf::Time)
+		{
+			if (!getBattlefieldBounds().intersects(e.getBoundingRect())) {
+				e.destroy();
+				std::cout << "entity destroyed" << std::endl;
+			}
+		});
+
+	mCommandQueue.push(command);
+}
+

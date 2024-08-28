@@ -34,16 +34,57 @@ void SceneNode::update(sf::Time dt, CommandQueue& commands)
 
 void SceneNode::onCommand(const Command& command, sf::Time dt)
 {
-    if (command.category & getCategory())
-        command.action(*this, dt);
+	if (command.category & getCategory())
+		command.action(*this, dt);
 
-    for (Ptr& child : mChildren)
-        child->onCommand(command, dt);
+	for (Ptr& child : mChildren)
+		child->onCommand(command, dt);
 }
 
 unsigned int SceneNode::getCategory() const
 {
-    return Category::SceneLandLayer;
+	return Category::SceneLandLayer;
+}
+
+void SceneNode::checkNodeCollision(SceneNode& node, std::set<Pair>& collisionPairs)
+{
+	if (this != &node && collision(*this, node) && !isDestroyed() && !node.isDestroyed())
+		collisionPairs.insert(std::minmax(this, &node));
+
+	for (Ptr& child : mChildren)
+		child->checkNodeCollision(node, collisionPairs);
+
+}
+
+void SceneNode::checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& collisionPairs)
+{
+	checkNodeCollision(sceneGraph, collisionPairs);
+
+	for (Ptr& child : sceneGraph.mChildren)
+		checkSceneCollision(*child, collisionPairs);
+}
+
+void SceneNode::removeWrecks()
+{
+	auto wreckfieldBegin = std::remove_if(mChildren.begin(), mChildren.end(), std::mem_fn(&SceneNode::isMarkedForRemoval));
+	mChildren.erase(wreckfieldBegin, mChildren.end());
+
+	std::for_each(mChildren.begin(), mChildren.end(), std::mem_fn(&SceneNode::removeWrecks));
+}
+
+sf::FloatRect SceneNode::getBoundingRect() const
+{
+	return sf::FloatRect();
+}
+
+bool SceneNode::isMarkedForRemoval() const
+{
+	return isDestroyed();
+}
+
+bool SceneNode::isDestroyed() const
+{
+	return false;
 }
 
 sf::Vector2f SceneNode::getWorldPosition() const
@@ -63,7 +104,7 @@ sf::Transform SceneNode::getWorldTransform() const
 
 void SceneNode::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
-	 // Do nothing by default
+	// Do nothing by default
 }
 
 void SceneNode::updateChildren(sf::Time dt, CommandQueue& commands)
@@ -91,4 +132,9 @@ void SceneNode::drawChildren(sf::RenderTarget& target, sf::RenderStates states) 
 {
 	for (const Ptr& child : mChildren)
 		child->draw(target, states);
+}
+
+bool collision(const SceneNode& lhs, const SceneNode& rhs)
+{
+	return lhs.getBoundingRect().intersects(rhs.getBoundingRect());
 }

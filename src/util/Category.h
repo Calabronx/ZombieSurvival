@@ -8,6 +8,6 @@ namespace Category
         PlayerSurvivor       = 1 << 1,
         Zombie               = 1 << 3,
         Pickup                  = 1 << 4,
-        SurvivorProjectile   = 1 << 5,
+        Projectile   = 1 << 5,
     };
 }
