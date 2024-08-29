@@ -25,6 +25,9 @@ class GameWorld : sf::NonCopyable
 
         CommandQueue& getCommandQueue();
 
+		bool	hasAlivePlayer() const;
+		bool	hasPlayerSurvived() const;
+
 	private:
 		void loadTextures();
 		void buildScene();

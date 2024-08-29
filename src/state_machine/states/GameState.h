@@ -18,7 +18,7 @@ public:
 
 private:
 	GameWorld		mWorld;
-	InputHandler	mPlayer;
+	InputHandler&	mPlayer;
 };
 #endif // !GAME_STATE_H
 

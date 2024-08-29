@@ -34,9 +34,11 @@ void GameWorld::update(sf::Time dt)
 	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
 	mPlayerSurvivor->setVelocity(0.f, 0.f);
 
+
+
 	destroyEntitiesOutsideView();
 
-	//std::cout << "ZOMBIES ALIVE: " << mActiveEnemies.size() << std::endl;
+	std::cout << "ZOMBIES ALIVE: " << mActiveEnemies.size() << std::endl;
 	//std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;
 	/*std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;*/
 	//std::cout << "PY VEC (X: " << mPlayerSurvivor->getPosition().x << ",Y: " << mPlayerSurvivor->getPosition().y << ")" << std::endl;
@@ -374,6 +376,16 @@ void GameWorld::handleCollisions()
 
 		}
 	}
+}
+
+bool GameWorld::hasAlivePlayer() const
+{
+	return !mPlayerSurvivor->isMarkedForRemoval();
+}
+
+bool GameWorld::hasPlayerSurvived() const
+{
+	return mActiveEnemies.size() == 0;
 }
 
 void GameWorld::destroyEntitiesOutsideView()

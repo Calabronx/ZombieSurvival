@@ -21,6 +21,7 @@ struct SurvivorMover
 };
 
 InputHandler::InputHandler()
+	: mCurrentPlayerStatus(SurviveMode)
 {
 	// Set initial key bindings
 	mKeyBinding[sf::Keyboard::A] = MoveLeft;
@@ -126,4 +127,14 @@ sf::Keyboard::Key InputHandler::getAssignedKey(Action action) const
 	}
 
 	return sf::Keyboard::Unknown;
+}
+
+void InputHandler::setPlayerStatus(PlayerStatus status)
+{
+	mCurrentPlayerStatus = status;
+}
+
+InputHandler::PlayerStatus  InputHandler::getPlayerStatus() const
+{
+	return mCurrentPlayerStatus;
 }

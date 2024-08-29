@@ -20,12 +20,22 @@ public:
         Fire,
     };
 
+    enum PlayerStatus
+    {
+        SurviveMode,
+        Alive,
+        Dead
+    };
+
 public:
                                     InputHandler();
 
 public:
     void assignKey(Action action, sf::Keyboard::Key key);
     sf::Keyboard::Key getAssignedKey(Action action) const;
+
+    void                setPlayerStatus(PlayerStatus status);
+    PlayerStatus    getPlayerStatus() const;
 
     void handleEvent(const sf::Event& event, CommandQueue& commands);
     void handleRealTimeInput(CommandQueue& commands);
@@ -35,9 +45,10 @@ private:
     static bool isRealtimeAction(Action action);
 
 private:
-    std::map<sf::Keyboard::Key, Action> mKeyBinding;
-    std::map<sf::Mouse::Button, Action> mMouseBinding;
-    std::map<Action, Command>           mActionBinding;
+    std::map<sf::Keyboard::Key, Action>     mKeyBinding;
+    std::map<sf::Mouse::Button, Action>         mMouseBinding;
+    std::map<Action, Command>                       mActionBinding;
+    PlayerStatus                                        mCurrentPlayerStatus;
 };
 #endif // ! INPUT_HANDLER_H
 

@@ -163,6 +163,7 @@
     <ClCompile Include="src\state_machine\ParallelTask.cpp" />
     <ClCompile Include="src\state_machine\State.cpp" />
     <ClCompile Include="src\state_machine\StateStack.cpp" />
+    <ClCompile Include="src\state_machine\states\GameOverState.cpp" />
     <ClCompile Include="src\state_machine\states\GameState.cpp" />
     <ClCompile Include="src\state_machine\states\LoadingState.cpp" />
     <ClCompile Include="src\state_machine\states\MenuState.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="src\state_machine\State.h" />
     <ClInclude Include="src\state_machine\StateIdentifiers.h" />
     <ClInclude Include="src\state_machine\StateStack.h" />
+    <ClInclude Include="src\state_machine\states\GameOverState.h" />
     <ClInclude Include="src\state_machine\states\GameState.h" />
     <ClInclude Include="src\state_machine\states\LoadingState.h" />
     <ClInclude Include="src\state_machine\states\MenuState.h" />

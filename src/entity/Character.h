@@ -38,6 +38,7 @@ public:
 
 	sf::FloatRect getBoundingRect() const;
 	sf::Vector2f getGunPosition() const;
+	virtual bool		isMarkedForRemoval() const;
 
 	// zombie only methods
 	void guideTowardsPlayer(sf::Vector2f position);
@@ -51,7 +52,6 @@ public:
 private:
 		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 		virtual void updateCurrent(sf::Time dt, CommandQueue&);
-		virtual bool		isMarkedForRemoval() const;
 
 		void updateMovementPattern(sf::Time dt);
 
