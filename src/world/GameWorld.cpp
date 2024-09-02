@@ -26,8 +26,8 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 
 	mWorldView.setCenter(mSpawnPosition);
 
+std::cout << "SPAWN  X : " << mSpawnPosition.x << "  Y: " << mSpawnPosition.y << std::endl;
 }
-//std::cout << "SPAWN  X : " << mSpawnPosition.x << "  Y: " << mSpawnPosition.y << std::endl;
 
 void GameWorld::update(sf::Time dt)
 {
@@ -80,6 +80,7 @@ void GameWorld::loadTextures()
 	mTextures.load(Textures::Zombie, "resources/textures/zombiebasic_first.png");
 	mTextures.load(Textures::HandgunBullet, "resources/textures/bullets/Bullet.png");
 	mTextures.load(Textures::Background, "resources/textures/Tiles/Desert.png");
+	//mTextures.load(Textures::Background, "resources/textures/Tiles/Asfalt1.png");
 
 	mTextures.load(Textures::HealthRefill, "resources/textures/HealthRefill.png");
 	mTextures.load(Textures::FireRate, "resources/textures/FireRate.png");
@@ -128,7 +129,26 @@ void GameWorld::buildScene()
 
 void GameWorld::addEnemies()
 {
-	addEnemy(Character::Zombie, 320.f, 5.f);
+	addEnemy(Character::Zombie, 620.f, 2000.f);
+	addEnemy(Character::Zombie, 620.f, 2100.f);
+	addEnemy(Character::Zombie, 620.f, 2200.f);
+	addEnemy(Character::Zombie, 620.f, 2400.f);
+	addEnemy(Character::Zombie, 620.f, 2500.f);
+	addEnemy(Character::Zombie, 620.f, 2600.f);
+	addEnemy(Character::Zombie, 620.f, 2700.f);
+	addEnemy(Character::Zombie, 620.f, 2800.f);
+	addEnemy(Character::Zombie, 620.f, 2900.f);
+	addEnemy(Character::Zombie, 620.f, 2000.f);
+	addEnemy(Character::Zombie, 620.f, 2100.f);
+	addEnemy(Character::Zombie, 620.f, 2230.f);
+	addEnemy(Character::Zombie, 620.f, 2700.f);
+	addEnemy(Character::Zombie, 620.f, 3200.f);
+	addEnemy(Character::Zombie, 620.f, 2000.f);
+	addEnemy(Character::Zombie, 620.f, 2000.f);
+	addEnemy(Character::Zombie, 828.f, 1205.f);
+	addEnemy(Character::Zombie, 927.f, 3305.f);
+	addEnemy(Character::Zombie, 326.f, 4095.f);
+
 	addEnemy(Character::Zombie, 0.f, 1400.f);
 	addEnemy(Character::Zombie, 0.f, 600.f);
 
@@ -178,13 +198,13 @@ void GameWorld::enemiesChaseIfClose()
 	enemyChase.category = Category::Zombie;
 	enemyChase.action = derivedAction<Character>([this](Character& enemyChaser, sf::Time)
 		{
-			if (!enemyChaser.isChasing())
+			if (enemyChaser.isAllied())
 				return;
 
 			float minDistance = std::numeric_limits<float>::max();
 			Character* closestEnemy = nullptr;
 
-			for (Character* zombie : mActiveEnemies)
+			/*for (Character* zombie : mActiveEnemies)
 			{
 				float enemyDistance = distance(*mPlayerSurvivor, *zombie);
 
@@ -193,9 +213,9 @@ void GameWorld::enemiesChaseIfClose()
 					closestEnemy = zombie;
 					minDistance = enemyDistance;
 				}
-			}
+			}*/
 
-			if (closestEnemy)
+			//if (closestEnemy)
 				enemyChaser.guideTowardsPlayer(mPlayerSurvivor->getWorldPosition());
 		});
 

@@ -24,6 +24,7 @@ class Character : public Entity
 	public:
 		explicit Character(Type type, const TextureHolder& textures, const FontHolder& fonts);
         virtual unsigned int getCategory() const;
+		bool	isAllied() const;
 
 public:
 	void	setDirectionAngle(float angle);
@@ -56,16 +57,18 @@ private:
 		void updateMovementPattern(sf::Time dt);
 
 		void		 updateTexts();
+		void		 checkPickupDrop(CommandQueue& commands);
 		void		 checkProjectileLaunch(sf::Time dt, CommandQueue& commands);
 
 		void		 createBullets(SceneNode& node, const TextureHolder& textures) const;
 		void		 createProjectile(SceneNode& node, Projectile::Type type, float xOffset, float yOffset, const TextureHolder& textures) const;
-
+		void		 createPickup(SceneNode& node, const TextureHolder& textures) const;
 
 private:
 		Type			mType;
 		sf::Sprite		mSprite;
 		Command			mFireCommand;
+		Command			mDropPickupCommand;
 		sf::Vector2f	mCenter;
 		float			mDirectionAngle;
 		float			mTravelledDistance;

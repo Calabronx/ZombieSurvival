@@ -11,7 +11,7 @@ std::vector<CharacterData> initializeCharacterData()
 
 	data[Character::Survivor].hitpoints = 100;
 	data[Character::Survivor].speed = 300.f;
-	data[Character::Survivor].fireInterval = sf::seconds(1);
+	data[Character::Survivor].fireInterval = sf::seconds(0.5);
 	data[Character::Survivor].texture = Textures::Survivor;
 
 	data[Character::Zombie].hitpoints = 20;
@@ -31,7 +31,7 @@ std::vector<ProjectileData> initializeProjectileData()
 	std::vector<ProjectileData> data(Projectile::TypeCount);
 
 	data[Projectile::HandgunBullet].damage = 10;
-	data[Projectile::HandgunBullet].speed = 1000.f;
+	data[Projectile::HandgunBullet].speed = 1500.f;
 	data[Projectile::HandgunBullet].texture = Textures::HandgunBullet;
 
 	return data;
@@ -45,7 +45,7 @@ std::vector<PickupData> initializePickupData()
 	data[Pickup::HealthRefill].action = [](Character& c) {c.heal(25);  };
 
 	data[Pickup::FireSpread].texture = Textures::FireSpread;
-	data[Pickup::HealthRefill].action = std::bind(&Character::increaseSpread, _1);
+	data[Pickup::FireSpread].action = std::bind(&Character::increaseSpread, _1);
 
 	data[Pickup::FireRate].texture = Textures::FireRate;
 	data[Pickup::FireRate].action = std::bind(&Character::increaseFireRate, _1);

@@ -5,6 +5,17 @@
 
 #include <cmath>
 #include <cassert>
+#include <random>
+
+namespace {
+	std::default_random_engine createRandomEngine()
+	{
+		auto seed = static_cast<unsigned long>(std::time(nullptr));
+		return std::default_random_engine(seed);
+	}
+
+	auto RandomEngine = createRandomEngine();
+}
 
 float toRadian(float degree)
 {
@@ -24,6 +35,12 @@ float length(sf::Vector2f vector)
 float distance(const SceneNode& lhs, const SceneNode& rhs)
 {
 	return length(lhs.getWorldPosition() - rhs.getWorldPosition());
+}
+
+int randomInt(int exclusiveMax)
+{
+	std::uniform_int_distribution<> distr(0, exclusiveMax - 1);
+	return distr(RandomEngine);
 }
 
 sf::Vector2f unitVector(sf::Vector2f vector)

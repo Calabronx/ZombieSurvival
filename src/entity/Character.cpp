@@ -4,6 +4,7 @@
 #include "../util/Category.h"
 #include "../util/Utility.h"
 #include <iostream>
+#include "Pickup.h"
 
 namespace {
 	const std::vector<CharacterData> Table = initializeCharacterData();
@@ -35,6 +36,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mFireCountdown(sf::Time::Zero)
 	, mFireRateLevel(1)
 	, mSpreadLevel(1)
+	, mDropPickupCommand()
 	, mTravelledDistance(0.f)
 	, mDirectionIndex(0)
 	, mGunPosition()
@@ -56,6 +58,13 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 
 		mGunPosition = sf::Vector2f(0.f, mSprite.getOrigin().y - bounds.top);
 	}
+
+	mDropPickupCommand.category = Category::SceneLandLayer;
+	mDropPickupCommand.action = [this, &textures](SceneNode& node, sf::Time)
+	{
+		createPickup(node, textures);
+	};
+
 	std::unique_ptr<TextNode> healthDisplay(new TextNode(fonts, ""));
 	mHealthDisplay = healthDisplay.get();
 	attachChild(std::move(healthDisplay));
@@ -73,6 +82,8 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	if (isDestroyed())
 	{
+		checkPickupDrop(commands);
+
 		mIsMarkedForRemoval = true;
 		return;
 	}
@@ -135,6 +146,12 @@ void Character::updateTexts()
 	mHealthDisplay->setString(toString(getHitpoints()) + " HP");
 	mHealthDisplay->setPosition(0.f, 95.f);
 	mHealthDisplay->setRotation(-getRotation());
+}
+
+void Character::checkPickupDrop(CommandQueue& commands)
+{
+	if (!isAllied() && randomInt(3) == 0)
+		commands.push(mDropPickupCommand);
 }
 
 void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
@@ -209,16 +226,29 @@ void Character::createProjectile(SceneNode& node, Projectile::Type type, float x
 	node.attachChild(std::move(projectile));
 }
 
+void Character::createPickup(SceneNode& node, const TextureHolder& textures) const
+{
+	auto type = static_cast<Pickup::Type>(randomInt(Pickup::TypeCount));
+
+	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
+	pickup->setPosition(getWorldPosition());
+	pickup->setVelocity(0.f, 1.f);
+	node.attachChild(std::move(pickup));
+}
+
 unsigned int Character::getCategory() const
 {
-	switch (mType)
-	{
-	case Survivor:
-		return Category::PlayerSurvivor;
+	if (isAllied())
+			return Category::PlayerSurvivor;
 
-	default:
-		return Category::Zombie;
-	}
+	else
+			return Category::Zombie;
+	
+}
+
+bool Character::isAllied() const
+{
+	return mType == Survivor;
 }
 
 void Character::setDirectionAngle(float angle)
