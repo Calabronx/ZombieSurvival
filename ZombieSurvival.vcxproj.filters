@@ -46,6 +46,9 @@
     <Filter Include="Source Files\src\entity\data">
       <UniqueIdentifier>{434d98ed-f798-4276-b712-87e6c563f246}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\graphics">
+      <UniqueIdentifier>{5dc4f6a3-b20b-496d-97e8-9ea2ae409659}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -116,6 +119,12 @@
     </ClCompile>
     <ClCompile Include="src\entity\Pickup.cpp">
       <Filter>Source Files\src\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\state_machine\states\GameOverState.cpp">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Animation.cpp">
+      <Filter>Source Files\src\graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -196,6 +205,12 @@
     </ClInclude>
     <ClInclude Include="src\entity\Pickup.h">
       <Filter>Source Files\src\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\states\GameOverState.h">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Animation.h">
+      <Filter>Source Files\src\graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
