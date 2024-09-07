@@ -13,14 +13,34 @@ namespace Textures
 	enum ID
 	{
 		Survivor,
-		Zombie,
+
+		ZombieIdle1,
+		ZombieWalk1,
+		ZombieWalk2,
+		ZombieWalk3,
+		ZombieWalk4,
+		ZombieWalk5,
+		ZombieWalk6,
+		ZombieWalk7,
+		ZombieWalk8,
+		ZombieWalk9,
+		ZombieWalk10,
+		ZombieWalk11,
+		ZombieWalk12,
+		ZombieWalk13,
+		ZombieWalk14,
+		ZombieWalk15,
+		ZombieWalk16,
+		ZombieWalk17,
 		Background,
 		TitleScreen,
 		HandgunBullet,
 		ShotgunBullet,
 		HealthRefill,
 		FireSpread,
-		FireRate
+		FireRate,
+		Particle,
+		Blood
 	};
 }
 

@@ -4,15 +4,21 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Time.hpp>
+#include "../util/ResourceIdentifiers.h"
+#include "../util/FileSystem.h"
 
 class Animation : public sf::Drawable, public sf::Transformable
 {
 	public:
 		Animation();
 		explicit Animation(const sf::Texture& texture);
+		explicit Animation(const TextureHolder& textures);
 
 		void setTexture(const sf::Texture& texture);
 		const sf::Texture* getTexture() const;
+
+		/*void setTextures(const TextureHolder& textures);
+		const TextureHolder getTextureHolder() const;*/
 
 		void setFrameSize(sf::Vector2i mFrameSize);
 		sf::Vector2i getFrameSize() const;

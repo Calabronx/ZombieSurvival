@@ -3,34 +3,39 @@
 #include "../util/FileSystem.h"
 #include "../util/Category.h"
 #include "../util/Utility.h"
-#include <iostream>
 #include "Pickup.h"
+#include <iostream>
 
 namespace {
 	const std::vector<CharacterData> Table = initializeCharacterData();
 }
 
-Textures::ID toTextureId(Character::Type type)
-{
-	switch (type)
-	{
-	case Character::Survivor:
-		return Textures::Survivor;
-
-	case Character::Zombie:
-		return Textures::Zombie;
-	}
-	return Textures::Survivor;
-}
+//Textures::ID toTextureId(Character::Type type)
+//{
+//	switch (type)
+//	{
+//	case Character::Survivor:
+//		return Textures::Survivor;
+//
+//	case Character::Zombie:
+//		return Textures::Zombie;
+//	}
+//	return Textures::Survivor;
+//}
 
 Character::Character(Type type, const TextureHolder& textures, const FontHolder& fonts)
 	: Entity(Table[type].hitpoints)
 	, mType(type)
-	, mSprite(textures.get(toTextureId(type)))
+	, mSprite(textures.get(Table[type].texture), Table[type].textureRect)
+	, mBlood(textures.get(Textures::Blood))
+	//, mTextureFrames(textures)
+	, mZombieAnim()
 	, mDirectionAngle(0.0f)
 	, mHealthDisplay(nullptr)
 	, mZombieTargetDirection()
 	, mIsFiring(false)
+	, mSpawnedPickup(false)
+	, mShowBlood(true)
 	, mIsMarkedForRemoval(false)
 	, mFireCommand()
 	, mFireCountdown(sf::Time::Zero)
@@ -43,10 +48,25 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 {
 	sf::FloatRect bounds = mSprite.getLocalBounds();
 	//sf::FloatRect gun = bounds.top + bounds.left;
-	mSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
 	sf::Vector2f center(bounds.left + bounds.width / 2.0f, bounds.top + bounds.height / 2.0f);
 	mCenter = center;
 
+	mBlood.setFrameSize(sf::Vector2i(256, 256));
+	mBlood.setNumFrames(4);
+	mBlood.setDuration(sf::seconds(1));
+
+	//mZombieAnim.setTextures(textures);
+
+	centerOrigin(mSprite);
+	centerOrigin(mBlood);
+	//mTextureFrames = textures;
+
+	/*std::map<Textures::ID, sf::Texture> textureMap;
+	if (getCategory() == Category::Zombie) {
+		for (auto i = 0; textures.size(); i++) {
+			textureMap.insert(textures.get(Table[type].texture));
+		}
+	}*/
 	if (getCategory() == Category::PlayerSurvivor) {
 		setRotation(mDirectionAngle);
 
@@ -75,20 +95,24 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 
 void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(mSprite, states);
+	if (isDestroyed() && mShowBlood)
+			target.draw(mBlood, states);
+	else
+			target.draw(mSprite, states);
 }
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
+	// update texts
+	updateTexts();
+
 	if (isDestroyed())
 	{
 		checkPickupDrop(commands);
-
-		mIsMarkedForRemoval = true;
+		mBlood.update(dt);
 		return;
 	}
 
-	updateMovementPattern(dt);
 
 	if (getCategory() == Category::Zombie)
 	{
@@ -102,21 +126,33 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 			setRotation(toDegree(angle) + 90.f);
 			setVelocity(newVelocity);
+
+			//mZombieAnim.update(dt);
+			/*for (auto i = 0; i < mTextureFrames.size(); i++) {
+				mZombieAnim.setTexture(mTextureFrames.get(Table[mType].textureFrames[i]));
+			}*/
+
 		}
 	}
 
 	// check if bullets are fired
 	checkProjectileLaunch(dt, commands);
 
+	updateMovementPattern(dt);
 	Entity::updateCurrent(dt, commands);
 
-	// update texts
-	updateTexts();
 }
+
 
 bool Character::isMarkedForRemoval() const
 {
-	return mIsMarkedForRemoval;
+	return isDestroyed() && (mBlood.isFinished() || !mShowBlood);
+}
+
+void Character::remove()
+{
+	Entity::remove();
+	mShowBlood = false;
 }
 
 void Character::updateMovementPattern(sf::Time dt)
@@ -150,8 +186,10 @@ void Character::updateTexts()
 
 void Character::checkPickupDrop(CommandQueue& commands)
 {
-	if (!isAllied() && randomInt(3) == 0)
+	if (!isAllied() && randomInt(3) == 0 && !mSpawnedPickup)
 		commands.push(mDropPickupCommand);
+
+	mSpawnedPickup = true;
 }
 
 void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
@@ -318,6 +356,11 @@ void Character::increaseSpread()
 {
 	if (mSpreadLevel < 3)
 		++mSpreadLevel;
+}
+
+void Character::splashBlood(sf::Time dt)
+{
+	mBlood.update(dt);
 }
 
 void Character::fire()

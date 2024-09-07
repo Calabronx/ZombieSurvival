@@ -5,6 +5,7 @@
 #include <sstream>
 #include <SFML/System/Vector2.hpp>
 #include "../ecs/SceneNode.h"
+#include "../graphics/Animation.h"
 
 namespace sf
 {
@@ -26,6 +27,7 @@ sf::Vector2f unitVector(sf::Vector2f vector);
 
 void centerOrigin(sf::Sprite& sprite);
 void centerOrigin(sf::Text& text);
+void centerOrigin(Animation& animation);
 
 
 #include "../util/Utility.inl"

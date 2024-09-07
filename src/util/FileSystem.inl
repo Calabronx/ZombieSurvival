@@ -1,3 +1,4 @@
+#include "FileSystem.h"
 
 template<typename Resource, typename Identifier>
 void FileSystem<Resource, Identifier>::load(Identifier id, const std::string& filename)
@@ -37,6 +38,12 @@ const Resource& FileSystem<Resource, Identifier>::get(Identifier id) const
 	assert(found != mResourceMap.end());
 
 	return *found->second;
+}
+
+template<typename Resource, typename Identifier>
+inline std::size_t FileSystem<Resource, Identifier>::size() const
+{
+	return mResourceMap.size();
 }
 
 template<typename Resource, typename Identifier>

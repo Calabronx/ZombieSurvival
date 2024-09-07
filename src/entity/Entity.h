@@ -10,7 +10,6 @@ class Entity : public SceneNode
 {
 	public:
 			explicit	Entity(int hitpoints);
-			void		damage(int points);
 			void		destroy();
 
 			int			getHitpoints() const;
@@ -25,6 +24,8 @@ class Entity : public SceneNode
 			void		moveEntity(sf::Vector2f velocity);
 			void		moveEntity(float vx, float vy);
 			virtual bool		isDestroyed() const;
+			virtual void		remove();
+			virtual void		damage(int points);
 
 	private:
 

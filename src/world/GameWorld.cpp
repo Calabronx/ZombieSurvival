@@ -26,15 +26,15 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 
 	mWorldView.setCenter(mSpawnPosition);
 
-std::cout << "SPAWN  X : " << mSpawnPosition.x << "  Y: " << mSpawnPosition.y << std::endl;
+	//for (int i = 0; i < mTextures.)
+
+	std::cout << "SPAWN  X : " << mSpawnPosition.x << "  Y: " << mSpawnPosition.y << std::endl;
 }
 
 void GameWorld::update(sf::Time dt)
 {
 	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
 	mPlayerSurvivor->setVelocity(0.f, 0.f);
-
-
 
 	destroyEntitiesOutsideView();
 
@@ -46,9 +46,7 @@ void GameWorld::update(sf::Time dt)
 	// Forward commands to the scene graph
 	while (!mCommandQueue.isEmpty())
 		mSceneGraph.onCommand(mCommandQueue.pop(), dt);
-
 	adaptPlayerVelocity();
-
 	adaptPlayerDirection();
 
 	handleCollisions();
@@ -76,9 +74,26 @@ void GameWorld::loadTextures()
 {
 	//mTextures.load(Textures::Survivor, "resources/textures/handgun/idle/survivor-idle_handgun_0.png");
 	mTextures.load(Textures::Survivor, "resources/textures/rifle/idle/survivor-idle_rifle_0.png");
-	//mTextures.load(Textures::Zombie, "resources/textures/zombiebasic.png");
-	//mTextures.load(Textures::Zombie, "resources/textures/zombiebasic_first.png");
-	mTextures.load(Textures::Zombie, "resources/textures/tds_zombie/export/skeleton-attack_0.png");
+
+	mTextures.load(Textures::ZombieIdle1, "resources/textures/tds_zombie/export/skeleton-idle_0.png");
+	mTextures.load(Textures::ZombieWalk1, "resources/textures/tds_zombie/export/skeleton-move_0.png");
+	mTextures.load(Textures::ZombieWalk2, "resources/textures/tds_zombie/export/skeleton-move_1.png");
+	mTextures.load(Textures::ZombieWalk3, "resources/textures/tds_zombie/export/skeleton-move_2.png");
+	mTextures.load(Textures::ZombieWalk4, "resources/textures/tds_zombie/export/skeleton-move_3.png");
+	mTextures.load(Textures::ZombieWalk5, "resources/textures/tds_zombie/export/skeleton-move_4.png");
+	mTextures.load(Textures::ZombieWalk6, "resources/textures/tds_zombie/export/skeleton-move_5.png");
+	mTextures.load(Textures::ZombieWalk7, "resources/textures/tds_zombie/export/skeleton-move_6.png");
+	mTextures.load(Textures::ZombieWalk8, "resources/textures/tds_zombie/export/skeleton-move_7.png");
+	mTextures.load(Textures::ZombieWalk9, "resources/textures/tds_zombie/export/skeleton-move_8.png");
+	mTextures.load(Textures::ZombieWalk10, "resources/textures/tds_zombie/export/skeleton-move_9.png");
+	mTextures.load(Textures::ZombieWalk11, "resources/textures/tds_zombie/export/skeleton-move_10.png");
+	mTextures.load(Textures::ZombieWalk12, "resources/textures/tds_zombie/export/skeleton-move_11.png");
+	mTextures.load(Textures::ZombieWalk13, "resources/textures/tds_zombie/export/skeleton-move_12.png");
+	mTextures.load(Textures::ZombieWalk14, "resources/textures/tds_zombie/export/skeleton-move_13.png");
+	mTextures.load(Textures::ZombieWalk15, "resources/textures/tds_zombie/export/skeleton-move_14.png");
+	mTextures.load(Textures::ZombieWalk16, "resources/textures/tds_zombie/export/skeleton-move_15.png");
+	mTextures.load(Textures::ZombieWalk17, "resources/textures/tds_zombie/export/skeleton-move_16.png");
+	//mTextures.load(Textures::Zombie, "resources/textures/tds_zombie/export/skeleton-move_16.png");
 	mTextures.load(Textures::HandgunBullet, "resources/textures/bullets/Bullet.png");
 	mTextures.load(Textures::Background, "resources/textures/Tiles/Desert.png");
 	//mTextures.load(Textures::Background, "resources/textures/Tiles/Asfalt1.png");
@@ -86,6 +101,10 @@ void GameWorld::loadTextures()
 	mTextures.load(Textures::HealthRefill, "resources/textures/HealthRefill.png");
 	mTextures.load(Textures::FireRate, "resources/textures/FireRate.png");
 	mTextures.load(Textures::FireSpread, "resources/textures/FireSpread.png");
+
+	mTextures.load(Textures::Blood, "resources/textures/blood/blood.png");
+	//mTextures.load(Textures::Blood, "resources/textures/Explosion.png");
+	//mTextures.load(Textures::Blood, "resources/textures/blood/blood splash.png");
 }
 
 void GameWorld::buildScene()
@@ -218,7 +237,8 @@ void GameWorld::enemiesChaseIfClose()
 			}*/
 
 			//if (closestEnemy)
-				enemyChaser.guideTowardsPlayer(mPlayerSurvivor->getWorldPosition());
+			enemyChaser.guideTowardsPlayer(mPlayerSurvivor->getWorldPosition());
+
 		});
 
 	mCommandQueue.push(enemyCollector);
@@ -234,56 +254,59 @@ void GameWorld::adaptPlayerPosition()
 	sf::Vector2f position = mPlayerSurvivor->getPosition();
 	sf::Vector2f viewPosition = viewBounds.getPosition();
 
-	if (position.x < mWorldBounds.getSize().x || position.x < 0 || position.y < mWorldBounds.getSize().y || position.y < 0) {
-		//std::cout << "inside of bounds" << std::endl;
-		//std::cout << "out of bounds" << std::endl;
-		// el jugador es mantenido dentro de los limites del juego
-		//mPlayerSurvivor->stop(true);
-		position.x = std::max(position.x, mWorldView.getCenter().x);
-		position.x = std::min(position.x, mWorldView.getCenter().x);
-		position.y = std::max(position.y, mWorldView.getCenter().y);
-		position.y = std::min(position.y, mWorldView.getCenter().y);
-		sf::Vector2f delta(mPlayerSurvivor->getVelocity().x * playerVelocity, mPlayerSurvivor->getVelocity().y * playerVelocity);
+	if (mPlayerSurvivor != nullptr) {
+		if (position.x < mWorldBounds.getSize().x || position.x < 0 || position.y < mWorldBounds.getSize().y || position.y < 0) {
+			//std::cout << "inside of bounds" << std::endl;
+			//std::cout << "out of bounds" << std::endl;
+			// el jugador es mantenido dentro de los limites del juego
+			//mPlayerSurvivor->stop(true);
+			position.x = std::max(position.x, mWorldView.getCenter().x);
+			position.x = std::min(position.x, mWorldView.getCenter().x);
+			position.y = std::max(position.y, mWorldView.getCenter().y);
+			position.y = std::min(position.y, mWorldView.getCenter().y);
+			sf::Vector2f delta(mPlayerSurvivor->getVelocity().x * playerVelocity, mPlayerSurvivor->getVelocity().y * playerVelocity);
 
-		if (mPlayerSurvivor->getBoundingRect().intersects(mWorldBounds)) {
-			//std::cout << "intersect bound" << std::endl;
-		}
+			//if (mPlayerSurvivor->getBoundingRect().intersects(mWorldBounds)) {
+			//	//std::cout << "intersect bound" << std::endl;
+			//}
 
 
-		if (viewBounds.intersects(mWorldBounds)) {
-			//std::cout << "camera inside boundaries" << std::endl;
-			//mPlayerSurvivor->stop(false);
+			if (viewBounds.intersects(mWorldBounds)) {
+				//std::cout << "camera inside boundaries" << std::endl;
+				//mPlayerSurvivor->stop(false);
+			}
+			else {
+				//std::cout << "camera outside boundaries" << std::endl;
+				//mPlayerSurvivor->stop(true);
+			}
+			//mWorldView.setCenter(delta);
 		}
 		else {
-			//std::cout << "camera outside boundaries" << std::endl;
-			//mPlayerSurvivor->stop(true);
+			// la camara sigue al jugador
 		}
-		//mWorldView.setCenter(delta);
+
+		sf::Vector2f delta(mPlayerSurvivor->getVelocity().x * playerVelocity, mPlayerSurvivor->getVelocity().y * playerVelocity);
+		if (viewPosition.x < mWorldBounds.getSize().x - 400 || viewPosition.x < 0 || viewPosition.y < mWorldBounds.getSize().y - 400 || viewPosition.y < 0) {
+			//std::cout << "out" << std::endl;
+			mWorldView.move(delta);
+		}
+
+		position.x = std::max(position.x, mWorldBounds.left + borderDistance);
+		position.x = std::min(position.x, mWorldBounds.left + mWorldBounds.width - borderDistance);
+		position.y = std::max(position.y, mWorldBounds.top + borderDistance);
+		position.y = std::min(position.y, mWorldBounds.top + mWorldBounds.height - borderDistance);
+
+
+
+
+		//sf::Vector2f view(mWorldView.getCenter().x, mWorldView.getCenter().y);
+		//mWorldView.move(view);
+		//mPlayerSurvivor->setPosition(position);
+		//std::cout << "pos: " << position.x << " " << position.y << std::endl;
+		mPlayerSurvivor->setPosition(position);
+		//mWorldView.setCenter(position);
+
 	}
-	else {
-		// la camara sigue al jugador
-	}
-
-	sf::Vector2f delta(mPlayerSurvivor->getVelocity().x * playerVelocity, mPlayerSurvivor->getVelocity().y * playerVelocity);
-	if (viewPosition.x < mWorldBounds.getSize().x - 400 || viewPosition.x < 0 || viewPosition.y < mWorldBounds.getSize().y - 400 || viewPosition.y < 0) {
-		//std::cout << "out" << std::endl;
-		mWorldView.move(delta);
-	}
-
-	position.x = std::max(position.x, mWorldBounds.left + borderDistance);
-	position.x = std::min(position.x, mWorldBounds.left + mWorldBounds.width - borderDistance);
-	position.y = std::max(position.y, mWorldBounds.top + borderDistance);
-	position.y = std::min(position.y, mWorldBounds.top + mWorldBounds.height - borderDistance);
-
-
-
-
-	//sf::Vector2f view(mWorldView.getCenter().x, mWorldView.getCenter().y);
-	//mWorldView.move(view);
-	//mPlayerSurvivor->setPosition(position);
-	//std::cout << "pos: " << position.x << " " << position.y << std::endl;
-	mPlayerSurvivor->setPosition(position);
-	//mWorldView.setCenter(position);
 
 }
 
@@ -393,7 +416,9 @@ void GameWorld::handleCollisions()
 			auto& projectile = static_cast<Projectile&>(*pair.second);
 
 			zombie.damage(projectile.getDamage());
+			//zombie.splashBlood();
 			projectile.destroy();
+
 			std::cout << zombie.getHitpoints() << " HP of zombie" << std::endl;
 
 		}
@@ -417,7 +442,7 @@ void GameWorld::destroyEntitiesOutsideView()
 	command.action = derivedAction<Entity>([this](Entity& e, sf::Time)
 		{
 			if (!getBattlefieldBounds().intersects(e.getBoundingRect())) {
-				e.destroy();
+				e.remove();
 				std::cout << "entity destroyed" << std::endl;
 			}
 		});

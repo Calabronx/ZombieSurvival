@@ -11,6 +11,7 @@
 #include "../util/ResourceIdentifiers.h"
 #include "../ecs/TextNode.h"
 #include "Projectile.h"
+#include "../graphics/Animation.h"
 
 class Character : public Entity
 {
@@ -40,6 +41,7 @@ public:
 	sf::FloatRect getBoundingRect() const;
 	sf::Vector2f getGunPosition() const;
 	virtual bool		isMarkedForRemoval() const;
+	virtual void		remove();
 
 	// zombie only methods
 	void guideTowardsPlayer(sf::Vector2f position);
@@ -47,7 +49,7 @@ public:
 
 	void	increaseFireRate();
 	void	increaseSpread();
-
+	void	splashBlood(sf::Time dt);
 	void fire();
 
 private:
@@ -69,6 +71,9 @@ private:
 		sf::Sprite		mSprite;
 		Command			mFireCommand;
 		Command			mDropPickupCommand;
+		Animation		mBlood;
+		Animation		mZombieAnim;
+		//const TextureHolder&	mTextureFrames;
 		sf::Vector2f	mCenter;
 		float			mDirectionAngle;
 		float			mTravelledDistance;
@@ -85,6 +90,8 @@ private:
 
 		bool			mIsFiring;
 		bool			mIsMarkedForRemoval;
+		bool			mShowBlood;
+		bool			mSpawnedPickup;
 };
 #endif // !SURVIVOR_H
 
