@@ -18,6 +18,7 @@ public:
         MoveDown,
         MoveAim,
         Fire,
+        Reload
     };
 
     enum PlayerStatus

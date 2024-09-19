@@ -1,4 +1,5 @@
 #include "FileSystem.h"
+#include <iostream>
 
 template<typename Resource, typename Identifier>
 void FileSystem<Resource, Identifier>::load(Identifier id, const std::string& filename)
@@ -35,6 +36,7 @@ template<typename Resource, typename Identifier>
 const Resource& FileSystem<Resource, Identifier>::get(Identifier id) const
 {
 	auto found = mResourceMap.find(id);
+	std::cout << id << std::endl;
 	assert(found != mResourceMap.end());
 
 	return *found->second;

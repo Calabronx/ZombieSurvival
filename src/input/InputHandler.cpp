@@ -28,6 +28,7 @@ InputHandler::InputHandler()
 	mKeyBinding[sf::Keyboard::D] = MoveRight;
 	mKeyBinding[sf::Keyboard::W] = MoveUp;
 	mKeyBinding[sf::Keyboard::S] = MoveDown;
+	mKeyBinding[sf::Keyboard::R] = Reload;
 	mMouseBinding[sf::Mouse::Left] = Fire;
 
 	initializeActions();
@@ -84,6 +85,7 @@ void InputHandler::initializeActions()
 	mActionBinding[MoveDown].action = derivedAction<Character>(SurvivorMover(0.f, +playerSpeed));
 	mActionBinding[MoveAim].action = derivedAction<Character>([](Character& c, sf::Time) { c.moveAim(); });
 	mActionBinding[Fire].action = derivedAction<Character>([](Character& c, sf::Time) { c.fire();  });
+	mActionBinding[Reload].action = derivedAction<Character>([](Character& c, sf::Time) { c.reload(); });
 }
 
 bool InputHandler::isRealtimeAction(Action action)
@@ -96,6 +98,7 @@ bool InputHandler::isRealtimeAction(Action action)
 	case MoveUp:
 	case MoveAim:
 	case Fire:
+	case Reload:
 		return true;
 	default:
 		return false;

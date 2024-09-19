@@ -22,41 +22,50 @@ class Character : public Entity
 			TypeCount,
 		};
 
+		enum Anim {
+			MOVE,
+			ATTACK,
+			RELOAD,
+			SHOOT
+		};
+
 	public:
 		explicit Character(Type type, const TextureHolder& textures, const FontHolder& fonts);
         virtual unsigned int getCategory() const;
 		bool	isAllied() const;
 
-public:
-	void	setDirectionAngle(float angle);
-	void	setMousePosition(sf::Vector2f mousePosition);
-	float	getDirectionAngle() const;
+	public:
+		void	setDirectionAngle(float angle);
+		void	setMousePosition(sf::Vector2f mousePosition);
+		float	getDirectionAngle() const;
 
 	
 
-	void moveAim();
+		void moveAim();
 
-	float getMaxSpeed() const;
+		float getMaxSpeed() const;
 
-	sf::FloatRect getBoundingRect() const;
-	sf::Vector2f getGunPosition() const;
-	virtual bool		isMarkedForRemoval() const;
-	virtual void		remove();
+		sf::FloatRect getBoundingRect() const;
+		sf::Vector2f getGunPosition() const;
+		virtual bool		isMarkedForRemoval() const;
+		virtual void		remove();
 
-	// zombie only methods
-	void guideTowardsPlayer(sf::Vector2f position);
-	bool isChasing() const;
+		// zombie only methods
+		void guideTowardsPlayer(sf::Vector2f position);
+		bool isChasing() const;
 
-	void	increaseFireRate();
-	void	increaseSpread();
-	void	splashBlood(sf::Time dt);
-	void fire();
+		void	increaseFireRate();
+		void	increaseSpread();
+		void	splashBlood();
+		void	fire();
+		void	reload();
 
 private:
 		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 		virtual void updateCurrent(sf::Time dt, CommandQueue&);
 
 		void updateMovementPattern(sf::Time dt);
+		void updatePlayerAnimation(sf::Time dt);
 
 		void		 updateTexts();
 		void		 checkPickupDrop(CommandQueue& commands);
@@ -69,11 +78,13 @@ private:
 private:
 		Type			mType;
 		sf::Sprite		mSprite;
+		sf::IntRect		mTextureRect;
 		Command			mFireCommand;
+		Command			mReloadCommand;
 		Command			mDropPickupCommand;
 		Animation		mBlood;
 		Animation		mZombieAnim;
-		//const TextureHolder&	mTextureFrames;
+		std::vector<sf::Texture> mTextureAnimations;
 		sf::Vector2f	mCenter;
 		float			mDirectionAngle;
 		float			mTravelledDistance;
@@ -81,14 +92,22 @@ private:
 		int				mDirectionIndex;
 		int				mFireRateLevel;
 		int				mSpreadLevel;
+		int				mLeftTexture;
+		int				mWidthTexture;
+		int				mHeightTexture;
+		int				mAmmoCounter;
+		int				mAction;
 
 		TextNode*		mHealthDisplay;
 		sf::Vector2f	mZombieTargetDirection;
 		sf::Time		mFireCountdown;
 		sf::Vector2f	mMousePosition;
 		sf::Vector2f	mGunPosition;
+		sf::Time		mElapsedFrameTime;
+		std::size_t		mCurrentFrame;
 
 		bool			mIsFiring;
+		bool			mIsReloading;
 		bool			mIsMarkedForRemoval;
 		bool			mShowBlood;
 		bool			mSpawnedPickup;

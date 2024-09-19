@@ -40,6 +40,7 @@ class GameWorld : sf::NonCopyable
 		void adaptPlayerPosition();
 		void adaptPlayerVelocity();
 		void adaptPlayerDirection();
+		//void setPlayerRef(InputHandler& input);
 
 		sf::FloatRect getViewBounds() const;
 		sf::FloatRect getBattlefieldBounds() const;
@@ -80,6 +81,8 @@ class GameWorld : sf::NonCopyable
 		sf::FloatRect	mWorldBounds;
 		sf::Vector2f	mSpawnPosition;
 		float mScrollSpeed;
+		int	  mHordeLevel;
+		bool  mLevelsFinished;
 		Character*		    mPlayerSurvivor;
         CommandQueue    mCommandQueue;
 		std::vector<SpawnPoint> mEnemySpawnPoints;

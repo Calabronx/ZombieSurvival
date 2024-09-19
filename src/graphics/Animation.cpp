@@ -6,9 +6,11 @@
 
 Animation::Animation()
 	: mSprite()
+	, mTextureFrames()
 	, mFrameSize()
 	, mNumFrames(0)
 	, mCurrentFrame(0)
+	, mIndex(0)
 	, mDuration(sf::Time::Zero)
 	, mElapsedTime(sf::Time::Zero)
 	, mRepeat(false)
@@ -26,18 +28,6 @@ Animation::Animation(const sf::Texture& texture)
 {
 }
 
-//Animation::Animation(const TextureHolder& textures)
-//	: mTextureFrames(textures)
-//	, mFrameSize()
-//	, mNumFrames(0)
-//	, mCurrentFrame(0)
-//	, mDuration(sf::Time::Zero)
-//	, mElapsedTime(sf::Time::Zero)
-//	, mRepeat(false)
-//{
-//
-//}
-
 void Animation::setTexture(const sf::Texture& texture)
 {
 	mSprite.setTexture(texture);
@@ -48,15 +38,15 @@ const sf::Texture* Animation::getTexture() const
 	return mSprite.getTexture();
 }
 
-//void Animation::setTextures(const TextureHolder& textures)
-//{
-//	mTextureFrames = textures;
-//}
+void Animation::addTextureFrame(const sf::Texture& textureFrame)
+{
+	mTextureFrames.push_back(textureFrame);
+}
 
-//const TextureHolder Animation::getTextureHolder() const
-//{
-//	return mTextureFrames;
-//}
+const std::vector<sf::Texture> Animation::getTextureFrames() const
+{
+	return mTextureFrames;
+}
 
 void Animation::setFrameSize(sf::Vector2i frameSize)
 {
@@ -155,6 +145,7 @@ void Animation::update(sf::Time dt)
 	}
 
 	mSprite.setTextureRect(textureRect);
+	//mIndex++;
 }
 
 void Animation::draw(sf::RenderTarget& target, sf::RenderStates states) const

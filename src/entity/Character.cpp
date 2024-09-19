@@ -29,45 +29,65 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mSprite(textures.get(Table[type].texture), Table[type].textureRect)
 	, mBlood(textures.get(Textures::Blood))
 	//, mTextureFrames(textures)
-	, mZombieAnim()
+	//, mZombieAnim(textures.get(Textures::ZombieWalk))
+	, mTextureAnimations()
 	, mDirectionAngle(0.0f)
 	, mHealthDisplay(nullptr)
 	, mZombieTargetDirection()
 	, mIsFiring(false)
+	, mIsReloading(false)
 	, mSpawnedPickup(false)
 	, mShowBlood(true)
 	, mIsMarkedForRemoval(false)
-	, mFireCommand()
 	, mFireCountdown(sf::Time::Zero)
 	, mFireRateLevel(1)
 	, mSpreadLevel(1)
+	, mFireCommand()
 	, mDropPickupCommand()
+	, mReloadCommand()
 	, mTravelledDistance(0.f)
 	, mDirectionIndex(0)
 	, mGunPosition()
+	, mCurrentFrame(0)
+	, mElapsedFrameTime(sf::Time::Zero)
+	, mLeftTexture(0)
+	, mWidthTexture(0)
+	, mHeightTexture(0)
+	, mAmmoCounter(60)
 {
 	sf::FloatRect bounds = mSprite.getLocalBounds();
 	//sf::FloatRect gun = bounds.top + bounds.left;
 	sf::Vector2f center(bounds.left + bounds.width / 2.0f, bounds.top + bounds.height / 2.0f);
 	mCenter = center;
 
-	mBlood.setFrameSize(sf::Vector2i(256, 256));
-	mBlood.setNumFrames(4);
-	mBlood.setDuration(sf::seconds(1));
-
-	//mZombieAnim.setTextures(textures);
-
 	centerOrigin(mSprite);
 	centerOrigin(mBlood);
+	mBlood.setFrameSize(sf::Vector2i(156, 156));
+	mBlood.setNumFrames(4);
+	mBlood.setDuration(sf::seconds(5));
+	mBlood.setScale(sf::Vector2f(4.f, 4.f));
+	//mBlood.setPosition(mSprite.getPosition());
+
+	//mTextures = textures;
+	//mTextureAnimations.push_back(textures.get(Textures::Reload));
+
+
+	if (getCategory() == Category::Zombie) {
+		/*	mZombieAnim.setTexture(textures.get(Textures::ZombieWalk));
+			mZombieAnim.setFrameSize(sf::Vector2i(256, 256));
+			mZombieAnim.setNumFrames(12);
+			mZombieAnim.setRepeating(true);
+			mZombieAnim.setDuration(sf::seconds(1));
+			centerOrigin(mZombieAnim);*/
+	}
+
 	//mTextureFrames = textures;
 
-	/*std::map<Textures::ID, sf::Texture> textureMap;
-	if (getCategory() == Category::Zombie) {
-		for (auto i = 0; textures.size(); i++) {
-			textureMap.insert(textures.get(Table[type].texture));
-		}
-	}*/
 	if (getCategory() == Category::PlayerSurvivor) {
+		mTextureAnimations.push_back(textures.get(Textures::Survivor));
+		mTextureAnimations.push_back(textures.get(Textures::Shoot));
+		mTextureAnimations.push_back(textures.get(Textures::Reload));
+
 		setRotation(mDirectionAngle);
 
 		mFireCommand.category = Category::SceneLandLayer;
@@ -77,6 +97,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		};
 
 		mGunPosition = sf::Vector2f(0.f, mSprite.getOrigin().y - bounds.top);
+
 	}
 
 	mDropPickupCommand.category = Category::SceneLandLayer;
@@ -96,9 +117,11 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	if (isDestroyed() && mShowBlood)
-			target.draw(mBlood, states);
+		target.draw(mBlood, states);
+	//else if (getCategory() == Zombie)
+	//	target.draw(mZombieAnim, states);
 	else
-			target.draw(mSprite, states);
+		target.draw(mSprite, states);
 }
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
@@ -113,7 +136,6 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 		return;
 	}
 
-
 	if (getCategory() == Category::Zombie)
 	{
 		if (isChasing())
@@ -127,11 +149,49 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 			setRotation(toDegree(angle) + 90.f);
 			setVelocity(newVelocity);
 
-			//mZombieAnim.update(dt);
-			/*for (auto i = 0; i < mTextureFrames.size(); i++) {
-				mZombieAnim.setTexture(mTextureFrames.get(Table[mType].textureFrames[i]));
-			}*/
 
+			int numFrames = 18;
+			bool repeat = true;
+			sf::Vector2i frameSize(220, 220);
+			sf::Time duration = sf::seconds(2);
+			sf::Time timePerFrame = duration / static_cast<float>(numFrames);
+			mElapsedFrameTime += dt;
+			sf::Vector2i textureBounds(mSprite.getTexture()->getSize());
+			sf::IntRect textureRect = Table[mType].textureRect;
+			int left = 0;
+
+			if (mCurrentFrame == 0)
+				textureRect = sf::IntRect(0, 0, frameSize.x, frameSize.y);
+
+			while (mElapsedFrameTime >= timePerFrame && (mCurrentFrame <= numFrames || repeat))
+			{
+				textureRect.left += textureRect.width;
+
+				if (textureRect.left + textureRect.width > textureBounds.x)
+				{
+					textureRect.left = 0;
+					textureRect.top += textureRect.height;
+				}
+
+				mElapsedFrameTime -= timePerFrame;
+				if (repeat)
+				{
+					mCurrentFrame = (mCurrentFrame + 1) % numFrames;
+
+					if (mCurrentFrame == 0)
+						textureRect = sf::IntRect(0, 0, frameSize.x, frameSize.y);
+				}
+				else
+				{
+					mCurrentFrame++;
+				}
+				/*	std::cout << "FRAME: " << mCurrentFrame << std::endl;
+					std::cout << "w: " << textureRect.getPosition().x << std::endl;
+					std::cout << "y: " << textureRect.getPosition().y << std::endl;*/
+
+			}
+
+			mSprite.setTextureRect(textureRect);
 		}
 	}
 
@@ -177,6 +237,75 @@ void Character::updateMovementPattern(sf::Time dt)
 	}
 }
 
+void Character::updatePlayerAnimation(sf::Time dt)
+{
+	int numFrames = 18;
+	bool repeat = false;
+
+	sf::Time duration;
+	sf::Vector2i frameSize;
+	sf::IntRect textureRect;
+
+	switch (mAction) {
+		case SHOOT:
+			textureRect = sf::IntRect(0, 0, 300, 200);
+			frameSize = sf::Vector2i(300, 300);
+			duration = sf::seconds(0.200);
+			repeat = true;
+			break;
+		case RELOAD:
+			textureRect = sf::IntRect(0, 0, 310, 250);
+			frameSize = sf::Vector2i(310, 250);
+			duration = sf::seconds(2);
+			repeat = false;
+			break;
+		case MOVE:
+			break;
+		default:
+			break;
+	}
+
+	sf::Time timePerFrame = duration / static_cast<float>(numFrames);
+	mElapsedFrameTime += dt;
+	sf::Vector2i textureBounds(mSprite.getTexture()->getSize());
+	//sf::IntRect textureRect = Table[mType].textureRect;
+	//sf::IntRect textureRect = sf::IntRect(0, 0, 300, 200);
+	int left = 0;
+
+	if (mCurrentFrame == 0)
+		textureRect = sf::IntRect(0, 0, frameSize.x, frameSize.y);
+
+	while (mElapsedFrameTime >= timePerFrame && (mCurrentFrame <= numFrames || repeat))
+	{
+		textureRect.left += textureRect.width;
+
+		if (textureRect.left + textureRect.width > textureBounds.x)
+		{
+			textureRect.left = 0;
+			textureRect.top += textureRect.height;
+		}
+
+		mElapsedFrameTime -= timePerFrame;
+		if (repeat)
+		{
+			mCurrentFrame = (mCurrentFrame + 1) % numFrames;
+
+			if (mCurrentFrame == 0)
+				textureRect = sf::IntRect(0, 0, frameSize.x, frameSize.y);
+		}
+		else
+		{
+			mCurrentFrame++;
+		}
+		/*	std::cout << "FRAME: " << mCurrentFrame << std::endl;
+			std::cout << "w: " << textureRect.getPosition().x << std::endl;
+			std::cout << "y: " << textureRect.getPosition().y << std::endl;*/
+
+	}
+
+	mSprite.setTextureRect(textureRect);
+}
+
 void Character::updateTexts()
 {
 	mHealthDisplay->setString(toString(getHitpoints()) + " HP");
@@ -194,74 +323,86 @@ void Character::checkPickupDrop(CommandQueue& commands)
 
 void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 {
+	if (mIsReloading) {
+		//std::cout << "RELOAD! : ammo : " << mAmmoCounter << std::endl;
+		commands.push(mReloadCommand);
+		mIsReloading = false;
+
+		if (mAction != RELOAD)
+			mSprite.setTexture(mTextureAnimations[2]);
+			mAction = RELOAD;
+
+		updatePlayerAnimation(dt);
+		return;
+
+	}
+
 	if (mIsFiring && mFireCountdown <= sf::Time::Zero)
 	{
 		commands.push(mFireCommand);
 		mFireCountdown += Table[mType].fireInterval / (mFireRateLevel + 1.f);
 		mIsFiring = false;
+
+		if (mAction != SHOOT)
+			mSprite.setTexture(mTextureAnimations[1]);
+			mAction = SHOOT;
+			mAmmoCounter--;
+
+		updatePlayerAnimation(dt);
+		//std::cout << "FIRE! : ammo shoot: " << mAmmoCounter << std::endl;
+
 	}
 	else if (mFireCountdown > sf::Time::Zero)
 	{
 		mFireCountdown -= dt;
 		mIsFiring = false;
+		mAction = MOVE;
+
+		if (mAction != MOVE)
+			mSprite.setTexture(mTextureAnimations[0]);
+			mAction = MOVE;
 	}
 }
 
 void Character::createBullets(SceneNode& node, const TextureHolder& textures) const
 {
 	Projectile::Type type = Projectile::HandgunBullet;
-	createProjectile(node, type, -0.2f, 0.0f, textures);
-	//switch (mSpreadLevel)
-	//{
-	//		case 1:
-	//			createProjectile(node, type, 0.0f, 0.5f, textures);
-	//			break;
+	float rotation = getRotation();
+	std::cout << rotation << std::endl;
 
-	//		case 2:
-	//			createProjectile(node, type, -0.33f, 0.33f, textures);
-	//			createProjectile(node, type, +0.33f, 0.33f, textures);
-	//			break;
+	float xOffset = rotation >= 0.f && rotation >= 230 ? -0.2f : rotation < 230 && rotation >= 199? -0.4f
+		: rotation < 199 && rotation >= 130 ? -0.2f : rotation < 170 && rotation >= 110 ? 0.0f : 0.0;
 
-	//		case 3:
-	//			createProjectile(node, type, -0.5f, 0.33f, textures);
-	//			createProjectile(node, type,  0.0f, 0.5f,  textures);
-	//			createProjectile(node, type, +0.5f, 0.33f, textures);
-	//			break;
-	//}
+	float yOffset = rotation >= 0.f && rotation >= 230 ? 0.0f : rotation < 199 && rotation >= 170 ?  0.1f : rotation < 170 && rotation >= 110 ? 0.4f : 0.0;
+
+	//createProjectile(node, type, -0.2f, 0.0f, textures); // 316 - 253
+	//createProjectile(node, type, 0.2f, 0.0f, textures); // 253 - 230
+	//createProjectile(node, type, -0.4f, 0.0f, textures); // 214 - 199
+
+	createProjectile(node, type, xOffset, yOffset, textures);
 }
 
 void Character::createProjectile(SceneNode& node, Projectile::Type type, float xOffset, float yOffset, const TextureHolder& textures) const
 {
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
-	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height); 
-	//std::cout << "TOP SPRITE " << mSprite.getGlobalBounds().top << std::endl;
-	//sf::Vector2f gun(xOffset, yOffset);
-	float angleRadians = toRadian(mSprite.getRotation());
-	sf::Vector2f center(mSprite.getGlobalBounds().width / 2.f, mSprite.getGlobalBounds().height / 2.f);
-	sf::Vector2f rotatedOffset;
-	rotatedOffset.x = offset.x * std::cos(angleRadians) - std::sin(angleRadians);
-	rotatedOffset.y = offset.x * std::cos(angleRadians) - std::sin(angleRadians);
+	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
 
-	sf::Vector2f projectilePosition = getWorldPosition() + center + rotatedOffset;
+	sf::Vector2f center(mSprite.getGlobalBounds().width / 2.f, mSprite.getGlobalBounds().height / 2.f);
 
 	sf::Vector2f mouseWorldPosition = mMousePosition;
 	float sign = -0.30f;
 
 	projectile->setPosition(getWorldPosition() + offset * sign);
-	//projectile->setPosition(projectilePosition);
-	//std::cout << "BULLET VEC SHOOT POS (X: " << projectile->getPosition().x << ",Y: " << projectile->getPosition().y << ")" << std::endl;
 	float mouseAngle = std::atan2(mMousePosition.y - projectile->getPosition().y, mMousePosition.x - projectile->getPosition().x);
 	float bulletRotation = std::atan2(mMousePosition.y, mMousePosition.x);
-
 	float mouse = std::atan2(mouseWorldPosition.y, mouseWorldPosition.x);
 	float degrees = toDegree(mouseAngle) + 90;
 
 	projectile->setVelocity(sf::Vector2f(projectile->getMaxSpeed() * std::cos(mouseAngle), projectile->getMaxSpeed() * std::sin(mouseAngle)));
 	projectile->setRotation(degrees); // falta ajustar el angulo perfecto acorde al cursor, solo en y+/y- la bala va derecha segun el angulo
 	projectile->setScale(0.019999f, 0.2f);
-	//std::cout << "MOUSE VEC (X: " << mouseWorldPosition.x << ",Y: " << mouseWorldPosition.y << ")" << std::endl;
-	//std::cout << "BULLET VEC TRAYECTORY (X: " << projectile->getVelocity().x << ",Y: " << projectile->getVelocity().y << ")" << std::endl;
 	node.attachChild(std::move(projectile));
+	//std::cout << "BULLET VEC SHOOT POS (X: " << projectile->getPosition().x << ",Y: " << projectile->getPosition().y << ")" << std::endl;
 }
 
 void Character::createPickup(SceneNode& node, const TextureHolder& textures) const
@@ -270,18 +411,18 @@ void Character::createPickup(SceneNode& node, const TextureHolder& textures) con
 
 	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
 	pickup->setPosition(getWorldPosition());
-	pickup->setVelocity(0.f, 1.f);
+	pickup->setVelocity(0.f, 0.f);
 	node.attachChild(std::move(pickup));
 }
 
 unsigned int Character::getCategory() const
 {
 	if (isAllied())
-			return Category::PlayerSurvivor;
+		return Category::PlayerSurvivor;
 
 	else
-			return Category::Zombie;
-	
+		return Category::Zombie;
+
 }
 
 bool Character::isAllied() const
@@ -326,7 +467,7 @@ sf::Vector2f Character::getGunPosition() const
 	sf::Vector2f offset(mSprite.getGlobalBounds().width, mSprite.getGlobalBounds().height);
 
 	sf::Vector2f gunOffset(mSprite.getPosition().x * cos(angleRad) - mSprite.getPosition().y * sin(angleRad),
-						  mGunPosition.x * sin(angleRad) * mGunPosition.y * cos(angleRad));
+		mGunPosition.x * sin(angleRad) * mGunPosition.y * cos(angleRad));
 
 	return getPosition() + gunOffset;
 }
@@ -338,7 +479,7 @@ void Character::guideTowardsPlayer(sf::Vector2f position)
 		return;
 	}
 
-	mZombieTargetDirection = unitVector(position - getWorldPosition());
+	//mZombieTargetDirection = unitVector(position - getWorldPosition());
 }
 
 bool Character::isChasing() const
@@ -358,15 +499,26 @@ void Character::increaseSpread()
 		++mSpreadLevel;
 }
 
-void Character::splashBlood(sf::Time dt)
-{
-	mBlood.update(dt);
-}
 
 void Character::fire()
 {
+	if (mAmmoCounter <= 0) 
+		return;
+	
+
 	if (Table[mType].fireInterval != sf::Time::Zero)
 		mIsFiring = true;
 
 	//std::cout << "fire" << std::endl;
 }
+
+void Character::reload()
+{
+	if (mAmmoCounter >= 60) 
+		return;
+	
+	mIsReloading = true;
+	mAmmoCounter = 60;
+}
+
+
