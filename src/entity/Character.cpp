@@ -53,7 +53,8 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mLeftTexture(0)
 	, mWidthTexture(0)
 	, mHeightTexture(0)
-	, mAmmoCounter(60)
+	, mAmmo(60)
+	, mPlayerHealth()
 {
 	sf::FloatRect bounds = mSprite.getLocalBounds();
 	//sf::FloatRect gun = bounds.top + bounds.left;
@@ -64,7 +65,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	centerOrigin(mBlood);
 	mBlood.setFrameSize(sf::Vector2i(156, 156));
 	mBlood.setNumFrames(4);
-	mBlood.setDuration(sf::seconds(5));
+	mBlood.setDuration(sf::seconds(1));
 	mBlood.setScale(sf::Vector2f(4.f, 4.f));
 	//mBlood.setPosition(mSprite.getPosition());
 
@@ -72,16 +73,10 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	//mTextureAnimations.push_back(textures.get(Textures::Reload));
 
 
-	if (getCategory() == Category::Zombie) {
-		/*	mZombieAnim.setTexture(textures.get(Textures::ZombieWalk));
-			mZombieAnim.setFrameSize(sf::Vector2i(256, 256));
-			mZombieAnim.setNumFrames(12);
-			mZombieAnim.setRepeating(true);
-			mZombieAnim.setDuration(sf::seconds(1));
-			centerOrigin(mZombieAnim);*/
-	}
 
 	//mTextureFrames = textures;
+	std::unique_ptr<TextNode> healthDisplay(new TextNode(fonts, ""));
+	mHealthDisplay = healthDisplay.get();
 
 	if (getCategory() == Category::PlayerSurvivor) {
 		mTextureAnimations.push_back(textures.get(Textures::Survivor));
@@ -96,8 +91,10 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 			createBullets(node, textures);
 		};
 
-		mGunPosition = sf::Vector2f(0.f, mSprite.getOrigin().y - bounds.top);
+	}
 
+	if (getCategory() == Category::Zombie) {
+		attachChild(std::move(healthDisplay));
 	}
 
 	mDropPickupCommand.category = Category::SceneLandLayer;
@@ -106,9 +103,6 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		createPickup(node, textures);
 	};
 
-	std::unique_ptr<TextNode> healthDisplay(new TextNode(fonts, ""));
-	mHealthDisplay = healthDisplay.get();
-	attachChild(std::move(healthDisplay));
 
 	updateTexts();
 
@@ -118,8 +112,7 @@ void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) c
 {
 	if (isDestroyed() && mShowBlood)
 		target.draw(mBlood, states);
-	//else if (getCategory() == Zombie)
-	//	target.draw(mZombieAnim, states);
+	
 	else
 		target.draw(mSprite, states);
 }
@@ -148,7 +141,6 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 			setRotation(toDegree(angle) + 90.f);
 			setVelocity(newVelocity);
-
 
 			int numFrames = 18;
 			bool repeat = true;
@@ -192,6 +184,23 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 			}
 
 			mSprite.setTextureRect(textureRect);
+
+		}
+	}
+	else if (getCategory() == Category::PlayerSurvivor)
+	{
+		if (mIsReloading) {
+			//std::cout << "RELOAD! : ammo : " << mAmmoCounter << std::endl;
+			commands.push(mReloadCommand);
+			mIsReloading = false;
+
+			//if (mAction != RELOAD)
+			mSprite.setTexture(mTextureAnimations[2]);
+			mAction = RELOAD;
+
+			updatePlayerAnimation(dt);
+			return;
+
 		}
 	}
 
@@ -241,44 +250,50 @@ void Character::updatePlayerAnimation(sf::Time dt)
 {
 	int numFrames = 18;
 	bool repeat = false;
+	bool reload = false;
 
 	sf::Time duration;
 	sf::Vector2i frameSize;
 	sf::IntRect textureRect;
-
+	//mElapsedFrameTime = sf::Time::Zero;
 	switch (mAction) {
-		case SHOOT:
-			textureRect = sf::IntRect(0, 0, 300, 200);
-			frameSize = sf::Vector2i(300, 300);
-			duration = sf::seconds(0.200);
-			repeat = true;
-			break;
-		case RELOAD:
-			textureRect = sf::IntRect(0, 0, 310, 250);
-			frameSize = sf::Vector2i(310, 250);
-			duration = sf::seconds(2);
-			repeat = false;
-			break;
-		case MOVE:
-			break;
-		default:
-			break;
+	case SHOOT:
+		textureRect = sf::IntRect(0, 0, 300, 200);
+		frameSize = sf::Vector2i(300, 300);
+		duration = sf::seconds(0.200);
+		repeat = true;
+		break;
+	case RELOAD:
+		textureRect = sf::IntRect(0, 0, 310, 250);
+		frameSize = sf::Vector2i(310, 250);
+		duration = sf::seconds(0.800);
+		numFrames = 20;
+		mCurrentFrame = 0;
+		mIsReloading = false;
+		//mSprite.setTexture(mTextureAnimations[2]);
+		//mElapsedFrameTime = sf::Time::Zero;
+		std::cout << "reloading" << std::endl;
+		break;
+	case MOVE:
+		break;
+	default:
+		break;
 	}
 
-	sf::Time timePerFrame = duration / static_cast<float>(numFrames);
+	sf::Time timePerFrame = duration / static_cast<float>(numFrames); // aca esta el bug
 	mElapsedFrameTime += dt;
 	sf::Vector2i textureBounds(mSprite.getTexture()->getSize());
-	//sf::IntRect textureRect = Table[mType].textureRect;
-	//sf::IntRect textureRect = sf::IntRect(0, 0, 300, 200);
-	int left = 0;
 
 	if (mCurrentFrame == 0)
 		textureRect = sf::IntRect(0, 0, frameSize.x, frameSize.y);
 
+	// While we have a frame to process
 	while (mElapsedFrameTime >= timePerFrame && (mCurrentFrame <= numFrames || repeat))
 	{
+		// Move the texture rect left
 		textureRect.left += textureRect.width;
 
+		// If we reach the end of the texture
 		if (textureRect.left + textureRect.width > textureBounds.x)
 		{
 			textureRect.left = 0;
@@ -308,9 +323,18 @@ void Character::updatePlayerAnimation(sf::Time dt)
 
 void Character::updateTexts()
 {
-	mHealthDisplay->setString(toString(getHitpoints()) + " HP");
-	mHealthDisplay->setPosition(0.f, 95.f);
-	mHealthDisplay->setRotation(-getRotation());
+	if (getCategory() == Category::PlayerSurvivor) {
+		//mPlayerHealth.setString(toString(getHitpoints()) + " HP");
+		//mPlayerHealth.setPosition(360.f, 4760.f);
+		//mPlayerHealth.setCharacterSize(10u);
+	}
+	else
+	{
+		mHealthDisplay->setString(toString(getHitpoints()) + " HP");
+		mHealthDisplay->setPosition(0.f, 95.f);
+		mHealthDisplay->setRotation(-getRotation());
+	}
+
 }
 
 void Character::checkPickupDrop(CommandQueue& commands)
@@ -323,19 +347,19 @@ void Character::checkPickupDrop(CommandQueue& commands)
 
 void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 {
-	if (mIsReloading) {
-		//std::cout << "RELOAD! : ammo : " << mAmmoCounter << std::endl;
-		commands.push(mReloadCommand);
-		mIsReloading = false;
+	//if (mIsReloading) {
+	//	//std::cout << "RELOAD! : ammo : " << mAmmoCounter << std::endl;
+	//	commands.push(mReloadCommand);
+	//	mIsReloading = false;
 
-		if (mAction != RELOAD)
-			mSprite.setTexture(mTextureAnimations[2]);
-			mAction = RELOAD;
+	//	if (mAction != RELOAD)
+	//		mSprite.setTexture(mTextureAnimations[2]);
+	//		mAction = RELOAD;
 
-		updatePlayerAnimation(dt);
-		return;
+	//	updatePlayerAnimation(dt);
+	//	return;
 
-	}
+	//}
 
 	if (mIsFiring && mFireCountdown <= sf::Time::Zero)
 	{
@@ -345,11 +369,12 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 
 		if (mAction != SHOOT)
 			mSprite.setTexture(mTextureAnimations[1]);
-			mAction = SHOOT;
-			mAmmoCounter--;
+		mAction = SHOOT;
+		mAmmo--;
+		/*mAmmoFired++;*/
 
 		updatePlayerAnimation(dt);
-		//std::cout << "FIRE! : ammo shoot: " << mAmmoCounter << std::endl;
+		//std::cout << "FIRE! : ammo shoot: " << mAmmoFired << std::endl;
 
 	}
 	else if (mFireCountdown > sf::Time::Zero)
@@ -359,7 +384,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 		mAction = MOVE;
 
 		if (mAction != MOVE)
-			mSprite.setTexture(mTextureAnimations[0]);
+			//mSprite.setTexture(mTextureAnimations[0]);
 			mAction = MOVE;
 	}
 }
@@ -368,12 +393,12 @@ void Character::createBullets(SceneNode& node, const TextureHolder& textures) co
 {
 	Projectile::Type type = Projectile::HandgunBullet;
 	float rotation = getRotation();
-	std::cout << rotation << std::endl;
+	//std::cout << rotation << std::endl;
 
-	float xOffset = rotation >= 0.f && rotation >= 230 ? -0.2f : rotation < 230 && rotation >= 199? -0.4f
+	float xOffset = rotation >= 0.f && rotation >= 230 ? -0.2f : rotation < 230 && rotation >= 199 ? -0.4f
 		: rotation < 199 && rotation >= 130 ? -0.2f : rotation < 170 && rotation >= 110 ? 0.0f : 0.0;
 
-	float yOffset = rotation >= 0.f && rotation >= 230 ? 0.0f : rotation < 199 && rotation >= 170 ?  0.1f : rotation < 170 && rotation >= 110 ? 0.4f : 0.0;
+	float yOffset = rotation >= 0.f && rotation >= 230 ? 0.0f : rotation < 199 && rotation >= 170 ? 0.1f : rotation < 170 && rotation >= 110 ? 0.4f : 0.0;
 
 	//createProjectile(node, type, -0.2f, 0.0f, textures); // 316 - 253
 	//createProjectile(node, type, 0.2f, 0.0f, textures); // 253 - 230
@@ -479,7 +504,7 @@ void Character::guideTowardsPlayer(sf::Vector2f position)
 		return;
 	}
 
-	//mZombieTargetDirection = unitVector(position - getWorldPosition());
+	mZombieTargetDirection = unitVector(position - getWorldPosition());
 }
 
 bool Character::isChasing() const
@@ -502,9 +527,9 @@ void Character::increaseSpread()
 
 void Character::fire()
 {
-	if (mAmmoCounter <= 0) 
+	if (mAmmo <= 0)
 		return;
-	
+
 
 	if (Table[mType].fireInterval != sf::Time::Zero)
 		mIsFiring = true;
@@ -514,11 +539,11 @@ void Character::fire()
 
 void Character::reload()
 {
-	if (mAmmoCounter >= 60) 
+	if (mAmmo >= 60)
 		return;
-	
+
 	mIsReloading = true;
-	mAmmoCounter = 60;
+	mAmmo = 60;
 }
 
 

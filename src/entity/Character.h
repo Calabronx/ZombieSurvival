@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include <SFML/System/Vector2.hpp>
 
 #include "Entity.h"
@@ -95,15 +96,17 @@ private:
 		int				mLeftTexture;
 		int				mWidthTexture;
 		int				mHeightTexture;
-		int				mAmmoCounter;
+		int				mAmmo;
 		int				mAction;
+		int				mAmmoFired;
 
 		TextNode*		mHealthDisplay;
-		sf::Vector2f	mZombieTargetDirection;
 		sf::Time		mFireCountdown;
+		sf::Time		mElapsedFrameTime;
+		sf::Vector2f	mZombieTargetDirection;
 		sf::Vector2f	mMousePosition;
 		sf::Vector2f	mGunPosition;
-		sf::Time		mElapsedFrameTime;
+		sf::Text		mPlayerHealth;
 		std::size_t		mCurrentFrame;
 
 		bool			mIsFiring;

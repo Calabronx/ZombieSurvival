@@ -1,34 +1,39 @@
 #pragma once
-#ifndef GAME_H
-#define GAME_H
+#ifndef APPLICATION_H
+#define APPLICATION_H
 
-#include<SFML/Graphics.hpp>
+#include<SFML/Graphics/RenderWindow.hpp>
+#include<SFML/Graphics/Text.hpp>
+#include<SFML/System/Time.hpp>
 #include "../input/InputHandler.h"
 #include "../state_machine/StateStack.h"
 #include "../util/FileSystem.h"
 
 class Application
 {
+	public:
+									Application();
+		void			run();
 
-public:
-	Application();
-	void run();
+	private:
+		void			processInput();
+		void			update(sf::Time dt);
+		void			render();
+		void			updateStatistics(sf::Time dt);
 
-private:
-	void	processInput();
-	void	update(sf::Time elapsedTime);
-	void	render();
+		void			registerStates();
+	private:
+		static const sf::Time		TimePerFrame;
 
-	void	registerStates();
-private:
-	static const sf::Time		TimePerFrame;
+		sf::RenderWindow		mWindow;
+		TextureHolder			mTextures;
+		FontHolder				mFonts;
+		InputHandler			mPlayer;
 
-	sf::RenderWindow    mWindow;
-	TextureHolder		mTextures;
-	FontHolder			mFonts;
-    InputHandler			mPlayer;
+		StateStack				mStateStack;
 
-	StateStack				mStateStack;
+		sf::Text				mStatisticsText;
+		sf::Time				mStatisticsUpdateTime;
+		std::size_t				mStatisticsNumFrames;
 };
-
-#endif // !GAME_H
+#endif 

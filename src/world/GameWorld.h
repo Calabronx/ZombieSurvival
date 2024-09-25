@@ -72,6 +72,7 @@ class GameWorld : sf::NonCopyable
 	private:
 		sf::RenderWindow& mWindow;
 		sf::View			mWorldView;
+		sf::Text			mPlayerHealth;
 		TextureHolder		mTextures;
 		FontHolder&			mFonts;
 
@@ -82,6 +83,7 @@ class GameWorld : sf::NonCopyable
 		sf::Vector2f	mSpawnPosition;
 		float mScrollSpeed;
 		int	  mHordeLevel;
+		int	  mProjectiles;
 		bool  mLevelsFinished;
 		Character*		    mPlayerSurvivor;
         CommandQueue    mCommandQueue;

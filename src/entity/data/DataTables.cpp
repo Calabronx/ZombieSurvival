@@ -9,7 +9,8 @@ std::vector<CharacterData> initializeCharacterData()
 {
 	std::vector<CharacterData> data(Character::TypeCount);
 
-	data[Character::Survivor].hitpoints = 500;
+	//data[Character::Survivor].hitpoints = 500;
+	data[Character::Survivor].hitpoints = 999900;
 	data[Character::Survivor].speed = 30.f;
 	data[Character::Survivor].fireInterval = sf::seconds(0.150);
 	data[Character::Survivor].texture = Textures::Survivor;
