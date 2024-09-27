@@ -24,6 +24,7 @@ class Character : public Entity
 		};
 
 		enum Anim {
+			IDLE,
 			MOVE,
 			ATTACK,
 			RELOAD,
@@ -54,6 +55,7 @@ class Character : public Entity
 		// zombie only methods
 		void guideTowardsPlayer(sf::Vector2f position);
 		bool isChasing() const;
+		bool isFiring() const;
 
 		void	increaseFireRate();
 		void	increaseSpread();
@@ -83,9 +85,18 @@ private:
 		Command			mFireCommand;
 		Command			mReloadCommand;
 		Command			mDropPickupCommand;
-		Animation		mBlood;
-		Animation		mZombieAnim;
-		std::vector<sf::Texture> mTextureAnimations;
+		// Zombie Animations
+		Animation		mZombieIdleAnim;
+		Animation		mZombieMoveAnim;
+		Animation		mZombieAttackAnim;
+		// Survivor animations
+		Animation		mRifleIdleAnim;
+		Animation		mRifleMoveAnim;
+		Animation		mShootingAnim;
+		Animation		mReloadAnim;
+
+		Animation		mBloodAnim;
+
 		sf::Vector2f	mCenter;
 		float			mDirectionAngle;
 		float			mTravelledDistance;
@@ -109,6 +120,7 @@ private:
 		sf::Text		mPlayerHealth;
 		std::size_t		mCurrentFrame;
 
+		bool			mIsMoving;
 		bool			mIsFiring;
 		bool			mIsReloading;
 		bool			mIsMarkedForRemoval;

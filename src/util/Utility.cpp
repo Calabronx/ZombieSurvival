@@ -6,7 +6,7 @@
 #include <cmath>
 #include <cassert>
 #include <random>
-
+#include <iostream>
 namespace {
 	std::default_random_engine createRandomEngine()
 	{
@@ -64,5 +64,8 @@ void centerOrigin(sf::Text& text)
 void centerOrigin(Animation& animation)
 {
 	sf::FloatRect bounds = animation.getLocalBounds();
+	std::cout << "Left: " << bounds.left << ", Top: " << bounds.top
+		<< ", Width: " << bounds.width << ", Height: " << bounds.height << std::endl;
+
 	animation.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));
 }

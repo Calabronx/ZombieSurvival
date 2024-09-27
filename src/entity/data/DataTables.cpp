@@ -20,6 +20,8 @@ std::vector<CharacterData> initializeCharacterData()
 	data[Character::Zombie].speed = 80.f;
 	data[Character::Zombie].texture = Textures::ZombieWalk;
 	data[Character::Zombie].textureRect = sf::IntRect(0, 0, 288, 300);
+
+
 	
 	/*  data[Character::Zombie].directions.push_back(Direction(45, 80));*/
 	  //data[Character::Zombie].directions.push_back(Direction(-45, 160));

@@ -6,7 +6,6 @@
 
 Animation::Animation()
 	: mSprite()
-	, mTextureFrames()
 	, mFrameSize()
 	, mNumFrames(0)
 	, mCurrentFrame(0)
@@ -28,6 +27,17 @@ Animation::Animation(const sf::Texture& texture)
 {
 }
 
+Animation::Animation(const sf::Sprite& sprite)
+	: mFrames()
+	, mFrameSize()
+	, mNumFrames(0)
+	, mCurrentFrame(0)
+	, mDuration(sf::Time::Zero)
+	, mElapsedTime(sf::Time::Zero)
+	, mRepeat(false)
+{
+}
+
 void Animation::setTexture(const sf::Texture& texture)
 {
 	mSprite.setTexture(texture);
@@ -38,15 +48,15 @@ const sf::Texture* Animation::getTexture() const
 	return mSprite.getTexture();
 }
 
-void Animation::addTextureFrame(const sf::Texture& textureFrame)
-{
-	mTextureFrames.push_back(textureFrame);
-}
-
-const std::vector<sf::Texture> Animation::getTextureFrames() const
-{
-	return mTextureFrames;
-}
+//void Animation::addTextureFrame(const sf::Texture& textureFrame)
+//{
+//	mFrames.push_back(textureFrame);
+//}
+//
+//const std::vector<sf::Texture> Animation::getTextureFrames() const
+//{
+//	return mTextureFrames;
+//}
 
 void Animation::setFrameSize(sf::Vector2i frameSize)
 {

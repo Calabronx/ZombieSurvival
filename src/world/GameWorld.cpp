@@ -86,11 +86,13 @@ void GameWorld::loadTextures()
 {
 	//mTextures.load(Textures::Survivor, "resources/textures/handgun/idle/survivor-idle_handgun_0.png");
 	mTextures.load(Textures::Survivor, "resources/textures/rifle/idle/survivor-idle_rifle_0.png");
-	mTextures.load(Textures::Shoot, "resources/textures/tds_zombie/hunter_shoot.png");
-	mTextures.load(Textures::Reload, "resources/textures/tds_zombie/hunter_rifle_reload.png");
+	mTextures.load(Textures::RifleIdle, "resources/textures/tds_zombie/hunter_rifle_idle.png");
+	mTextures.load(Textures::RifleMove, "resources/textures/tds_zombie/hunter_rifle_move.png");
+	mTextures.load(Textures::RifleShoot, "resources/textures/tds_zombie/hunter_shoot.png");
+	mTextures.load(Textures::RifleReload, "resources/textures/tds_zombie/hunter_rifle_reload.png");
 
 	mTextures.load(Textures::ZombieIdle, "resources/textures/tds_zombie/export/skeleton-idle_0.png");
-	mTextures.load(Textures::ZombieWalk, "resources/textures/tds_zombie/zombie_move_1.png");
+	mTextures.load(Textures::ZombieWalk, "resources/textures/tds_zombie/zombie_move.png");
 
 	mTextures.load(Textures::HandgunBullet, "resources/textures/bullets/Bullet.png");
 	//mTextures.load(Textures::Background, "resources/textures/Tiles/Desert.png");

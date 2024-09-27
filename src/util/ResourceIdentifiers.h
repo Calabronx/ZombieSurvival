@@ -24,8 +24,15 @@ namespace Textures
 		FireRate,
 		Particle,
 		Blood,
-		Shoot,
-		Reload
+		HandgunIdle,
+		HandgunMove,
+		HandgunShoot,
+		HandgunReload,
+		RifleIdle,
+		RifleMove,
+		RifleShoot,
+		RifleReload
+
 	};
 }
 
