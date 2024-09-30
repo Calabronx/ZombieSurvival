@@ -28,6 +28,11 @@ int Entity::getHitpoints() const
 	return mHitpoints;
 }
 
+void Entity::setHitpoints(int hitpoints)
+{
+	mHitpoints = hitpoints;
+}
+
 bool Entity::isDestroyed() const
 {
 	return mHitpoints <= 0;

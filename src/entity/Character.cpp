@@ -27,7 +27,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mGunPosition()
 	, mCurrentFrame(0)
 	, mElapsedFrameTime(sf::Time::Zero)
-	, mAmmo(60)
+	, mAmmo(16)
 	, mPlayerHealth()
 {
 	sf::FloatRect bounds = mSprite.getLocalBounds();
@@ -40,6 +40,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	mBloodAnim.setDuration(sf::seconds(1));
 	mBloodAnim.setScale(sf::Vector2f(4.f, 4.f));
 	centerOrigin(mBloodAnim);
+	mBloodAnim.setPosition(mBloodAnim.getPosition() + sf::Vector2f(+150.f, +300.0f));
 
 	std::unique_ptr<TextNode> healthDisplay(new TextNode(fonts, ""));
 	mHealthDisplay = healthDisplay.get();
@@ -53,34 +54,82 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		{
 			createBullets(node, textures);
 		};
-		mShootingAnim.setFrameSize(sf::Vector2i(300, 300));
-		mShootingAnim.setNumFrames(3);
-		mShootingAnim.setDuration(sf::seconds(00.100));
-		mShootingAnim.setTexture(textures.get(Textures::RifleShoot));
-		mShootingAnim.setRepeating(true);
-		centerOrigin(mShootingAnim);
-		mShootingAnim.setPosition(mShootingAnim.getPosition() - sf::Vector2f(0.f, -50.f));
-
-		mReloadAnim.setFrameSize(sf::Vector2i(330, 220));
-		mReloadAnim.setNumFrames(18);
-		mReloadAnim.setDuration(sf::seconds(2));
-		mReloadAnim.setTexture(textures.get(Textures::RifleReload));
-		mReloadAnim.setRepeating(false);
-		centerOrigin(mReloadAnim);
-
+		// Rifle animations
+		mRifleShootAnim.setFrameSize(sf::Vector2i(300, 300));
+		mRifleShootAnim.setNumFrames(3);
+		mRifleShootAnim.setDuration(sf::seconds(0.0005));
+		mRifleShootAnim.setTexture(textures.get(Textures::RifleShoot));
+		mRifleShootAnim.setRepeating(true);
+		mRifleShootAnim.setPosition(mRifleShootAnim.getPosition() - sf::Vector2f(0.f, -50.f));
+		centerOrigin(mRifleShootAnim);
+		mRifleReloadAnim.setFrameSize(sf::Vector2i(330, 220));
+		mRifleReloadAnim.setNumFrames(14);
+		mRifleReloadAnim.setDuration(sf::seconds(2));
+		mRifleReloadAnim.setTexture(textures.get(Textures::RifleReload));
+		mRifleReloadAnim.setRepeating(false);
+		centerOrigin(mRifleReloadAnim);
 		mRifleIdleAnim.setFrameSize(sf::Vector2i(311, 210));
 		mRifleIdleAnim.setNumFrames(18);
 		mRifleIdleAnim.setDuration(sf::seconds(3));
 		mRifleIdleAnim.setTexture(textures.get(Textures::RifleIdle));
 		mRifleIdleAnim.setRepeating(true);
 		centerOrigin(mRifleIdleAnim);
-
 		mRifleMoveAnim.setFrameSize(sf::Vector2i(311, 210));
 		mRifleMoveAnim.setNumFrames(20);
 		mRifleMoveAnim.setDuration(sf::seconds(2));
 		mRifleMoveAnim.setTexture(textures.get(Textures::RifleMove));
 		mRifleMoveAnim.setRepeating(true);
 		centerOrigin(mRifleMoveAnim);
+		// Handgun animations
+		mHandgunIdleAnim.setFrameSize(sf::Vector2i(250, 210));
+		mHandgunIdleAnim.setNumFrames(18);
+		mHandgunIdleAnim.setDuration(sf::seconds(3));
+		mHandgunIdleAnim.setTexture(textures.get(Textures::HandgunIdle));
+		mHandgunIdleAnim.setRepeating(true);
+		centerOrigin(mHandgunIdleAnim);
+		mHandgunShootAnim.setFrameSize(sf::Vector2i(300, 300));
+		mHandgunShootAnim.setNumFrames(3);
+		mHandgunShootAnim.setDuration(sf::seconds(0.0005));
+		mHandgunShootAnim.setTexture(textures.get(Textures::HandgunShoot));
+		mHandgunShootAnim.setRepeating(true);
+		mHandgunShootAnim.setPosition(mHandgunShootAnim.getPosition() - sf::Vector2f(0.f, -50.f));
+		centerOrigin(mHandgunShootAnim);
+		/*	mHandgunReloadAnim.setFrameSize(sf::Vector2i(330, 220));
+			mHandgunReloadAnim.setNumFrames(14);
+			mHandgunReloadAnim.setDuration(sf::seconds(2));
+			mHandgunReloadAnim.setTexture(textures.get(Textures::HandgunReload));
+			mHandgunReloadAnim.setRepeating(false);
+			centerOrigin(mHandgunReloadAnim);*/
+		mHandgunMoveAnim.setFrameSize(sf::Vector2i(311, 210));
+		mHandgunMoveAnim.setNumFrames(20);
+		mHandgunMoveAnim.setDuration(sf::seconds(2));
+		mHandgunMoveAnim.setTexture(textures.get(Textures::HandgunMove));
+		mHandgunMoveAnim.setRepeating(true);
+		// Shotgun animations
+		mShotgunShootAnim.setFrameSize(sf::Vector2i(300, 300));
+		mShotgunShootAnim.setNumFrames(3);
+		mShotgunShootAnim.setDuration(sf::seconds(0.0005));
+		mShotgunShootAnim.setTexture(textures.get(Textures::ShotgunShoot));
+		mShotgunShootAnim.setRepeating(true);
+		centerOrigin(mShotgunShootAnim);
+		mShotgunShootAnim.setPosition(mShotgunShootAnim.getPosition() - sf::Vector2f(0.f, -50.f));
+		/*	mShotgunReloadAnim.setFrameSize(sf::Vector2i(330, 220));
+			mShotgunReloadAnim.setNumFrames(14);
+			mShotgunReloadAnim.setDuration(sf::seconds(2));
+			mShotgunReloadAnim.setTexture(textures.get(Textures::ShotgunReload));
+			mShotgunReloadAnim.setRepeating(false);
+			centerOrigin(mShotgunReloadAnim);*/
+		mShotgunIdleAnim.setFrameSize(sf::Vector2i(311, 210));
+		mShotgunIdleAnim.setNumFrames(18);
+		mShotgunIdleAnim.setDuration(sf::seconds(3));
+		mShotgunIdleAnim.setTexture(textures.get(Textures::ShotgunIdle));
+		mShotgunIdleAnim.setRepeating(true);
+		centerOrigin(mShotgunIdleAnim);
+		mShotgunMoveAnim.setFrameSize(sf::Vector2i(311, 210));
+		mShotgunMoveAnim.setNumFrames(20);
+		mShotgunMoveAnim.setDuration(sf::seconds(2));
+		mShotgunMoveAnim.setTexture(textures.get(Textures::ShotgunMove));
+		mShotgunMoveAnim.setRepeating(true);
 
 		mIsFiring = false;
 		mIsReloading = false;
@@ -89,6 +138,8 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		mFireRateLevel = 1;
 		mDirectionAngle = 0.0f;
 		mAction = IDLE;
+		mProjectileType = Projectile::Type::HandgunBullet;
+		mGunEquipped = 1;
 	}
 
 	if (getCategory() == Category::Zombie) {
@@ -98,6 +149,16 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		mZombieMoveAnim.setTexture(textures.get(Textures::ZombieWalk));
 		mZombieMoveAnim.setRepeating(true);
 		centerOrigin(mZombieMoveAnim);
+
+		mZombieAttackAnim.setFrameSize(sf::Vector2i(300, 290));
+		mZombieAttackAnim.setNumFrames(9);
+		mZombieAttackAnim.setDuration(sf::seconds(1));
+		mZombieAttackAnim.setTexture(textures.get(Textures::ZombieAttack));
+		mZombieAttackAnim.setRepeating(true);
+		centerOrigin(mZombieAttackAnim);
+
+		mIsZombieAttacking = false;
+		mIsZombieChasing = false;
 
 		attachChild(std::move(healthDisplay));
 	}
@@ -115,27 +176,15 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 
 void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-
-	if (getCategory() == Category::PlayerSurvivor) {
-		if (isDestroyed() && mShowBlood)
-			target.draw(mBloodAnim, states);
-
-		if (mAction == IDLE)
-			target.draw(mRifleIdleAnim, states);
-		else if (mAction == MOVE)
-			target.draw(mRifleMoveAnim, states);
-		else if (mAction == SHOOT)
-			target.draw(mShootingAnim, states);
-		else if (mAction == RELOAD)
-			target.draw(mReloadAnim, states);
-	}
-	else if (getCategory() == Category::Zombie) {
-		if (isDestroyed() && mShowBlood)
-			target.draw(mBloodAnim, states);
-		else
-			//target.draw(mSprite, states);
+	if (isDestroyed() && mShowBlood)
+		target.draw(mBloodAnim, states);
+	else if (getCategory() == Category::PlayerSurvivor)
+		target.draw(getGunAnimationObj(mGunEquipped, mAction), states);
+	else if (getCategory() == Category::Zombie)
+		if (mAction == MOVE)
 			target.draw(mZombieMoveAnim, states);
-	}
+		else if (mAction == ATTACK)
+			target.draw(mZombieAttackAnim, states);
 }
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
@@ -154,7 +203,14 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	{
 		if (isChasing())
 		{
-			mZombieMoveAnim.update(dt);
+			if (mIsZombieAttacking) {
+				mZombieAttackAnim.update(dt);
+				mAction = ATTACK;
+			}
+			else {
+				mZombieMoveAnim.update(dt);
+				mAction = MOVE;
+			}
 
 			const float approachRate = 200.f;
 			sf::Vector2f newVelocity = unitVector(approachRate * dt.asSeconds() * mZombieTargetDirection + getVelocity());
@@ -163,6 +219,8 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 			setRotation(toDegree(angle));
 			setVelocity(newVelocity);
+
+
 		}
 	}
 	else if (getCategory() == Category::PlayerSurvivor)
@@ -178,23 +236,26 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 			mIsMoving = false;
 			mRifleMoveAnim.restart();
 		}
-		if (mIsReloading) {
+		if (mIsReloading && mGunEquipped == 3) {
 			//std::cout << "RELOAD! : ammo : " << mAmmo << std::endl;
 			commands.push(mReloadCommand);
 			mAction = RELOAD;
-			mReloadAnim.update(dt);
+			mRifleReloadAnim.update(dt);
 		}
 		else {
 			checkProjectileLaunch(dt, commands);
 		}
 
-		if (mReloadAnim.isFinished() && mIsReloading) {
-			mReloadAnim.restart();
+		if (mRifleReloadAnim.isFinished() && mIsReloading) {
+			mRifleReloadAnim.restart();
 			mIsReloading = false;
 			mAction = IDLE;
 		}
 
-		if (mAction == IDLE) {
+		if (mAction == IDLE && mGunEquipped == 1) {
+			mHandgunIdleAnim.update(dt);
+		}
+		else if (mAction == IDLE && mGunEquipped == 3) {
 			mRifleIdleAnim.update(dt);
 		}
 		/*else if (mIsMoving) {
@@ -275,9 +336,9 @@ void Character::updatePlayerAnimation(sf::Time dt)
 void Character::updateTexts()
 {
 	if (getCategory() == Category::PlayerSurvivor) {
-		//mPlayerHealth.setString(toString(getHitpoints()) + " HP");
-		//mPlayerHealth.setPosition(360.f, 4760.f);
-		//mPlayerHealth.setCharacterSize(10u);
+		mPlayerHealth.setString(toString(getHitpoints()) + " HP");
+		mPlayerHealth.setPosition(360.f, 4760.f);
+		mPlayerHealth.setCharacterSize(10u);
 	}
 	else
 	{
@@ -307,7 +368,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 		mAmmo--;
 		//std::cout << "FIRING" << std::endl;
 
-		mShootingAnim.update(dt);
+		mRifleShootAnim.update(dt);
 		//updatePlayerAnimation(dt);
 	}
 	else if (mFireCountdown > sf::Time::Zero)
@@ -325,7 +386,8 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 
 void Character::createBullets(SceneNode& node, const TextureHolder& textures) const
 {
-	Projectile::Type type = Projectile::HandgunBullet;
+	Projectile::Type type = mProjectileType;
+	//Projectile::Type type = Projectile::HandgunBullet;
 	float rotation = getRotation();
 	//std::cout << rotation << std::endl;
 
@@ -404,6 +466,11 @@ float Character::getDirectionAngle() const
 	return getRotation();
 }
 
+void Character::setHordeLevel(int hourdNum)
+{
+	mHordeLevel = hourdNum;
+}
+
 
 void Character::moveAim()
 {
@@ -413,6 +480,43 @@ void Character::moveAim()
 float Character::getMaxSpeed() const
 {
 	return Table[mType].speed;
+}
+
+Animation Character::getGunAnimationObj(int gun, int action) const
+{
+	if (action == IDLE) {
+		if (gun == 1)
+			return mHandgunIdleAnim;
+		else if (gun == 2)
+			return mShotgunIdleAnim;
+		else if (gun == 3)
+			return mRifleIdleAnim;
+	}
+	else if (action == SHOOT) {
+		if (gun == 1)
+			return mHandgunShootAnim;
+		else if (gun == 2)
+			return mShotgunShootAnim;
+		else if (gun == 3)
+			return mRifleShootAnim;
+	}
+	else if (action == MOVE) {
+		if (gun == 1)
+			return mHandgunMoveAnim;
+		else if (gun == 2)
+			return mShotgunMoveAnim;
+		else if (gun == 3)
+			return mRifleMoveAnim;
+
+	}
+	else if (action == RELOAD) {
+		if (gun == 1)
+			return mHandgunIdleAnim;
+		else if (gun == 2)
+			return mShotgunIdleAnim;
+		else if (gun == 3)
+			return mRifleReloadAnim;
+	}
 }
 
 sf::FloatRect Character::getBoundingRect() const
@@ -476,6 +580,17 @@ void Character::fire()
 	//std::cout << "fire" << std::endl;
 }
 
+void Character::chase()
+{
+	//mIsZombieChasing = true;
+	mIsZombieAttacking = false;
+}
+
+void Character::attack()
+{
+	mIsZombieAttacking = true;
+}
+
 void Character::reload()
 {
 	if (mAmmo >= 60)
@@ -483,6 +598,41 @@ void Character::reload()
 
 	mIsReloading = true;
 	mAmmo = 60;
+}
+
+void Character::changeGun(int gunNum)
+{
+	if (gunNum == mGunEquipped)
+		return;
+
+	switch (gunNum)
+	{
+	case 1:
+		std::cout << "HANDUNG CHOOSE" << std::endl;
+		mProjectileType = Projectile::Type::HandgunBullet;
+		mFireRateLevel = 5;
+		mAmmo = 16;
+		break;
+	case 2:
+		std::cout << "SHOTGUN CHOOSE" << std::endl;
+		mProjectileType = Projectile::Type::ShotgunBullet;
+		mFireRateLevel = 1;
+		mAmmo = 6;
+		break;
+	case 3:
+		std::cout << "RIFLE CHOOSE" << std::endl;
+		mProjectileType = Projectile::Type::RifleBullet;
+		mFireRateLevel = 10;
+		mAmmo = 60;
+		break;
+		/*case 4:
+			std::cout << "KNIFE CHOOSE" << std::endl;
+			break;*/
+	default:
+		break;
+	}
+
+	mGunEquipped = gunNum;
 }
 
 

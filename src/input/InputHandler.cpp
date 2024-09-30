@@ -29,6 +29,10 @@ InputHandler::InputHandler()
 	mKeyBinding[sf::Keyboard::W] = MoveUp;
 	mKeyBinding[sf::Keyboard::S] = MoveDown;
 	mKeyBinding[sf::Keyboard::R] = Reload;
+	mKeyBinding[sf::Keyboard::Num1] = EquipHandgun;
+	mKeyBinding[sf::Keyboard::Num2] = EquipShotgun;
+	mKeyBinding[sf::Keyboard::Num3] = EquipRifle;
+	mKeyBinding[sf::Keyboard::Num4] = EquipKnife;
 	mMouseBinding[sf::Mouse::Left] = Fire;
 
 	initializeActions();
@@ -86,6 +90,10 @@ void InputHandler::initializeActions()
 	mActionBinding[MoveAim].action = derivedAction<Character>([](Character& c, sf::Time) { c.moveAim(); });
 	mActionBinding[Fire].action = derivedAction<Character>([](Character& c, sf::Time) { c.fire();  });
 	mActionBinding[Reload].action = derivedAction<Character>([](Character& c, sf::Time) { c.reload(); });
+	mActionBinding[EquipHandgun].action = derivedAction<Character>([](Character& c, sf::Time) {c.changeGun(1); });
+	mActionBinding[EquipShotgun].action = derivedAction<Character>([](Character& c, sf::Time) {c.changeGun(2); });
+	mActionBinding[EquipRifle].action = derivedAction<Character>([](Character& c, sf::Time) {c.changeGun(3); });
+	mActionBinding[EquipKnife].action = derivedAction<Character>([](Character& c, sf::Time) {c.changeGun(4); });
 }
 
 bool InputHandler::isRealtimeAction(Action action)

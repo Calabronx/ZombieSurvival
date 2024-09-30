@@ -13,8 +13,25 @@ namespace Textures
 	enum ID
 	{
 		Survivor,
+		HandgunIdle,
+		HandgunMove,
+		HandgunShoot,
+		HandgunReload,
+
+		RifleIdle,
+		RifleMove,
+		RifleShoot,
+		RifleReload,
+
+		ShotgunIdle,
+		ShotgunMove,
+		ShotgunShoot,
+		ShotgunReload,
+
 		ZombieIdle,
 		ZombieWalk,
+		ZombieAttack,
+
 		Background,
 		TitleScreen,
 		HandgunBullet,
@@ -24,14 +41,6 @@ namespace Textures
 		FireRate,
 		Particle,
 		Blood,
-		HandgunIdle,
-		HandgunMove,
-		HandgunShoot,
-		HandgunReload,
-		RifleIdle,
-		RifleMove,
-		RifleShoot,
-		RifleReload
 
 	};
 }

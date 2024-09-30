@@ -23,13 +23,14 @@ class Character : public Entity
 			TypeCount,
 		};
 
-		enum Anim {
+		enum AnimationState {
 			IDLE,
 			MOVE,
 			ATTACK,
 			RELOAD,
 			SHOOT
 		};
+
 
 	public:
 		explicit Character(Type type, const TextureHolder& textures, const FontHolder& fonts);
@@ -41,12 +42,13 @@ class Character : public Entity
 		void	setMousePosition(sf::Vector2f mousePosition);
 		float	getDirectionAngle() const;
 
-	
+		void setHordeLevel(int hourdNum);
 
 		void moveAim();
 
 		float getMaxSpeed() const;
 
+		Animation getGunAnimationObj(int gun, int action) const;
 		sf::FloatRect getBoundingRect() const;
 		sf::Vector2f getGunPosition() const;
 		virtual bool		isMarkedForRemoval() const;
@@ -61,7 +63,10 @@ class Character : public Entity
 		void	increaseSpread();
 		void	splashBlood();
 		void	fire();
+		void	chase();
+		void	attack();
 		void	reload();
+		void	changeGun(int gunNum);
 
 private:
 		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -85,16 +90,28 @@ private:
 		Command			mFireCommand;
 		Command			mReloadCommand;
 		Command			mDropPickupCommand;
-		// Zombie Animations
+		Command			mChangeGunCommand;
+
+		Projectile::Type mProjectileType;
+		/*** Survivor animations **********/
+		Animation			mHandgunIdleAnim;
+		Animation			mHandgunMoveAnim;
+		Animation			mHandgunShootAnim;
+		//Animation			mHandgunReloadAnim;
+		Animation			mRifleIdleAnim;
+		Animation			mRifleMoveAnim;
+		Animation			mRifleShootAnim;
+		Animation			mRifleReloadAnim;
+		Animation			mShotgunIdleAnim;
+		Animation			mShotgunMoveAnim;
+		Animation			mShotgunShootAnim;
+		//Animation			mShotgunReloadAnim;
+		/*********************************/
+		/*** Zombie Animations ************/
 		Animation		mZombieIdleAnim;
 		Animation		mZombieMoveAnim;
 		Animation		mZombieAttackAnim;
-		// Survivor animations
-		Animation		mRifleIdleAnim;
-		Animation		mRifleMoveAnim;
-		Animation		mShootingAnim;
-		Animation		mReloadAnim;
-
+		/*********************************/
 		Animation		mBloodAnim;
 
 		sf::Vector2f	mCenter;
@@ -110,6 +127,8 @@ private:
 		int				mAmmo;
 		int				mAction;
 		int				mAmmoFired;
+		int				mHordeLevel;
+		int				mGunEquipped;
 
 		TextNode*		mHealthDisplay;
 		sf::Time		mFireCountdown;
@@ -126,6 +145,8 @@ private:
 		bool			mIsMarkedForRemoval;
 		bool			mShowBlood;
 		bool			mSpawnedPickup;
+		bool			mIsZombieAttacking;
+		bool			mIsZombieChasing;
 };
 #endif // !SURVIVOR_H
 

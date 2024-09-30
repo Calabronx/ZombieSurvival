@@ -13,6 +13,7 @@ class Entity : public SceneNode
 			void		destroy();
 
 			int			getHitpoints() const;
+			void		setHitpoints(int hitpoints);
 
 			void		heal(int points);
 

@@ -18,7 +18,11 @@ public:
         MoveDown,
         MoveAim,
         Fire,
-        Reload
+        Reload,
+        EquipHandgun,
+        EquipShotgun,
+        EquipRifle,
+        EquipKnife,
     };
 
     enum PlayerStatus

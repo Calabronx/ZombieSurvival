@@ -86,6 +86,15 @@ void GameWorld::loadTextures()
 {
 	//mTextures.load(Textures::Survivor, "resources/textures/handgun/idle/survivor-idle_handgun_0.png");
 	mTextures.load(Textures::Survivor, "resources/textures/rifle/idle/survivor-idle_rifle_0.png");
+
+	mTextures.load(Textures::HandgunIdle, "resources/textures/tds_zombie/hunter_gun_idle.png");
+	mTextures.load(Textures::HandgunMove, "resources/textures/tds_zombie/hunter_gun_move.png");
+	mTextures.load(Textures::HandgunShoot, "resources/textures/tds_zombie/hunter_gun_shoot.png");
+
+	mTextures.load(Textures::ShotgunIdle, "resources/textures/tds_zombie/hunter_shotgun_idle.png");
+	mTextures.load(Textures::ShotgunMove, "resources/textures/tds_zombie/hunter_shotgun_move.png");
+	mTextures.load(Textures::ShotgunShoot, "resources/textures/tds_zombie/hunter_shotgun_shoot.png");
+
 	mTextures.load(Textures::RifleIdle, "resources/textures/tds_zombie/hunter_rifle_idle.png");
 	mTextures.load(Textures::RifleMove, "resources/textures/tds_zombie/hunter_rifle_move.png");
 	mTextures.load(Textures::RifleShoot, "resources/textures/tds_zombie/hunter_shoot.png");
@@ -93,6 +102,7 @@ void GameWorld::loadTextures()
 
 	mTextures.load(Textures::ZombieIdle, "resources/textures/tds_zombie/export/skeleton-idle_0.png");
 	mTextures.load(Textures::ZombieWalk, "resources/textures/tds_zombie/zombie_move.png");
+	mTextures.load(Textures::ZombieAttack, "resources/textures/tds_zombie/zombie_attack.png");
 
 	mTextures.load(Textures::HandgunBullet, "resources/textures/bullets/Bullet.png");
 	//mTextures.load(Textures::Background, "resources/textures/Tiles/Desert.png");
@@ -135,7 +145,7 @@ void GameWorld::buildScene()
 	//mPlayerSurvivor->attachChild(gun);
 	mSceneLayers[Land]->attachChild(std::move(player));
 
-	addEnemies();
+	//addEnemies();
 }
 
 void GameWorld::addEnemies()
@@ -149,16 +159,18 @@ void GameWorld::addEnemies()
 			addEnemy(Character::Zombie, -70.f, 1400.f);
 			addEnemy(Character::Zombie, -70.f, 1600.f);
 			addEnemy(Character::Zombie, 70.f, 1400.f);
+			addEnemy(Character::Zombie, 70.f, 1400.f);
 			addEnemy(Character::Zombie, 70.f, 1600.f);
+		/*	addEnemy(Character::Zombie, 70.f, 1600.f);
 			addEnemy(Character::Zombie, 0.f, -500.f);
 			addEnemy(Character::Zombie, 0.f, -1000.f);
 			addEnemy(Character::Zombie, +100.f, -1100.f);
-			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);*/
 			break;
 		case 2:
-			addEnemy(Character::Zombie, 0.f, 500.f);
-			addEnemy(Character::Zombie, 0.f, 1000.f);
-			addEnemy(Character::Zombie, +200.f, 1100.f);
+			//addEnemy(Character::Zombie, 0.f, 500.f);
+			//addEnemy(Character::Zombie, 0.f, 1000.f);
+			//addEnemy(Character::Zombie, +200.f, 1100.f);
 			addEnemy(Character::Zombie, -200.f, 1100.f);
 			addEnemy(Character::Zombie, -90.f, 1400.f);
 			addEnemy(Character::Zombie, -90.f, 1600.f);
@@ -174,10 +186,10 @@ void GameWorld::addEnemies()
 			addEnemy(Character::Zombie, -2000.f, 0.f);
 			break;
 		case 3:
-			addEnemy(Character::Zombie, 0.f, 500.f);
-			addEnemy(Character::Zombie, 0.f, 1000.f);
-			addEnemy(Character::Zombie, +200.f, 1100.f);
-			addEnemy(Character::Zombie, -200.f, 1100.f);
+			//addEnemy(Character::Zombie, 0.f, 500.f);
+			//addEnemy(Character::Zombie, 0.f, 1000.f);
+			//addEnemy(Character::Zombie, +200.f, 1100.f);
+			//addEnemy(Character::Zombie, -200.f, 1100.f);
 			addEnemy(Character::Zombie, -90.f, 1400.f);
 			addEnemy(Character::Zombie, -90.f, 1600.f);
 			addEnemy(Character::Zombie, 380.f, 1400.f);
@@ -196,13 +208,123 @@ void GameWorld::addEnemies()
 			addEnemy(Character::Zombie, 70.f, -1400.f);
 			break;
 		case 4:
-			addEnemy(Character::Zombie, 0.f, 500.f);
-			addEnemy(Character::Zombie, 0.f, 1000.f);
-			addEnemy(Character::Zombie, +200.f, 1100.f);
-			addEnemy(Character::Zombie, -200.f, 1100.f);
-			addEnemy(Character::Zombie, -90.f, 1400.f);
-			addEnemy(Character::Zombie, -90.f, 1600.f);
+			//addEnemy(Character::Zombie, 0.f, 500.f);
+			//addEnemy(Character::Zombie, 0.f, 1000.f);
+			//addEnemy(Character::Zombie, +200.f, 1100.f);
+			//addEnemy(Character::Zombie, -200.f, 1100.f);
+			//addEnemy(Character::Zombie, -90.f, 1400.f);
+			//addEnemy(Character::Zombie, -90.f, 1600.f);
 			addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, 0.f, -500.f);
+			addEnemy(Character::Zombie, 0.f, -1000.f);
+			addEnemy(Character::Zombie, +100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -70.f, -1400.f);
+			addEnemy(Character::Zombie, -70.f, -1600.f);
+			addEnemy(Character::Zombie, 70.f, -1400.f);
+			break;
+		case 5:
+			//addEnemy(Character::Zombie, 0.f, 1000.f);
+			//addEnemy(Character::Zombie, +200.f, 1100.f);
+			//addEnemy(Character::Zombie, -200.f, 1100.f);
+			//addEnemy(Character::Zombie, -90.f, 1400.f);
+			//addEnemy(Character::Zombie, -90.f, 1600.f);
+			addEnemy(Character::Zombie, 0.f, 500.f);
+			addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, 0.f, -500.f);
+			addEnemy(Character::Zombie, 0.f, -1000.f);
+			addEnemy(Character::Zombie, +100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -70.f, -1400.f);
+			addEnemy(Character::Zombie, -70.f, -1600.f);
+			addEnemy(Character::Zombie, 70.f, -1400.f);
+			break;
+		case 6:
+			//addEnemy(Character::Zombie, 0.f, 1000.f);
+			//addEnemy(Character::Zombie, +200.f, 1100.f);
+			//addEnemy(Character::Zombie, -200.f, 1100.f);
+			//addEnemy(Character::Zombie, -90.f, 1400.f);
+			//addEnemy(Character::Zombie, -90.f, 1600.f);
+			addEnemy(Character::Zombie, 0.f, 500.f);
+			addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, 0.f, -500.f);
+			addEnemy(Character::Zombie, 0.f, -1000.f);
+			addEnemy(Character::Zombie, +100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -70.f, -1400.f);
+			addEnemy(Character::Zombie, -70.f, -1600.f);
+			addEnemy(Character::Zombie, 70.f, -1400.f);
+			break;
+		case 7:
+			addEnemy(Character::Zombie, 0.f, 500.f);
+			//addEnemy(Character::Zombie, 0.f, 1000.f);
+			//addEnemy(Character::Zombie, +200.f, 1100.f);
+			//addEnemy(Character::Zombie, -200.f, 1100.f);
+			//addEnemy(Character::Zombie, -90.f, 1400.f);
+			//addEnemy(Character::Zombie, -90.f, 1600.f);
+			//addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, 0.f, -500.f);
+			addEnemy(Character::Zombie, 0.f, -1000.f);
+			addEnemy(Character::Zombie, +100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -70.f, -1400.f);
+			addEnemy(Character::Zombie, -70.f, -1600.f);
+			addEnemy(Character::Zombie, 70.f, -1400.f);
+			break;
+		case 8:
+			addEnemy(Character::Zombie, 0.f, 500.f);
+			//addEnemy(Character::Zombie, 0.f, 1000.f);
+			//addEnemy(Character::Zombie, +200.f, 1100.f);
+			//addEnemy(Character::Zombie, -200.f, 1100.f);
+			//addEnemy(Character::Zombie, -90.f, 1400.f);
+			//addEnemy(Character::Zombie, -90.f, 1600.f);
+			//addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, 0.f, -500.f);
+			addEnemy(Character::Zombie, 0.f, -1000.f);
+			addEnemy(Character::Zombie, +100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -70.f, -1400.f);
+			addEnemy(Character::Zombie, -70.f, -1600.f);
+			addEnemy(Character::Zombie, 70.f, -1400.f);
+			break;
+		case 9:
+			//addEnemy(Character::Zombie, 0.f, 500.f);
+			addEnemy(Character::Zombie, 0.f, 1000.f);
+			//addEnemy(Character::Zombie, +200.f, 1100.f);
+			//addEnemy(Character::Zombie, -200.f, 1100.f);
+			addEnemy(Character::Zombie, -90.f, 1400.f);
+			//addEnemy(Character::Zombie, -90.f, 1600.f);
+			//addEnemy(Character::Zombie, 380.f, 1400.f);
 			addEnemy(Character::Zombie, 390.f, 1600.f);
 			addEnemy(Character::Zombie, 2000.f, 0.f);
 			addEnemy(Character::Zombie, 2000.f, 0.f);
@@ -243,8 +365,37 @@ void GameWorld::spawnEnemies()
 
 		std::unique_ptr<Character> enemy(new Character(spawn.type, mTextures, mFonts));
 		enemy->setPosition(spawn.x, spawn.y);
-		enemy->setVelocity(20.f, 20.f);
 		enemy->setScale(sf::Vector2f(0.300f, 0.300f));
+
+		if (mHordeLevel == 2) {
+			enemy->setVelocity(40.f, 40.f);
+		}
+		else if (mHordeLevel == 3) {
+			enemy->setHitpoints(enemy->getHitpoints() + 250);
+			enemy->setVelocity(80.f, 80.f);
+		}
+		else if (mHordeLevel == 4) {
+			enemy->setHitpoints(enemy->getHitpoints() + 250);
+			enemy->setVelocity(80.f, 80.f);
+		}
+		else if (mHordeLevel == 5) {
+			enemy->setHitpoints(enemy->getHitpoints() + 350);
+			enemy->setVelocity(120.f, 120.f);
+		}
+		else if (mHordeLevel == 6) {
+			enemy->setHitpoints(enemy->getHitpoints() + 550);
+			enemy->setVelocity(80.f, 80.f);
+		}
+		else if (mHordeLevel == 7) {
+			enemy->setHitpoints(enemy->getHitpoints() + 750);
+			enemy->setVelocity(80.f, 80.f);
+		}
+
+		else if (mHordeLevel == 8) {
+			enemy->setHitpoints(enemy->getHitpoints() + 950);
+			enemy->setVelocity(80.f, 80.f);
+		}
+		
 		//enemy->setRotation(90.f); 
 
 		mActiveEnemies.push_back(enemy.get());
@@ -406,13 +557,15 @@ void GameWorld::handleCollisions()
 
 			float limit = 20;
 
-			float p = length(unitPlayer);
-			float z = length(unitZombie);
 			float d = length(diff);
 
-			if (d < limit)
-				zombie.setVelocity(0.0f, 0.0f);
+			if (d < limit) {
+				zombie.setVelocity(2.0f, 0.0f);
 				player.damage(1);
+				zombie.attack();
+			}
+			/*else
+				zombie.chase();*/
 
 		}
 		else if (matchesCategories(pair, Category::PlayerSurvivor, Category::Pickup))
@@ -436,8 +589,6 @@ void GameWorld::handleCollisions()
 		{
 			auto& zombie = static_cast<Character&>(*pair.first);
 			auto& zombie_2 = static_cast<Character&>(*pair.second);
-
-			const float borderDistance = 100.f;
 
 			sf::Vector2f zombiePos = zombie_2.getPosition();
 			sf::Vector2f zombiePos_2 = zombie.getPosition();
