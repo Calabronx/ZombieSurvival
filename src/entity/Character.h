@@ -73,7 +73,8 @@ private:
 		virtual void updateCurrent(sf::Time dt, CommandQueue&);
 
 		void updateMovementPattern(sf::Time dt);
-		void updatePlayerAnimation(sf::Time dt);
+		void updatePlayerAnimation(sf::Time dt, Animation& anim) const;
+		void checkGunAnimation(sf::Time dt);
 
 		void		 updateTexts();
 		void		 checkPickupDrop(CommandQueue& commands);
