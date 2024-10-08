@@ -56,8 +56,14 @@ std::vector<PickupData> initializePickupData()
 	data[Pickup::HealthRefill].texture = Textures::HealthRefill;
 	data[Pickup::HealthRefill].action = [](Character& c) {c.heal(25);  };
 
-	data[Pickup::FireSpread].texture = Textures::FireSpread;
-	data[Pickup::FireSpread].action = std::bind(&Character::increaseSpread, _1);
+	data[Pickup::HandgunAmmo].texture = Textures::HandgunAmmo;
+	data[Pickup::HandgunAmmo].action = [](Character& c) {c.increaseAmmo(1);  };
+
+	data[Pickup::ShotgunAmmo].texture = Textures::ShotgunAmmo;
+	data[Pickup::ShotgunAmmo].action = [](Character& c) {c.increaseAmmo(2);  };
+
+	data[Pickup::RifleAmmo].texture = Textures::RifleAmmo;
+	data[Pickup::RifleAmmo].action = [](Character& c) {c.increaseAmmo(3);  };
 
 	data[Pickup::FireRate].texture = Textures::FireRate;
 	data[Pickup::FireRate].action = std::bind(&Character::increaseFireRate, _1);

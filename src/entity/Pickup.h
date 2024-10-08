@@ -15,7 +15,9 @@ public:
 	enum Type
 	{
 		HealthRefill,
-		FireSpread,
+		HandgunAmmo,
+		ShotgunAmmo,
+		RifleAmmo,
 		FireRate,
 		ShotgunItem,
 		RifleItem,

@@ -497,6 +497,8 @@ void Character::createProjectile(SceneNode& node, Projectile::Type type, float x
 void Character::createPickup(SceneNode& node, const TextureHolder& textures) const
 {
 	auto type = static_cast<Pickup::Type>(randomInt(Pickup::TypeCount));
+	if (type == Pickup::RifleItem || type == Pickup::ShotgunItem)  // evitar el spwan de items de arma
+		return;
 
 	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
 	pickup->setPosition(getWorldPosition());
@@ -645,13 +647,16 @@ void Character::increaseFireRate()
 		++mFireRateLevel;
 }
 
-void Character::increaseSpread()
+
+void Character::increaseAmmo(int gun)
 {
-	if (mSpreadLevel < 3)
-		++mSpreadLevel;
+	if(gun == 1)
+		mGunInventoryList[HANDGUN]->totalAmmo += 30;
+	else if (gun == 2)
+		mGunInventoryList[SHOTGUN]->totalAmmo += 8;
+	else if (gun == 3)
+		mGunInventoryList[RIFLE]->totalAmmo += 60;
 }
-
-
 void Character::fire()
 {
 	if (mCurrentAmmo <= 0)

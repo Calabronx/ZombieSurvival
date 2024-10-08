@@ -78,7 +78,7 @@ class Character : public Entity
 		bool isFiring() const;
 
 		void	increaseFireRate();
-		void	increaseSpread();
+		void	increaseAmmo(int gun);
 		void	splashBlood();
 		void	fire();
 		void	chase();
