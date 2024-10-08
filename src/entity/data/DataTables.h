@@ -48,9 +48,17 @@ struct PickupData
 	sf::IntRect										textureRect;
 };
 
+struct WeaponData {
+	int id;
+	int currentAmmo;
+	int maxAmmo;
+	bool available;
+};
+
 std::vector<CharacterData> initializeCharacterData();
 std::vector<ProjectileData> initializeProjectileData();
 std::vector<PickupData> initializePickupData();
+std::vector<WeaponData> initializeWeaponData();
 #endif // !DATA_TABLES_H
 
 

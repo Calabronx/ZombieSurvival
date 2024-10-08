@@ -84,7 +84,6 @@ CommandQueue& GameWorld::getCommandQueue()
 
 void GameWorld::loadTextures()
 {
-	//mTextures.load(Textures::Survivor, "resources/textures/handgun/idle/survivor-idle_handgun_0.png");
 	mTextures.load(Textures::Survivor, "resources/textures/rifle/idle/survivor-idle_rifle_0.png");
 
 	mTextures.load(Textures::HandgunIdle, "resources/textures/tds_zombie/hunter_gun_idle.png");
@@ -105,12 +104,14 @@ void GameWorld::loadTextures()
 	mTextures.load(Textures::ZombieAttack, "resources/textures/tds_zombie/zombie_attack.png");
 
 	mTextures.load(Textures::HandgunBullet, "resources/textures/bullets/Bullet.png");
+	mTextures.load(Textures::ShotgunBullet, "resources/textures/bullets/ShotgunBullet.png");
 	//mTextures.load(Textures::Background, "resources/textures/Tiles/Desert.png");
 	mTextures.load(Textures::Background, "resources/textures/Tiles/Asfalt1.jpg");
 
 	mTextures.load(Textures::HealthRefill, "resources/textures/HealthRefill.png");
 	mTextures.load(Textures::FireRate, "resources/textures/FireRate.png");
 	mTextures.load(Textures::FireSpread, "resources/textures/FireSpread.png");
+	mTextures.load(Textures::ShotgunItem, "resources/textures/shotgun_item.png");
 
 	mTextures.load(Textures::Blood, "resources/textures/blood/blood splash.png");
 }
@@ -132,6 +133,12 @@ void GameWorld::buildScene()
 	std::unique_ptr<SpriteNode> backgroundSprite(new SpriteNode(texture, textureRect));
 	backgroundSprite->setPosition(mWorldBounds.left, mWorldBounds.top);
 	mSceneLayers[Background]->attachChild(std::move(backgroundSprite));
+
+	std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
+	shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y));
+
+	mSceneLayers[Land]->attachChild(std::move(shotgun));
+
 
 	// agregar jugador a la escena
 	std::unique_ptr<Character> player(new Character(Character::Survivor, mTextures, mFonts));
@@ -348,7 +355,7 @@ void GameWorld::addEnemies()
 		{
 			return lhs.y < rhs.y;
 		});
-	std::cout << "mHorde level : " << mHordeLevel << std::endl;
+	//std::cout << "mHorde level : " << mHordeLevel << std::endl;
 }
 
 void GameWorld::addEnemy(Character::Type type, float relX, float relY)
@@ -629,7 +636,6 @@ void GameWorld::destroyEntitiesOutsideView()
 				e.remove();
 				//std::cout << "entity destroyed" << std::endl;
 				mProjectiles++;
-				std::cout << mProjectiles << std::endl;
 			}
 		});
 

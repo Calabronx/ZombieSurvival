@@ -9,8 +9,8 @@ std::vector<CharacterData> initializeCharacterData()
 {
 	std::vector<CharacterData> data(Character::TypeCount);
 
-	data[Character::Survivor].hitpoints = 500;
-	//data[Character::Survivor].hitpoints = 999900;
+	//data[Character::Survivor].hitpoints = 500;
+	data[Character::Survivor].hitpoints = 999900;
 	data[Character::Survivor].speed = 30.f;
 	data[Character::Survivor].fireInterval = sf::seconds(1);
 	data[Character::Survivor].texture = Textures::Survivor;
@@ -44,7 +44,7 @@ std::vector<ProjectileData> initializeProjectileData()
 	data[Projectile::RifleBullet].texture = Textures::HandgunBullet;
 	data[Projectile::ShotgunBullet].damage = 40;
 	data[Projectile::ShotgunBullet].speed = 1500.f;
-	data[Projectile::ShotgunBullet].texture = Textures::HandgunBullet;
+	data[Projectile::ShotgunBullet].texture = Textures::ShotgunBullet;
 
 	return data;
 }
@@ -61,6 +61,31 @@ std::vector<PickupData> initializePickupData()
 
 	data[Pickup::FireRate].texture = Textures::FireRate;
 	data[Pickup::FireRate].action = std::bind(&Character::increaseFireRate, _1);
+
+	data[Pickup::ShotgunItem].texture = Textures::ShotgunItem;
+	data[Pickup::ShotgunItem].action = [](Character& c) {c.addGun(2); };
+
+	return data;
+}
+
+std::vector<WeaponData> initializeWeaponData()
+{
+	std::vector<WeaponData> data(3);
+
+	data[Character::HANDGUN].id = 1;
+	data[Character::HANDGUN].maxAmmo = 16;
+	data[Character::HANDGUN].currentAmmo = 16;
+	data[Character::HANDGUN].available = true;
+
+	data[Character::SHOTGUN].id = 2;
+	data[Character::SHOTGUN].maxAmmo = 8;
+	data[Character::SHOTGUN].currentAmmo = 8;
+	data[Character::SHOTGUN].available = false;
+
+	data[Character::RIFLE].id = 3;
+	data[Character::RIFLE].maxAmmo = 60;
+	data[Character::RIFLE].currentAmmo = 60;
+	data[Character::RIFLE].available = false;
 
 	return data;
 }

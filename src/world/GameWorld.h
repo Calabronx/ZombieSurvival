@@ -34,6 +34,7 @@ class GameWorld : sf::NonCopyable
 		void addEnemies();
 		void addEnemy(Character::Type type, float relX, float relY);
 		void spawnEnemies();
+		void spawnGun(int gunNum);
 		void enemiesChaseIfClose();
 		void destroyEntitiesOutsideView();
 

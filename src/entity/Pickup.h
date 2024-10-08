@@ -17,6 +17,7 @@ public:
 		HealthRefill,
 		FireSpread,
 		FireRate,
+		ShotgunItem,
 		TypeCount
 	};
 

@@ -8,6 +8,7 @@
 
 namespace {
 	const std::vector<CharacterData> Table = initializeCharacterData();
+	const std::vector<WeaponData> WeaponDataTable = initializeWeaponData();
 }
 
 Character::Character(Type type, const TextureHolder& textures, const FontHolder& fonts)
@@ -27,8 +28,9 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mGunPosition()
 	, mCurrentFrame(0)
 	, mElapsedFrameTime(sf::Time::Zero)
-	, mAmmo(16)
+	, mCurrentAmmo(16)
 	, mPlayerHealth()
+	, mGunInventoryList(3)
 {
 	sf::FloatRect bounds = mSprite.getLocalBounds();
 	sf::Vector2f center(bounds.left + bounds.width / 2.0f, bounds.top + bounds.height / 2.0f);
@@ -142,6 +144,32 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		mAction = IDLE;
 		mProjectileType = Projectile::Type::HandgunBullet;
 		mGunEquipped = 1;
+
+		//addGun(1);
+
+		std::unique_ptr<WeaponData> handgun(new WeaponData());
+		std::unique_ptr<WeaponData> shotgun(new WeaponData());
+		std::unique_ptr<WeaponData> rifle(new WeaponData());
+
+		handgun->id = WeaponDataTable[HANDGUN].id;
+		handgun->currentAmmo = WeaponDataTable[HANDGUN].currentAmmo;
+		handgun->maxAmmo = WeaponDataTable[HANDGUN].maxAmmo;
+		handgun->available = WeaponDataTable[HANDGUN].available;
+		mGunInventoryList[HANDGUN] = std::move(handgun);
+
+		shotgun->id = WeaponDataTable[SHOTGUN].id;
+		shotgun->currentAmmo = WeaponDataTable[SHOTGUN].currentAmmo;
+		shotgun->maxAmmo = WeaponDataTable[SHOTGUN].maxAmmo;
+		shotgun->available = WeaponDataTable[SHOTGUN].available;
+		shotgun->available = false;
+		mGunInventoryList[SHOTGUN] = std::move(shotgun);
+
+		rifle->id = WeaponDataTable[RIFLE].id;
+		rifle->currentAmmo = WeaponDataTable[RIFLE].currentAmmo;
+		rifle->maxAmmo = WeaponDataTable[RIFLE].maxAmmo;
+		rifle->available = false;
+		mGunInventoryList[RIFLE] = std::move(rifle);
+
 	}
 
 	if (getCategory() == Category::Zombie) {
@@ -170,6 +198,8 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	{
 		createPickup(node, textures);
 	};
+
+
 
 
 	updateTexts();
@@ -386,7 +416,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 		mFireCountdown += Table[mType].fireInterval / (mFireRateLevel + 1.f);
 		mIsFiring = false;
 		mAction = SHOOT;
-		mAmmo--;
+		mCurrentAmmo--;
 		//std::cout << "FIRING" << std::endl;
 
 		if (mGunEquipped == 3)
@@ -428,7 +458,15 @@ void Character::createBullets(SceneNode& node, const TextureHolder& textures) co
 	//createProjectile(node, type, 0.2f, 0.0f, textures); // 253 - 230
 	//createProjectile(node, type, -0.4f, 0.0f, textures); // 214 - 199
 
-	createProjectile(node, type, xOffset, yOffset, textures);
+	if (mGunEquipped == 2) {
+		createProjectile(node, type, -0.2f, 0.0f, textures);
+		createProjectile(node, type, 0.2f, 0.0f, textures);
+		createProjectile(node, type, -0.4f, 0.0f, textures);
+	}
+	else {
+		createProjectile(node, type, xOffset, yOffset, textures);
+
+	}
 }
 
 void Character::createProjectile(SceneNode& node, Projectile::Type type, float xOffset, float yOffset, const TextureHolder& textures) const
@@ -563,6 +601,16 @@ sf::Vector2f Character::getGunPosition() const
 	return getPosition() + gunOffset;
 }
 
+int Character::getCurrentAmmunition(int gun) const
+{
+	return 0;
+}
+
+int Character::decrementCurrentAmmo(int gunType)
+{
+	return 0;
+}
+
 void Character::guideTowardsPlayer(sf::Vector2f position)
 {
 	if (mType != Type::Zombie)
@@ -598,7 +646,7 @@ void Character::increaseSpread()
 
 void Character::fire()
 {
-	if (mAmmo <= 0)
+	if (mCurrentAmmo <= 0)
 		return;
 
 
@@ -630,11 +678,11 @@ void Character::reload()
 	else
 		return;
 
-	if (mAmmo >= maxAmmo)
+	if (mCurrentAmmo >= maxAmmo)
 		return;
 
 	mIsReloading = true;
-	mAmmo = maxAmmo;
+	mCurrentAmmo = maxAmmo;
 }
 
 void Character::changeGun(int gunNum)
@@ -642,25 +690,29 @@ void Character::changeGun(int gunNum)
 	if (gunNum == mGunEquipped)
 		return;
 
+	if (!isGunInInventory(gunNum)) {
+		return;
+	}
+
 	switch (gunNum)
 	{
 	case 1:
 		std::cout << "HANDUNG CHOOSE" << std::endl;
 		mProjectileType = Projectile::Type::HandgunBullet;
 		mFireRateLevel = 8;
-		mAmmo = 16;
+		mCurrentAmmo = 16;
 		break;
 	case 2:
 		std::cout << "SHOTGUN CHOOSE" << std::endl;
 		mProjectileType = Projectile::Type::ShotgunBullet;
 		mFireRateLevel = 1;
-		mAmmo = 6;
+		mCurrentAmmo = 6;
 		break;
 	case 3:
 		std::cout << "RIFLE CHOOSE" << std::endl;
 		mProjectileType = Projectile::Type::RifleBullet;
 		mFireRateLevel = 10;
-		mAmmo = 60;
+		mCurrentAmmo = 60;
 		break;
 		/*case 4:
 			std::cout << "KNIFE CHOOSE" << std::endl;
@@ -670,6 +722,24 @@ void Character::changeGun(int gunNum)
 	}
 
 	mGunEquipped = gunNum;
+}
+
+void Character::addGun(int gunNum)
+{
+	for (auto i = 0; i < mGunInventoryList.size(); i++) {
+		if (mGunInventoryList[i]->id == gunNum)
+			mGunInventoryList[i]->available = true;
+	}
+}
+
+bool Character::isGunInInventory(int gunNum)
+{
+	for (auto i = 0; i < mGunInventoryList.size(); i++) {
+		if (gunNum == mGunInventoryList[i]->id && !mGunInventoryList[i]->available) {
+			return false;
+		}
+	}
+	return true;
 }
 
 

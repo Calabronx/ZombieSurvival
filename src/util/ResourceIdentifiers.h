@@ -39,6 +39,8 @@ namespace Textures
 		HealthRefill,
 		FireSpread,
 		FireRate,
+		ShotgunItem,
+		RifleItem,
 		Particle,
 		Blood,
 

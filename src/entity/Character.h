@@ -31,6 +31,21 @@ class Character : public Entity
 			SHOOT
 		};
 
+		enum WeaponSlot {
+			HANDGUN,
+			SHOTGUN,
+			RIFLE
+		};
+
+		struct WeaponData {
+			int id;
+			int currentAmmo;
+			int maxAmmo;
+			bool available; // tuve que hacer esto para mostrar el arma en caso que agarre el item, por pedazo de pelotudo y borrar todo el sistema
+			// que hacia que agregue el objeto del arma a la lista del inventario, solucion rapida para no tener que hacer todo de nuevo
+			// puto
+			// puto el que lee
+		};
 
 	public:
 		explicit Character(Type type, const TextureHolder& textures, const FontHolder& fonts);
@@ -51,6 +66,8 @@ class Character : public Entity
 		Animation getGunAnimationObj(int gun, int action) const;
 		sf::FloatRect getBoundingRect() const;
 		sf::Vector2f getGunPosition() const;
+		int getCurrentAmmunition(int gun) const;
+		int decrementCurrentAmmo(int gunType);
 		virtual bool		isMarkedForRemoval() const;
 		virtual void		remove();
 
@@ -67,6 +84,8 @@ class Character : public Entity
 		void	attack();
 		void	reload();
 		void	changeGun(int gunNum);
+		void	addGun(int gunNum);
+		bool	isGunInInventory(int gunNum);
 
 private:
 		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -125,11 +144,14 @@ private:
 		int				mLeftTexture;
 		int				mWidthTexture;
 		int				mHeightTexture;
-		int				mAmmo;
+		int				mCurrentAmmo;
+		int				mMaxAmmo;
 		int				mAction;
 		int				mAmmoFired;
 		int				mHordeLevel;
 		int				mGunEquipped;
+		std::vector<std::unique_ptr<WeaponData>>	mGunInventoryList;
+		std::vector<std::unique_ptr<WeaponData>>	mGunAvailableList;
 
 		TextNode*		mHealthDisplay;
 		sf::Time		mFireCountdown;
