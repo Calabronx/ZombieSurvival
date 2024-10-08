@@ -416,7 +416,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 		mFireCountdown += Table[mType].fireInterval / (mFireRateLevel + 1.f);
 		mIsFiring = false;
 		mAction = SHOOT;
-		mCurrentAmmo--;
+		decrementCurrentAmmo(mGunEquipped);
 		//std::cout << "FIRING" << std::endl;
 
 		if (mGunEquipped == 3)
@@ -608,6 +608,12 @@ int Character::getCurrentAmmunition(int gun) const
 
 int Character::decrementCurrentAmmo(int gunType)
 {
+	for (auto i = 0; i < mGunInventoryList.size(); i++) {
+		if (mGunInventoryList[i]->id == gunType && mCurrentAmmo <= mGunInventoryList[i]->maxAmmo) {
+			mCurrentAmmo = --mGunInventoryList[i]->currentAmmo;
+		}
+	}
+	std::cout << "AMMO: " << mCurrentAmmo << std::endl;
 	return 0;
 }
 
@@ -668,21 +674,25 @@ void Character::attack()
 
 void Character::reload()
 {
-	int maxAmmo;
-	if (mGunEquipped == 1)
-		maxAmmo = 16;
-	else if (mGunEquipped == 2)
-		maxAmmo = 6;
-	else if (mGunEquipped == 3)
-		maxAmmo = 60;
-	else
-		return;
+	if (mGunEquipped == 1) {
+		mGunInventoryList[HANDGUN]->currentAmmo = WeaponDataTable[HANDGUN].maxAmmo;
+		mCurrentAmmo = mGunInventoryList[HANDGUN]->currentAmmo;
+	}
+	else if (mGunEquipped == 2) {
+		mGunInventoryList[SHOTGUN]->currentAmmo = WeaponDataTable[SHOTGUN].maxAmmo;
+		mCurrentAmmo = mGunInventoryList[SHOTGUN]->currentAmmo;
 
-	if (mCurrentAmmo >= maxAmmo)
+	}
+	else if (mGunEquipped == 3) {
+		mGunInventoryList[RIFLE]->currentAmmo = WeaponDataTable[RIFLE].maxAmmo;
+		mCurrentAmmo = mGunInventoryList[RIFLE]->currentAmmo;
+
+	}
+	else {
 		return;
+	}
 
 	mIsReloading = true;
-	mCurrentAmmo = maxAmmo;
 }
 
 void Character::changeGun(int gunNum)
@@ -700,19 +710,19 @@ void Character::changeGun(int gunNum)
 		std::cout << "HANDUNG CHOOSE" << std::endl;
 		mProjectileType = Projectile::Type::HandgunBullet;
 		mFireRateLevel = 8;
-		mCurrentAmmo = 16;
+		mCurrentAmmo = mGunInventoryList[HANDGUN]->currentAmmo;
 		break;
 	case 2:
 		std::cout << "SHOTGUN CHOOSE" << std::endl;
 		mProjectileType = Projectile::Type::ShotgunBullet;
 		mFireRateLevel = 1;
-		mCurrentAmmo = 6;
+		mCurrentAmmo = mGunInventoryList[SHOTGUN]->currentAmmo;
 		break;
 	case 3:
 		std::cout << "RIFLE CHOOSE" << std::endl;
 		mProjectileType = Projectile::Type::RifleBullet;
 		mFireRateLevel = 10;
-		mCurrentAmmo = 60;
+		mCurrentAmmo = mGunInventoryList[RIFLE]->currentAmmo;
 		break;
 		/*case 4:
 			std::cout << "KNIFE CHOOSE" << std::endl;
