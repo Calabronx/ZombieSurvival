@@ -52,6 +52,7 @@ struct WeaponData {
 	int id;
 	int currentAmmo;
 	int maxAmmo;
+	int totalAmmo;
 	bool available;
 };
 

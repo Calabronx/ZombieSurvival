@@ -65,6 +65,9 @@ std::vector<PickupData> initializePickupData()
 	data[Pickup::ShotgunItem].texture = Textures::ShotgunItem;
 	data[Pickup::ShotgunItem].action = [](Character& c) {c.addGun(2); };
 
+	data[Pickup::RifleItem].texture = Textures::RifleItem;
+	data[Pickup::RifleItem].action = [](Character& c) {c.addGun(3); };
+
 	return data;
 }
 
@@ -75,16 +78,19 @@ std::vector<WeaponData> initializeWeaponData()
 	data[Character::HANDGUN].id = 1;
 	data[Character::HANDGUN].maxAmmo = 16;
 	data[Character::HANDGUN].currentAmmo = 16;
+	data[Character::HANDGUN].totalAmmo = 80;
 	data[Character::HANDGUN].available = true;
 
 	data[Character::SHOTGUN].id = 2;
 	data[Character::SHOTGUN].maxAmmo = 8;
 	data[Character::SHOTGUN].currentAmmo = 8;
+	data[Character::SHOTGUN].totalAmmo = 48;
 	data[Character::SHOTGUN].available = false;
 
 	data[Character::RIFLE].id = 3;
 	data[Character::RIFLE].maxAmmo = 60;
 	data[Character::RIFLE].currentAmmo = 60;
+	data[Character::RIFLE].totalAmmo = 240;
 	data[Character::RIFLE].available = false;
 
 	return data;

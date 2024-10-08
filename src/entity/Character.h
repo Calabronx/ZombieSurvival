@@ -41,6 +41,7 @@ class Character : public Entity
 			int id;
 			int currentAmmo;
 			int maxAmmo;
+			int totalAmmo;
 			bool available; // tuve que hacer esto para mostrar el arma en caso que agarre el item, por pedazo de pelotudo y borrar todo el sistema
 			// que hacia que agregue el objeto del arma a la lista del inventario, solucion rapida para no tener que hacer todo de nuevo
 			// puto

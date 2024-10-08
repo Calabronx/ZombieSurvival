@@ -18,6 +18,7 @@ public:
 		FireSpread,
 		FireRate,
 		ShotgunItem,
+		RifleItem,
 		TypeCount
 	};
 

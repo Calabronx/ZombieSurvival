@@ -154,19 +154,21 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		handgun->id = WeaponDataTable[HANDGUN].id;
 		handgun->currentAmmo = WeaponDataTable[HANDGUN].currentAmmo;
 		handgun->maxAmmo = WeaponDataTable[HANDGUN].maxAmmo;
+		handgun->totalAmmo = WeaponDataTable[HANDGUN].totalAmmo;
 		handgun->available = WeaponDataTable[HANDGUN].available;
 		mGunInventoryList[HANDGUN] = std::move(handgun);
 
 		shotgun->id = WeaponDataTable[SHOTGUN].id;
 		shotgun->currentAmmo = WeaponDataTable[SHOTGUN].currentAmmo;
 		shotgun->maxAmmo = WeaponDataTable[SHOTGUN].maxAmmo;
-		shotgun->available = WeaponDataTable[SHOTGUN].available;
+		shotgun->totalAmmo = WeaponDataTable[SHOTGUN].totalAmmo;
 		shotgun->available = false;
 		mGunInventoryList[SHOTGUN] = std::move(shotgun);
 
 		rifle->id = WeaponDataTable[RIFLE].id;
 		rifle->currentAmmo = WeaponDataTable[RIFLE].currentAmmo;
 		rifle->maxAmmo = WeaponDataTable[RIFLE].maxAmmo;
+		rifle->totalAmmo = WeaponDataTable[RIFLE].totalAmmo;
 		rifle->available = false;
 		mGunInventoryList[RIFLE] = std::move(rifle);
 
@@ -675,16 +677,28 @@ void Character::attack()
 void Character::reload()
 {
 	if (mGunEquipped == 1) {
+		if (mGunInventoryList[HANDGUN]->totalAmmo <= 0) 
+			return;
+		
 		mGunInventoryList[HANDGUN]->currentAmmo = WeaponDataTable[HANDGUN].maxAmmo;
+		mGunInventoryList[HANDGUN]->totalAmmo -= (mCurrentAmmo - mGunInventoryList[HANDGUN]->currentAmmo) * -1;
 		mCurrentAmmo = mGunInventoryList[HANDGUN]->currentAmmo;
 	}
 	else if (mGunEquipped == 2) {
+		if (mGunInventoryList[SHOTGUN]->totalAmmo <= 0)
+			return;
+
 		mGunInventoryList[SHOTGUN]->currentAmmo = WeaponDataTable[SHOTGUN].maxAmmo;
+		mGunInventoryList[SHOTGUN]->totalAmmo -= (mCurrentAmmo - mGunInventoryList[SHOTGUN]->currentAmmo) * -1;
 		mCurrentAmmo = mGunInventoryList[SHOTGUN]->currentAmmo;
 
 	}
 	else if (mGunEquipped == 3) {
+		if (mGunInventoryList[RIFLE]->totalAmmo <= 0)
+			return;
+
 		mGunInventoryList[RIFLE]->currentAmmo = WeaponDataTable[RIFLE].maxAmmo;
+		mGunInventoryList[RIFLE]->totalAmmo -= (mCurrentAmmo - mGunInventoryList[RIFLE]->currentAmmo) * -1;
 		mCurrentAmmo = mGunInventoryList[RIFLE]->currentAmmo;
 
 	}
@@ -700,9 +714,9 @@ void Character::changeGun(int gunNum)
 	if (gunNum == mGunEquipped)
 		return;
 
-	if (!isGunInInventory(gunNum)) {
+	if (!isGunInInventory(gunNum)) 
 		return;
-	}
+	
 
 	switch (gunNum)
 	{

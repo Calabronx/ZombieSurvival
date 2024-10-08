@@ -112,6 +112,8 @@ void GameWorld::loadTextures()
 	mTextures.load(Textures::FireRate, "resources/textures/FireRate.png");
 	mTextures.load(Textures::FireSpread, "resources/textures/FireSpread.png");
 	mTextures.load(Textures::ShotgunItem, "resources/textures/shotgun_item.png");
+	//mTextures.load(Textures::RifleItem, "resources/textures/rifle_item.png");
+	mTextures.load(Textures::RifleItem, "resources/textures/rifle_item_1.png");
 
 	mTextures.load(Textures::Blood, "resources/textures/blood/blood splash.png");
 }
@@ -136,8 +138,12 @@ void GameWorld::buildScene()
 
 	std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
 	shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y));
+	
+	std::unique_ptr<Pickup> rifle(new Pickup(Pickup::RifleItem, mTextures));
+	rifle->setPosition(sf::Vector2f(mSpawnPosition.x + 250, mSpawnPosition.y + 200));
 
 	mSceneLayers[Land]->attachChild(std::move(shotgun));
+	mSceneLayers[Land]->attachChild(std::move(rifle));
 
 
 	// agregar jugador a la escena
