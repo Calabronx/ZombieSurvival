@@ -201,11 +201,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		createPickup(node, textures);
 	};
 
-
-
-
 	updateTexts();
-
 }
 
 void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
@@ -246,8 +242,8 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 				mAction = MOVE;
 			}
 
-			const float approachRate = 200.f;
-			sf::Vector2f newVelocity = unitVector(approachRate * dt.asSeconds() * mZombieTargetDirection + getVelocity());
+			const float approachRate = 200.f; 
+			sf::Vector2f newVelocity = unitVector(approachRate * dt.asSeconds() * mZombieTargetDirection + getVelocity()); // me parece que esta calculando con parametro 0 de vector
 			newVelocity *= getMaxSpeed();
 			float angle = std::atan2(newVelocity.y, newVelocity.x);
 
@@ -500,6 +496,10 @@ void Character::createPickup(SceneNode& node, const TextureHolder& textures) con
 	if (type == Pickup::RifleItem || type == Pickup::ShotgunItem)  // evitar el spwan de items de arma
 		return;
 
+	/*if (type == Pickup::RifleAmmo && mGunInventoryList[RIFLE]->totalAmmo >= 60 || type == Pickup::ShotgunAmmo 
+		&& mGunInventoryList[SHOTGUN]->totalAmmo >= 12)
+		return;*/
+
 	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
 	pickup->setPosition(getWorldPosition());
 	pickup->setVelocity(0.f, 0.f);
@@ -628,7 +628,7 @@ void Character::guideTowardsPlayer(sf::Vector2f position)
 		return;
 	}
 
-	mZombieTargetDirection = unitVector(position - getWorldPosition());
+	mZombieTargetDirection = unitVector(position - getWorldPosition()); // revisar valor parametro
 }
 
 bool Character::isChasing() const

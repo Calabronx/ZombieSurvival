@@ -138,11 +138,12 @@ void GameWorld::buildScene()
 	backgroundSprite->setPosition(mWorldBounds.left, mWorldBounds.top);
 	mSceneLayers[Background]->attachChild(std::move(backgroundSprite));
 
-	std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
-	shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y));
+	/*std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
+	shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y - 450));
+	shotgun->setVelocity(0.f, 20.f);
 	
 	std::unique_ptr<Pickup> rifle(new Pickup(Pickup::RifleItem, mTextures));
-	rifle->setPosition(sf::Vector2f(mSpawnPosition.x + 250, mSpawnPosition.y + 200));
+	rifle->setPosition(sf::Vector2f(mSpawnPosition.x + 250, mSpawnPosition.y + 200));*/
 
 	std::unique_ptr<Pickup> ammo(new Pickup(Pickup::RifleAmmo, mTextures));
 	ammo->setPosition(sf::Vector2f(mSpawnPosition.x + 250, mSpawnPosition.y + 290));
@@ -150,8 +151,8 @@ void GameWorld::buildScene()
 	std::unique_ptr<Pickup> s(new Pickup(Pickup::ShotgunAmmo, mTextures));
 	s->setPosition(sf::Vector2f(mSpawnPosition.x + 250, mSpawnPosition.y + 250));
 
-	mSceneLayers[Land]->attachChild(std::move(shotgun));
-	mSceneLayers[Land]->attachChild(std::move(rifle));
+	//mSceneLayers[Land]->attachChild(std::move(shotgun));
+	//mSceneLayers[Land]->attachChild(std::move(rifle));
 	mSceneLayers[Land]->attachChild(std::move(ammo));
 	mSceneLayers[Land]->attachChild(std::move(s));
 
@@ -298,12 +299,7 @@ void GameWorld::addEnemies()
 			break;
 		case 7:
 			addEnemy(Character::Zombie, 0.f, 500.f);
-			//addEnemy(Character::Zombie, 0.f, 1000.f);
-			//addEnemy(Character::Zombie, +200.f, 1100.f);
-			//addEnemy(Character::Zombie, -200.f, 1100.f);
-			//addEnemy(Character::Zombie, -90.f, 1400.f);
-			//addEnemy(Character::Zombie, -90.f, 1600.f);
-			//addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 380.f, 1400.f);
 			addEnemy(Character::Zombie, 390.f, 1600.f);
 			addEnemy(Character::Zombie, 2000.f, 0.f);
 			addEnemy(Character::Zombie, 2000.f, 0.f);
@@ -320,12 +316,7 @@ void GameWorld::addEnemies()
 			break;
 		case 8:
 			addEnemy(Character::Zombie, 0.f, 500.f);
-			//addEnemy(Character::Zombie, 0.f, 1000.f);
-			//addEnemy(Character::Zombie, +200.f, 1100.f);
-			//addEnemy(Character::Zombie, -200.f, 1100.f);
-			//addEnemy(Character::Zombie, -90.f, 1400.f);
-			//addEnemy(Character::Zombie, -90.f, 1600.f);
-			//addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 380.f, 1400.f);
 			addEnemy(Character::Zombie, 390.f, 1600.f);
 			addEnemy(Character::Zombie, 2000.f, 0.f);
 			addEnemy(Character::Zombie, 2000.f, 0.f);
@@ -389,34 +380,41 @@ void GameWorld::spawnEnemies()
 		std::unique_ptr<Character> enemy(new Character(spawn.type, mTextures, mFonts));
 		enemy->setPosition(spawn.x, spawn.y);
 		enemy->setScale(sf::Vector2f(0.300f, 0.300f));
+		enemy->setVelocity(40.f, 40.f);
 
 		if (mHordeLevel == 2) {
-			enemy->setVelocity(40.f, 40.f);
+			enemy->setHitpoints(enemy->getHitpoints() + 50);
 		}
 		else if (mHordeLevel == 3) {
 			enemy->setHitpoints(enemy->getHitpoints() + 250);
-			enemy->setVelocity(80.f, 80.f);
+			std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
+			shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y - 450));
+			shotgun->setVelocity(0.f, 100.f);
+			mSceneLayers[Land]->attachChild(std::move(shotgun));
 		}
 		else if (mHordeLevel == 4) {
-			enemy->setHitpoints(enemy->getHitpoints() + 250);
-			enemy->setVelocity(80.f, 80.f);
+			enemy->setHitpoints(enemy->getHitpoints() + 290);
 		}
 		else if (mHordeLevel == 5) {
 			enemy->setHitpoints(enemy->getHitpoints() + 350);
-			enemy->setVelocity(120.f, 120.f);
+			std::unique_ptr<Pickup> rifle(new Pickup(Pickup::RifleItem, mTextures));
+			rifle->setVelocity(0.f, 100.f);
+			rifle->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y - 450));
+			mSceneLayers[Land]->attachChild(std::move(rifle));
 		}
 		else if (mHordeLevel == 6) {
 			enemy->setHitpoints(enemy->getHitpoints() + 550);
-			enemy->setVelocity(80.f, 80.f);
 		}
 		else if (mHordeLevel == 7) {
 			enemy->setHitpoints(enemy->getHitpoints() + 750);
-			enemy->setVelocity(80.f, 80.f);
 		}
 
 		else if (mHordeLevel == 8) {
 			enemy->setHitpoints(enemy->getHitpoints() + 950);
-			enemy->setVelocity(80.f, 80.f);
+		}
+
+		else if (mHordeLevel == 9) {
+			enemy->setHitpoints(enemy->getHitpoints() + 1250);
 		}
 		
 		//enemy->setRotation(90.f); 
@@ -571,8 +569,8 @@ void GameWorld::handleCollisions()
 			sf::Vector2f playerPos = player.getPosition();
 			sf::Vector2f zombiePos = zombie.getPosition();
 
-			sf::Vector2f unitPlayer = unitVector(playerPos);
-			sf::Vector2f unitZombie = unitVector(zombiePos);
+			//sf::Vector2f unitPlayer = unitVector(playerPos);
+			//sf::Vector2f unitZombie = unitVector(zombiePos);
 
 			sf::Vector2f diff;
 			diff.x = playerPos.x - zombiePos.x;
