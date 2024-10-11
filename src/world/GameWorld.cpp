@@ -23,6 +23,7 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 	, mEnemySpawnPoints()
 	, mActiveEnemies()
 	, mPlayerHealth()
+	, mPlayerAmmo()
 {
 	loadTextures();
 	buildScene();
@@ -31,8 +32,12 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 
 	mWorldView.setCenter(mSpawnPosition);
 	mPlayerHealth.setFont(mFonts.get(Fonts::Main));
-	mPlayerHealth.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
+	mPlayerHealth.setPosition(sf::Vector2f(104.f, 7916.f));
 	mPlayerHealth.setCharacterSize(20);
+	
+	mPlayerAmmo.setFont(mFonts.get(Fonts::Main));
+	mPlayerAmmo.setPosition(sf::Vector2f(104.f, 7956.f));
+	mPlayerAmmo.setCharacterSize(20);
 
 	//std::cout << "SPAWN  X : " << mSpawnPosition.x << "  Y: " << mSpawnPosition.y << std::endl;
 }
@@ -42,7 +47,8 @@ void GameWorld::update(sf::Time dt)
 	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
 	mPlayerSurvivor->setVelocity(0.f, 0.f);
 
-	mPlayerHealth.setString(toString(mPlayerSurvivor->getHitpoints()) + " HP");
+	mPlayerHealth.setString("LIFE: " + toString(mPlayerSurvivor->getHitpoints()));
+	mPlayerAmmo.setString("AMMO: " + toString(mPlayerSurvivor->getCurrentAmmunition()));
 
 	if (mActiveEnemies.size() == 0)
 		addEnemies();
@@ -75,6 +81,7 @@ void GameWorld::draw()
 	mWindow.setView(mWorldView);
 	mWindow.draw(mSceneGraph);
 	mWindow.draw(mPlayerHealth);
+	mWindow.draw(mPlayerAmmo);
 }
 
 CommandQueue& GameWorld::getCommandQueue()
@@ -137,25 +144,6 @@ void GameWorld::buildScene()
 	std::unique_ptr<SpriteNode> backgroundSprite(new SpriteNode(texture, textureRect));
 	backgroundSprite->setPosition(mWorldBounds.left, mWorldBounds.top);
 	mSceneLayers[Background]->attachChild(std::move(backgroundSprite));
-
-	/*std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
-	shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y - 450));
-	shotgun->setVelocity(0.f, 20.f);
-	
-	std::unique_ptr<Pickup> rifle(new Pickup(Pickup::RifleItem, mTextures));
-	rifle->setPosition(sf::Vector2f(mSpawnPosition.x + 250, mSpawnPosition.y + 200));*/
-
-	std::unique_ptr<Pickup> ammo(new Pickup(Pickup::RifleAmmo, mTextures));
-	ammo->setPosition(sf::Vector2f(mSpawnPosition.x + 250, mSpawnPosition.y + 290));
-	
-	std::unique_ptr<Pickup> s(new Pickup(Pickup::ShotgunAmmo, mTextures));
-	s->setPosition(sf::Vector2f(mSpawnPosition.x + 250, mSpawnPosition.y + 250));
-
-	//mSceneLayers[Land]->attachChild(std::move(shotgun));
-	//mSceneLayers[Land]->attachChild(std::move(rifle));
-	mSceneLayers[Land]->attachChild(std::move(ammo));
-	mSceneLayers[Land]->attachChild(std::move(s));
-
 
 	// agregar jugador a la escena
 	std::unique_ptr<Character> player(new Character(Character::Survivor, mTextures, mFonts));
@@ -383,14 +371,19 @@ void GameWorld::spawnEnemies()
 		enemy->setVelocity(40.f, 40.f);
 
 		if (mHordeLevel == 2) {
-			enemy->setHitpoints(enemy->getHitpoints() + 50);
-		}
-		else if (mHordeLevel == 3) {
 			enemy->setHitpoints(enemy->getHitpoints() + 250);
 			std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
 			shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y - 450));
 			shotgun->setVelocity(0.f, 100.f);
 			mSceneLayers[Land]->attachChild(std::move(shotgun));
+			std::unique_ptr<Pickup> rifle(new Pickup(Pickup::RifleItem, mTextures));
+			rifle->setVelocity(0.f, 100.f);
+			rifle->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y - 470));
+			mSceneLayers[Land]->attachChild(std::move(rifle));
+			enemy->setHitpoints(enemy->getHitpoints() + 50);
+
+		}
+		else if (mHordeLevel == 3) {
 		}
 		else if (mHordeLevel == 4) {
 			enemy->setHitpoints(enemy->getHitpoints() + 290);
@@ -569,14 +562,11 @@ void GameWorld::handleCollisions()
 			sf::Vector2f playerPos = player.getPosition();
 			sf::Vector2f zombiePos = zombie.getPosition();
 
-			//sf::Vector2f unitPlayer = unitVector(playerPos);
-			//sf::Vector2f unitZombie = unitVector(zombiePos);
-
 			sf::Vector2f diff;
 			diff.x = playerPos.x - zombiePos.x;
 			diff.y = playerPos.y - zombiePos.y;
 
-			float limit = 20;
+			float limit = 60;
 
 			float d = length(diff);
 
@@ -585,8 +575,8 @@ void GameWorld::handleCollisions()
 				player.damage(1);
 				zombie.attack();
 			}
-			/*else
-				zombie.chase();*/
+			else
+				zombie.chase();
 
 		}
 		else if (matchesCategories(pair, Category::PlayerSurvivor, Category::Pickup))

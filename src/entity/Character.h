@@ -48,6 +48,7 @@ class Character : public Entity
 			// puto el que lee
 		};
 
+
 	public:
 		explicit Character(Type type, const TextureHolder& textures, const FontHolder& fonts);
         virtual unsigned int getCategory() const;
@@ -64,10 +65,10 @@ class Character : public Entity
 
 		float getMaxSpeed() const;
 
-		Animation getGunAnimationObj(int gun, int action) const;
+		Animation getGunAnimation(int gun, int action) const;
 		sf::FloatRect getBoundingRect() const;
 		sf::Vector2f getGunPosition() const;
-		int getCurrentAmmunition(int gun) const;
+		int getCurrentAmmunition() const;
 		int decrementCurrentAmmo(int gunType);
 		virtual bool		isMarkedForRemoval() const;
 		virtual void		remove();
@@ -152,15 +153,13 @@ private:
 		int				mHordeLevel;
 		int				mGunEquipped;
 		std::vector<std::unique_ptr<WeaponData>>	mGunInventoryList;
-		std::vector<std::unique_ptr<WeaponData>>	mGunAvailableList;
-
 		TextNode*		mHealthDisplay;
+		TextNode*		mAmmoDisplay;
 		sf::Time		mFireCountdown;
 		sf::Time		mElapsedFrameTime;
 		sf::Vector2f	mZombieTargetDirection;
 		sf::Vector2f	mMousePosition;
 		sf::Vector2f	mGunPosition;
-		sf::Text		mPlayerHealth;
 		std::size_t		mCurrentFrame;
 
 		bool			mIsMoving;

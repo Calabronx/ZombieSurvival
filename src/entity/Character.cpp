@@ -17,6 +17,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mSprite(textures.get(Table[type].texture), Table[type].textureRect)
 	, mBloodAnim(textures.get(Textures::Blood))
 	, mHealthDisplay(nullptr)
+	, mAmmoDisplay(nullptr)
 	, mSpawnedPickup(false)
 	, mShowBlood(true)
 	, mIsMarkedForRemoval(false)
@@ -29,7 +30,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mCurrentFrame(0)
 	, mElapsedFrameTime(sf::Time::Zero)
 	, mCurrentAmmo(16)
-	, mPlayerHealth()
+	//, mPlayerHealth()
 	, mGunInventoryList(3)
 {
 	sf::FloatRect bounds = mSprite.getLocalBounds();
@@ -45,7 +46,9 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	mBloodAnim.setPosition(mBloodAnim.getPosition() + sf::Vector2f(+150.f, +300.0f));
 
 	std::unique_ptr<TextNode> healthDisplay(new TextNode(fonts, ""));
+	std::unique_ptr<TextNode> ammoDisplay(new TextNode(fonts, ""));
 	mHealthDisplay = healthDisplay.get();
+	mAmmoDisplay = ammoDisplay.get();
 
 	if (getCategory() == Category::PlayerSurvivor) {
 
@@ -171,7 +174,8 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		rifle->totalAmmo = WeaponDataTable[RIFLE].totalAmmo;
 		rifle->available = false;
 		mGunInventoryList[RIFLE] = std::move(rifle);
-
+		attachChild(std::move(healthDisplay));
+		attachChild(std::move(ammoDisplay));
 	}
 
 	if (getCategory() == Category::Zombie) {
@@ -191,8 +195,6 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 
 		mIsZombieAttacking = false;
 		mIsZombieChasing = false;
-
-		attachChild(std::move(healthDisplay));
 	}
 
 	mDropPickupCommand.category = Category::SceneLandLayer;
@@ -201,20 +203,24 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		createPickup(node, textures);
 	};
 
+	
 	updateTexts();
 }
 
 void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	if (isDestroyed() && mShowBlood)
+	if (isDestroyed() && mShowBlood) {
 		target.draw(mBloodAnim, states);
-	else if (getCategory() == Category::PlayerSurvivor)
-		target.draw(getGunAnimationObj(mGunEquipped, mAction), states);
-	else if (getCategory() == Category::Zombie)
+	}
+	else if (getCategory() == Category::PlayerSurvivor) {
+		target.draw(getGunAnimation(mGunEquipped, mAction), states);
+	}
+	else if (getCategory() == Category::Zombie) {
 		if (mAction == MOVE)
 			target.draw(mZombieMoveAnim, states);
 		else if (mAction == ATTACK)
 			target.draw(mZombieAttackAnim, states);
+	}
 }
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
@@ -284,8 +290,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 			mAction = IDLE;
 		}
 
-		if (mAction == IDLE)
-			checkGunAnimation(dt);
+		checkGunAnimation(dt);
 	}
 
 	// check if bullets are fired
@@ -385,16 +390,15 @@ void Character::checkGunAnimation(sf::Time dt)
 void Character::updateTexts()
 {
 	if (getCategory() == Category::PlayerSurvivor) {
-		mPlayerHealth.setString(toString(getHitpoints()) + " HP");
-		mPlayerHealth.setPosition(360.f, 4760.f);
-		mPlayerHealth.setCharacterSize(10u);
-	}
-	else
-	{
-		mHealthDisplay->setString(toString(getHitpoints()) + " HP");
+		/*mHealthDisplay->setString(toString(getHitpoints()) + " HP");
 		mHealthDisplay->setPosition(0.f, 95.f);
 		mHealthDisplay->setRotation(-getRotation());
+
+		mAmmoDisplay->setString("AMMO: " + toString(mCurrentAmmo));
+		mAmmoDisplay->setPosition(0.f, 150.f);
+		mAmmoDisplay->setRotation(-getRotation());*/
 	}
+	
 
 }
 
@@ -552,7 +556,7 @@ float Character::getMaxSpeed() const
 	return Table[mType].speed;
 }
 
-Animation Character::getGunAnimationObj(int gun, int action) const
+Animation Character::getGunAnimation(int gun, int action) const
 {
 	if (action == IDLE) {
 		if (gun == 1)
@@ -605,9 +609,9 @@ sf::Vector2f Character::getGunPosition() const
 	return getPosition() + gunOffset;
 }
 
-int Character::getCurrentAmmunition(int gun) const
+int Character::getCurrentAmmunition() const
 {
-	return 0;
+	return mCurrentAmmo;
 }
 
 int Character::decrementCurrentAmmo(int gunType)
@@ -726,19 +730,16 @@ void Character::changeGun(int gunNum)
 	switch (gunNum)
 	{
 	case 1:
-		std::cout << "HANDUNG CHOOSE" << std::endl;
 		mProjectileType = Projectile::Type::HandgunBullet;
 		mFireRateLevel = 8;
 		mCurrentAmmo = mGunInventoryList[HANDGUN]->currentAmmo;
 		break;
 	case 2:
-		std::cout << "SHOTGUN CHOOSE" << std::endl;
 		mProjectileType = Projectile::Type::ShotgunBullet;
 		mFireRateLevel = 1;
 		mCurrentAmmo = mGunInventoryList[SHOTGUN]->currentAmmo;
 		break;
 	case 3:
-		std::cout << "RIFLE CHOOSE" << std::endl;
 		mProjectileType = Projectile::Type::RifleBullet;
 		mFireRateLevel = 10;
 		mCurrentAmmo = mGunInventoryList[RIFLE]->currentAmmo;

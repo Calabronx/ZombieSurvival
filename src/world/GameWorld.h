@@ -74,6 +74,7 @@ class GameWorld : sf::NonCopyable
 		sf::RenderWindow& mWindow;
 		sf::View			mWorldView;
 		sf::Text			mPlayerHealth;
+		sf::Text			mPlayerAmmo;
 		TextureHolder		mTextures;
 		FontHolder&			mFonts;
 
