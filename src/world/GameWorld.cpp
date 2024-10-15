@@ -6,6 +6,8 @@
 #include <memory>
 #include "../util/Utility.h"
 #include "../entity/Pickup.h"
+#include "../graphics/ParticleNode.h"
+#include "../graphics/EmitterNode.h"
 
 GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 	: mWindow(window)
@@ -48,7 +50,7 @@ void GameWorld::update(sf::Time dt)
 	mPlayerSurvivor->setVelocity(0.f, 0.f);
 
 	mPlayerHealth.setString("LIFE: " + toString(mPlayerSurvivor->getHitpoints()));
-	mPlayerAmmo.setString("AMMO: " + toString(mPlayerSurvivor->getCurrentAmmunition()));
+	mPlayerAmmo.setString("AMMO: " + toString(mPlayerSurvivor->getCurrentAmmunition()) + "/" + toString(mPlayerSurvivor->getCurrentTotalAmmunition()));
 
 	if (mActiveEnemies.size() == 0)
 		addEnemies();
@@ -125,6 +127,8 @@ void GameWorld::loadTextures()
 	mTextures.load(Textures::RifleItem, "resources/textures/rifle_item_1.png");
 
 	mTextures.load(Textures::Blood, "resources/textures/blood/blood splash.png");
+
+	mTextures.load(Textures::Particle, "resources/textures/particle/particle.png");
 }
 
 void GameWorld::buildScene()
@@ -144,6 +148,15 @@ void GameWorld::buildScene()
 	std::unique_ptr<SpriteNode> backgroundSprite(new SpriteNode(texture, textureRect));
 	backgroundSprite->setPosition(mWorldBounds.left, mWorldBounds.top);
 	mSceneLayers[Background]->attachChild(std::move(backgroundSprite));
+
+	std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Smoke, mTextures));
+	mSceneLayers[Land]->attachChild(std::move(smokeNode));
+	
+	std::unique_ptr<ParticleNode> fireNode(new ParticleNode(Particle::Fire, mTextures));
+	mSceneLayers[Land]->attachChild(std::move(fireNode));
+	
+	std::unique_ptr<ParticleNode> bloodNode(new ParticleNode(Particle::Blood, mTextures));
+	mSceneLayers[Land]->attachChild(std::move(bloodNode));
 
 	// agregar jugador a la escena
 	std::unique_ptr<Character> player(new Character(Character::Survivor, mTextures, mFonts));
@@ -593,8 +606,10 @@ void GameWorld::handleCollisions()
 			auto& projectile = static_cast<Projectile&>(*pair.second);
 
 			zombie.damage(projectile.getDamage());
-			//zombie.splashBlood();
+			sf::Vector2f impactPos(projectile.getWorldPosition());
+			zombie.splashBlood(impactPos - zombie.getWorldPosition());
 			projectile.destroy();
+			
 		}
 		else if (matchesCategories(pair, Category::Zombie, Category::Zombie))
 		{

@@ -56,10 +56,17 @@ struct WeaponData {
 	bool available;
 };
 
+struct ParticleData
+{
+	sf::Color	color;
+	sf::Time	lifetime;
+};
+
 std::vector<CharacterData> initializeCharacterData();
 std::vector<ProjectileData> initializeProjectileData();
 std::vector<PickupData> initializePickupData();
 std::vector<WeaponData> initializeWeaponData();
+std::vector<ParticleData> initializeParticleData();
 #endif // !DATA_TABLES_H
 
 

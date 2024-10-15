@@ -69,6 +69,7 @@ class Character : public Entity
 		sf::FloatRect getBoundingRect() const;
 		sf::Vector2f getGunPosition() const;
 		int getCurrentAmmunition() const;
+		int getCurrentTotalAmmunition() const;
 		int decrementCurrentAmmo(int gunType);
 		virtual bool		isMarkedForRemoval() const;
 		virtual void		remove();
@@ -80,7 +81,7 @@ class Character : public Entity
 
 		void	increaseFireRate();
 		void	increaseAmmo(int gun);
-		void	splashBlood();
+		void	splashBlood(sf::Vector2f impactPos);
 		void	fire();
 		void	chase();
 		void	attack();
@@ -147,6 +148,7 @@ private:
 		int				mWidthTexture;
 		int				mHeightTexture;
 		int				mCurrentAmmo;
+		int				mTotalAmmo;
 		int				mMaxAmmo;
 		int				mAction;
 		int				mAmmoFired;

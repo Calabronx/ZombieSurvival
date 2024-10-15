@@ -2,6 +2,7 @@
 #include "../Character.h"
 #include "../Projectile.h"
 #include "../Pickup.h"
+#include "../../graphics/Particle.h"
 
 using namespace std::placeholders;
 
@@ -98,6 +99,23 @@ std::vector<WeaponData> initializeWeaponData()
 	data[Character::RIFLE].currentAmmo = 60;
 	data[Character::RIFLE].totalAmmo = 240;
 	data[Character::RIFLE].available = false;
+
+	return data;
+}
+
+std::vector<ParticleData> initializeParticleData()
+{
+	std::vector<ParticleData> data(Particle::ParticleCount);
+
+	data[Particle::Fire].color = sf::Color(255, 255, 50);
+	data[Particle::Fire].lifetime = sf::seconds(0.6f);
+	
+	data[Particle::Smoke].color = sf::Color(50, 50, 50);
+	data[Particle::Smoke].lifetime = sf::seconds(4.f);
+
+	data[Particle::Blood].color = sf::Color(255, 0, 0);
+	data[Particle::Blood].lifetime = sf::seconds(0.3f);
+
 
 	return data;
 }

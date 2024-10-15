@@ -5,6 +5,7 @@
 #include "../util/Utility.h"
 #include "Pickup.h"
 #include <iostream>
+#include "../graphics/EmitterNode.h"
 
 namespace {
 	const std::vector<CharacterData> Table = initializeCharacterData();
@@ -147,7 +148,6 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		mAction = IDLE;
 		mProjectileType = Projectile::Type::HandgunBullet;
 		mGunEquipped = 1;
-
 		//addGun(1);
 
 		std::unique_ptr<WeaponData> handgun(new WeaponData());
@@ -174,8 +174,11 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		rifle->totalAmmo = WeaponDataTable[RIFLE].totalAmmo;
 		rifle->available = false;
 		mGunInventoryList[RIFLE] = std::move(rifle);
+
+		mTotalAmmo = mGunInventoryList[HANDGUN]->totalAmmo;
 		attachChild(std::move(healthDisplay));
 		attachChild(std::move(ammoDisplay));
+
 	}
 
 	if (getCategory() == Category::Zombie) {
@@ -614,6 +617,11 @@ int Character::getCurrentAmmunition() const
 	return mCurrentAmmo;
 }
 
+int Character::getCurrentTotalAmmunition() const
+{
+	return mTotalAmmo;
+}
+
 int Character::decrementCurrentAmmo(int gunType)
 {
 	for (auto i = 0; i < mGunInventoryList.size(); i++) {
@@ -661,6 +669,17 @@ void Character::increaseAmmo(int gun)
 	else if (gun == 3)
 		mGunInventoryList[RIFLE]->totalAmmo += 60;
 }
+void Character::splashBlood(sf::Vector2f impactPos)
+{
+	std::unique_ptr<EmitterNode> blood(new EmitterNode(Particle::Blood));
+	blood->setPosition(impactPos);
+	attachChild(std::move(blood));
+
+	/*std::unique_ptr<EmitterNode> fire(new EmitterNode(Particle::Fire));
+	fire->setPosition(impactPos);
+	attachChild(std::move(fire));*/
+	
+}
 void Character::fire()
 {
 	if (mCurrentAmmo <= 0)
@@ -692,6 +711,7 @@ void Character::reload()
 		mGunInventoryList[HANDGUN]->currentAmmo = WeaponDataTable[HANDGUN].maxAmmo;
 		mGunInventoryList[HANDGUN]->totalAmmo -= (mCurrentAmmo - mGunInventoryList[HANDGUN]->currentAmmo) * -1;
 		mCurrentAmmo = mGunInventoryList[HANDGUN]->currentAmmo;
+		mTotalAmmo = mGunInventoryList[HANDGUN]->totalAmmo;
 	}
 	else if (mGunEquipped == 2) {
 		if (mGunInventoryList[SHOTGUN]->totalAmmo <= 0)
@@ -700,6 +720,7 @@ void Character::reload()
 		mGunInventoryList[SHOTGUN]->currentAmmo = WeaponDataTable[SHOTGUN].maxAmmo;
 		mGunInventoryList[SHOTGUN]->totalAmmo -= (mCurrentAmmo - mGunInventoryList[SHOTGUN]->currentAmmo) * -1;
 		mCurrentAmmo = mGunInventoryList[SHOTGUN]->currentAmmo;
+		mTotalAmmo = mGunInventoryList[SHOTGUN]->totalAmmo;
 
 	}
 	else if (mGunEquipped == 3) {
@@ -709,6 +730,7 @@ void Character::reload()
 		mGunInventoryList[RIFLE]->currentAmmo = WeaponDataTable[RIFLE].maxAmmo;
 		mGunInventoryList[RIFLE]->totalAmmo -= (mCurrentAmmo - mGunInventoryList[RIFLE]->currentAmmo) * -1;
 		mCurrentAmmo = mGunInventoryList[RIFLE]->currentAmmo;
+		mTotalAmmo = mGunInventoryList[RIFLE]->totalAmmo;
 
 	}
 	else {
@@ -733,16 +755,19 @@ void Character::changeGun(int gunNum)
 		mProjectileType = Projectile::Type::HandgunBullet;
 		mFireRateLevel = 8;
 		mCurrentAmmo = mGunInventoryList[HANDGUN]->currentAmmo;
+		mTotalAmmo = mGunInventoryList[HANDGUN]->totalAmmo;
 		break;
 	case 2:
 		mProjectileType = Projectile::Type::ShotgunBullet;
 		mFireRateLevel = 1;
 		mCurrentAmmo = mGunInventoryList[SHOTGUN]->currentAmmo;
+		mTotalAmmo = mGunInventoryList[SHOTGUN]->totalAmmo;
 		break;
 	case 3:
 		mProjectileType = Projectile::Type::RifleBullet;
 		mFireRateLevel = 10;
 		mCurrentAmmo = mGunInventoryList[RIFLE]->currentAmmo;
+		mTotalAmmo = mGunInventoryList[RIFLE]->totalAmmo;
 		break;
 		/*case 4:
 			std::cout << "KNIFE CHOOSE" << std::endl;

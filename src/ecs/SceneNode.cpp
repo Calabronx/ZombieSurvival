@@ -2,6 +2,7 @@
 #include "../util/Category.h"
 
 #include <cassert>
+#include "../state_machine/State.h"
 
 SceneNode::SceneNode()
 	: mChildren()

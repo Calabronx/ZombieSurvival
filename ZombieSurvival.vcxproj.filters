@@ -126,6 +126,12 @@
     <ClCompile Include="src\graphics\Animation.cpp">
       <Filter>Source Files\src\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\ParticleNode.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\EmitterNode.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\FileSystem.h">
@@ -210,6 +216,15 @@
       <Filter>Source Files\src\state_machine\states</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\Animation.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Particle.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\ParticleNode.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\EmitterNode.h">
       <Filter>Source Files\src\graphics</Filter>
     </ClInclude>
   </ItemGroup>
