@@ -98,6 +98,11 @@ bool Animation::isRepeating() const
 	return mRepeat;
 }
 
+void Animation::setPosition(sf::Vector2f pos)
+{
+	mSprite.setPosition(pos);
+}
+
 void Animation::restart()
 {
 	mCurrentFrame = 0;

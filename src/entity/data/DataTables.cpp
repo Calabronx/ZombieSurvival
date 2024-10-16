@@ -12,7 +12,7 @@ std::vector<CharacterData> initializeCharacterData()
 
 	//data[Character::Survivor].hitpoints = 500;
 	data[Character::Survivor].hitpoints = 999900;
-	data[Character::Survivor].speed = 30.f;
+	data[Character::Survivor].speed = 2.f;
 	data[Character::Survivor].fireInterval = sf::seconds(1);
 	data[Character::Survivor].texture = Textures::Survivor;
 	//data[Character::Survivor].textureRect = sf::IntRect(0, 0, 48, 64);
@@ -45,7 +45,7 @@ std::vector<ProjectileData> initializeProjectileData()
 	data[Projectile::RifleBullet].texture = Textures::HandgunBullet;
 	data[Projectile::ShotgunBullet].damage = 40;
 	data[Projectile::ShotgunBullet].speed = 1500.f;
-	data[Projectile::ShotgunBullet].texture = Textures::ShotgunBullet;
+	data[Projectile::ShotgunBullet].texture = Textures::HandgunBullet;
 
 	return data;
 }
@@ -111,7 +111,7 @@ std::vector<ParticleData> initializeParticleData()
 	data[Particle::Fire].lifetime = sf::seconds(0.6f);
 	
 	data[Particle::Smoke].color = sf::Color(50, 50, 50);
-	data[Particle::Smoke].lifetime = sf::seconds(4.f);
+	data[Particle::Smoke].lifetime = sf::seconds(0.5f);
 
 	data[Particle::Blood].color = sf::Color(255, 0, 0);
 	data[Particle::Blood].lifetime = sf::seconds(0.3f);

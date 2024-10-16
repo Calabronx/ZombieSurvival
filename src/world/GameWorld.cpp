@@ -8,12 +8,17 @@
 #include "../entity/Pickup.h"
 #include "../graphics/ParticleNode.h"
 #include "../graphics/EmitterNode.h"
+#include "../graphics/PostEffect.h"
+#include "../ecs/SoundNode.h"
 
-GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
-	: mWindow(window)
+GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds)
+	: mTarget(window)
+	, mWindow(window)
+	, mSceneTexture()
 	, mWorldView(window.getDefaultView())
 	, mFonts(fonts)
 	, mTextures()
+	, mSounds(sounds)
 	, mSceneGraph()
 	, mSceneLayers()
 	, mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 8000.f)
@@ -27,10 +32,11 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
 	, mPlayerHealth()
 	, mPlayerAmmo()
 {
+	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
+
 	loadTextures();
 	buildScene();
 
-	sf::Vector2f windowSize(mWindow.getSize());
 
 	mWorldView.setCenter(mSpawnPosition);
 	mPlayerHealth.setFont(mFonts.get(Fonts::Main));
@@ -76,14 +82,30 @@ void GameWorld::update(sf::Time dt)
 
 	mSceneGraph.update(dt, mCommandQueue);
 	adaptPlayerPosition();
+
+	updateSounds();
 }
 
 void GameWorld::draw()
 {
-	mWindow.setView(mWorldView);
-	mWindow.draw(mSceneGraph);
-	mWindow.draw(mPlayerHealth);
-	mWindow.draw(mPlayerAmmo);
+	if (PostEffect::isSupported())
+	{
+		mSceneTexture.clear();
+		mSceneTexture.setView(mWorldView);
+		mSceneTexture.draw(mSceneGraph);
+		mSceneTexture.draw(mPlayerHealth);
+		mSceneTexture.draw(mPlayerAmmo);
+		mSceneTexture.display();
+		mBloomEffect.apply(mSceneTexture, mTarget);
+	}
+	else
+	{
+		mWindow.setView(mWorldView);
+		mWindow.draw(mSceneGraph);
+		mWindow.draw(mPlayerHealth);
+		mWindow.draw(mPlayerAmmo);
+
+	}
 }
 
 CommandQueue& GameWorld::getCommandQueue()
@@ -127,6 +149,7 @@ void GameWorld::loadTextures()
 	mTextures.load(Textures::RifleItem, "resources/textures/rifle_item_1.png");
 
 	mTextures.load(Textures::Blood, "resources/textures/blood/blood splash.png");
+	mTextures.load(Textures::ShootFire, "resources/textures/fire.png");
 
 	mTextures.load(Textures::Particle, "resources/textures/particle/particle.png");
 }
@@ -157,6 +180,9 @@ void GameWorld::buildScene()
 	
 	std::unique_ptr<ParticleNode> bloodNode(new ParticleNode(Particle::Blood, mTextures));
 	mSceneLayers[Land]->attachChild(std::move(bloodNode));
+
+	std::unique_ptr<SoundNode> soundNode(new SoundNode(mSounds));
+	mSceneGraph.attachChild(std::move(soundNode));
 
 	// agregar jugador a la escena
 	std::unique_ptr<Character> player(new Character(Character::Survivor, mTextures, mFonts));
@@ -506,7 +532,7 @@ void GameWorld::adaptPlayerDirection()
 	const int ROTATION_DEGREE = 360;
 	sf::Vector2i playerPosition(mPlayerSurvivor->getPosition().x, mPlayerSurvivor->getPosition().y);
 	sf::Vector2i mousePosition = sf::Mouse::getPosition(mWindow);
-	sf::Vector2f mouseWorldPosition = mWindow.mapPixelToCoords(mousePosition, mWorldView);
+	sf::Vector2f mouseWorldPosition = mTarget.mapPixelToCoords(mousePosition, mWorldView);
 
 	float mouseAngle = -atan2(mouseWorldPosition.x - playerPosition.x, mouseWorldPosition.y - playerPosition.y); // angle in degrees of rotation of sprite
 	float rotate = mouseAngle;
@@ -579,6 +605,8 @@ void GameWorld::handleCollisions()
 			diff.x = playerPos.x - zombiePos.x;
 			diff.y = playerPos.y - zombiePos.y;
 
+			player.splashBlood(player.getPosition());
+
 			float limit = 60;
 
 			float d = length(diff);
@@ -599,6 +627,7 @@ void GameWorld::handleCollisions()
 
 			pickup.apply(player);
 			pickup.destroy();
+			player.playLocalSound(mCommandQueue, SoundEffect::CollectPickup);
 		}
 		else if (matchesCategories(pair, Category::Zombie, Category::Projectile))
 		{
@@ -659,5 +688,11 @@ void GameWorld::destroyEntitiesOutsideView()
 		});
 
 	mCommandQueue.push(command);
+}
+
+void GameWorld::updateSounds()
+{
+	mSounds.setListenerPosition(mPlayerSurvivor->getWorldPosition());
+	mSounds.removeStoppedSounds();
 }
 

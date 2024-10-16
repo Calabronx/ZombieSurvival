@@ -96,7 +96,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,7 +126,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,6 +150,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\core\Application.cpp" />
     <ClCompile Include="src\ecs\SceneNode.cpp" />
+    <ClCompile Include="src\ecs\SoundNode.cpp" />
     <ClCompile Include="src\ecs\SpriteNode.cpp" />
     <ClCompile Include="src\ecs\TextNode.cpp" />
     <ClCompile Include="src\entity\data\DataTables.cpp" />
@@ -158,11 +159,15 @@
     <ClCompile Include="src\entity\Pickup.cpp" />
     <ClCompile Include="src\entity\Projectile.cpp" />
     <ClCompile Include="src\graphics\Animation.cpp" />
+    <ClCompile Include="src\graphics\BloomEffect.cpp" />
     <ClCompile Include="src\graphics\EmitterNode.cpp" />
     <ClCompile Include="src\graphics\ParticleNode.cpp" />
+    <ClCompile Include="src\graphics\PostEffect.cpp" />
     <ClCompile Include="src\input\command\Command.cpp" />
     <ClCompile Include="src\input\command\CommandQueue.cpp" />
     <ClCompile Include="src\input\InputHandler.cpp" />
+    <ClCompile Include="src\sound\MusicPlayer.cpp" />
+    <ClCompile Include="src\sound\SoundPlayer.cpp" />
     <ClCompile Include="src\state_machine\ParallelTask.cpp" />
     <ClCompile Include="src\state_machine\State.cpp" />
     <ClCompile Include="src\state_machine\StateStack.cpp" />
@@ -178,6 +183,7 @@
   <ItemGroup>
     <ClInclude Include="src\core\Application.h" />
     <ClInclude Include="src\ecs\SceneNode.h" />
+    <ClInclude Include="src\ecs\SoundNode.h" />
     <ClInclude Include="src\ecs\SpriteNode.h" />
     <ClInclude Include="src\ecs\TextNode.h" />
     <ClInclude Include="src\entity\data\DataTables.h" />
@@ -186,12 +192,16 @@
     <ClInclude Include="src\entity\Pickup.h" />
     <ClInclude Include="src\entity\Projectile.h" />
     <ClInclude Include="src\graphics\Animation.h" />
+    <ClInclude Include="src\graphics\BloomEffect.h" />
     <ClInclude Include="src\graphics\EmitterNode.h" />
     <ClInclude Include="src\graphics\Particle.h" />
     <ClInclude Include="src\graphics\ParticleNode.h" />
+    <ClInclude Include="src\graphics\PostEffect.h" />
     <ClInclude Include="src\input\command\Command.h" />
     <ClInclude Include="src\input\command\CommandQueue.h" />
     <ClInclude Include="src\input\InputHandler.h" />
+    <ClInclude Include="src\sound\MusicPlayer.h" />
+    <ClInclude Include="src\sound\SoundPlayer.h" />
     <ClInclude Include="src\state_machine\ParallelTask.h" />
     <ClInclude Include="src\state_machine\State.h" />
     <ClInclude Include="src\state_machine\StateIdentifiers.h" />
@@ -209,6 +219,11 @@
     <ClInclude Include="src\world\GameWorld.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\shaders\Add.frag" />
+    <None Include="resources\shaders\Brightness.frag" />
+    <None Include="resources\shaders\DownSample.frag" />
+    <None Include="resources\shaders\Fullpass.vert" />
+    <None Include="resources\shaders\GuassianBlur.frag" />
     <None Include="src\util\FileSystem.inl" />
     <None Include="src\util\Utility.inl" />
   </ItemGroup>

@@ -10,6 +10,8 @@
 #include "../ecs/SceneNode.h"
 #include "../entity/Character.h"
 #include "../input/command/CommandQueue.h"
+#include "../graphics/BloomEffect.h"
+#include "../sound/SoundPlayer.h"
 
 namespace sf
 {
@@ -19,7 +21,7 @@ namespace sf
 class GameWorld : sf::NonCopyable
 {
 	public:
-		explicit GameWorld(sf::RenderWindow& window, FontHolder& fonts);
+		explicit GameWorld(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds);
 		void update(sf::Time dt);
 		void draw();
 
@@ -41,6 +43,7 @@ class GameWorld : sf::NonCopyable
 		void adaptPlayerPosition();
 		void adaptPlayerVelocity();
 		void adaptPlayerDirection();
+		void updateSounds();
 		//void setPlayerRef(InputHandler& input);
 
 		sf::FloatRect getViewBounds() const;
@@ -71,12 +74,15 @@ class GameWorld : sf::NonCopyable
 		};
 
 	private:
+		sf::RenderTarget&	mTarget;
+		sf::RenderTexture	mSceneTexture;
 		sf::RenderWindow& mWindow;
 		sf::View			mWorldView;
 		sf::Text			mPlayerHealth;
 		sf::Text			mPlayerAmmo;
 		TextureHolder		mTextures;
 		FontHolder&			mFonts;
+		SoundPlayer&	    mSounds;
 
 		SceneNode			mSceneGraph;
 		std::array<SceneNode*, LayerCount>	mSceneLayers;
@@ -91,6 +97,8 @@ class GameWorld : sf::NonCopyable
         CommandQueue    mCommandQueue;
 		std::vector<SpawnPoint> mEnemySpawnPoints;
 		std::vector<Character*> mActiveEnemies;
+
+		BloomEffect				mBloomEffect;
 
 
 };

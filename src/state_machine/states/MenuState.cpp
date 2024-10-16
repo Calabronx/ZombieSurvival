@@ -29,6 +29,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	mOptions.push_back(exitOption);
 
 	updateOptionText();
+	context.music->play(Music::MenuTheme);
 }
 
 void MenuState::draw()
@@ -37,7 +38,7 @@ void MenuState::draw()
 
 bool MenuState::update(sf::Time dt)
 {
-	return false;
+	return true;
 }
 
 bool MenuState::handleEvent(const sf::Event& event)

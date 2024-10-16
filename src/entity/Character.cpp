@@ -6,6 +6,9 @@
 #include "Pickup.h"
 #include <iostream>
 #include "../graphics/EmitterNode.h"
+#include "../ecs/SoundNode.h"
+
+using namespace std::placeholders;
 
 namespace {
 	const std::vector<CharacterData> Table = initializeCharacterData();
@@ -31,6 +34,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mCurrentFrame(0)
 	, mElapsedFrameTime(sf::Time::Zero)
 	, mCurrentAmmo(16)
+	, mBulletLaunchPosition()
 	//, mPlayerHealth()
 	, mGunInventoryList(3)
 {
@@ -44,7 +48,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	mBloodAnim.setDuration(sf::seconds(1));
 	mBloodAnim.setScale(sf::Vector2f(4.f, 4.f));
 	centerOrigin(mBloodAnim);
-	mBloodAnim.setPosition(mBloodAnim.getPosition() + sf::Vector2f(+150.f, +300.0f));
+	mBloodAnim.setPosition(mBloodAnim.getPosition() + sf::Vector2f(+60.f, +0.0f));
 
 	std::unique_ptr<TextNode> healthDisplay(new TextNode(fonts, ""));
 	std::unique_ptr<TextNode> ammoDisplay(new TextNode(fonts, ""));
@@ -139,6 +143,34 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		mShotgunMoveAnim.setRepeating(true);
 		centerOrigin(mShotgunMoveAnim);
 
+		mShootFireAnim1.setFrameSize(sf::Vector2i(64, 64));
+		mShootFireAnim1.setNumFrames(16);
+		mShootFireAnim1.setTexture(textures.get(Textures::ShootFire));
+		mShootFireAnim1.setDuration(sf::seconds(1));
+		mShootFireAnim1.setScale(sf::Vector2f(4.5f, 1.5f));
+		mShootFireAnim1.setRepeating(false);
+		centerOrigin(mShootFireAnim1);
+		mShootFireAnim1.setPosition(mShootFireAnim1.getPosition() + sf::Vector2f(50.f, 40.0f));
+
+		mShootFireAnim2.setFrameSize(sf::Vector2i(64, 64));
+		mShootFireAnim2.setNumFrames(16);
+		mShootFireAnim2.setTexture(textures.get(Textures::ShootFire));
+		mShootFireAnim2.setDuration(sf::seconds(1));
+		mShootFireAnim2.setScale(sf::Vector2f(4.5f, 3.5f));
+		mShootFireAnim2.setRepeating(false);
+		centerOrigin(mShootFireAnim2);
+		mShootFireAnim2.setPosition(mShootFireAnim2.getPosition() + sf::Vector2f(50.f, 10.0f));
+
+		mShootFireAnim3.setFrameSize(sf::Vector2i(64, 64));
+		mShootFireAnim3.setNumFrames(16);
+		mShootFireAnim3.setTexture(textures.get(Textures::ShootFire));
+		mShootFireAnim3.setDuration(sf::seconds(1));
+		mShootFireAnim3.setScale(sf::Vector2f(4.5f, 1.5f));
+		mShootFireAnim3.setRepeating(false);
+		centerOrigin(mShootFireAnim3);
+		mShootFireAnim3.setPosition(mShootFireAnim3.getPosition() + sf::Vector2f(50.f, -10.0f));
+
+
 		mIsFiring = false;
 		mIsReloading = false;
 		mIsMoving = false;
@@ -217,6 +249,11 @@ void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) c
 	}
 	else if (getCategory() == Category::PlayerSurvivor) {
 		target.draw(getGunAnimation(mGunEquipped, mAction), states);
+		if (mAction == SHOOT) {
+			target.draw(mShootFireAnim1, states);
+			target.draw(mShootFireAnim2, states);
+			target.draw(mShootFireAnim3, states);
+		}
 	}
 	else if (getCategory() == Category::Zombie) {
 		if (mAction == MOVE)
@@ -268,6 +305,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 			mAction = MOVE;
 			mIsMoving = true;
 			checkGunAnimation(dt);
+
 		}
 		else {
 			mIsMoving = false;
@@ -417,8 +455,25 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 {
 	if (mIsFiring && mFireCountdown <= sf::Time::Zero)
 	{
+		playLocalSound(commands, SoundEffect::Gunfire);
+
 		commands.push(mFireCommand);
 		mFireCountdown += Table[mType].fireInterval / (mFireRateLevel + 1.f);
+		mShootFireAnim1.update(dt);
+		mShootFireAnim2.update(dt);
+		mShootFireAnim3.update(dt);
+		bool f = mShootFireAnim1.isFinished();
+		
+		std::unique_ptr<EmitterNode> smoke1(new EmitterNode(Particle::Smoke));
+		std::unique_ptr<EmitterNode> smoke2(new EmitterNode(Particle::Smoke));
+		std::unique_ptr<EmitterNode> smoke3(new EmitterNode(Particle::Smoke));
+		smoke1->setPosition(mShootFireAnim1.getPosition() + sf::Vector2f(100.f,100.f));
+		smoke2->setPosition(mShootFireAnim2.getPosition() + sf::Vector2f(100.f, 100.f));
+		smoke3->setPosition(mShootFireAnim3.getPosition() + sf::Vector2f(100.f, 100.f));
+		attachChild(std::move(smoke1));
+		attachChild(std::move(smoke2));
+		attachChild(std::move(smoke3));
+
 		mIsFiring = false;
 		mAction = SHOOT;
 		decrementCurrentAmmo(mGunEquipped);
@@ -438,6 +493,9 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	{
 		mFireCountdown -= dt;
 		mIsFiring = false;
+		mShootFireAnim1.restart();
+		mShootFireAnim2.restart();
+		mShootFireAnim3.restart();
 		//mAction = SHOOT;
 		//std::cout << "FIRING" << std::endl;
 	}
@@ -467,6 +525,9 @@ void Character::createBullets(SceneNode& node, const TextureHolder& textures) co
 		createProjectile(node, type, -0.2f, 0.0f, textures);
 		createProjectile(node, type, 0.2f, 0.0f, textures);
 		createProjectile(node, type, -0.4f, 0.0f, textures);
+		createProjectile(node, type, 1.0f, 0.0f, textures);
+		createProjectile(node, type, 0.4f, 0.0f, textures);
+		createProjectile(node, type, -0.8f, 0.0f, textures);
 	}
 	else {
 		createProjectile(node, type, xOffset, yOffset, textures);
@@ -485,6 +546,7 @@ void Character::createProjectile(SceneNode& node, Projectile::Type type, float x
 	float sign = -0.30f;
 
 	projectile->setPosition(getWorldPosition() + offset * sign);
+
 	float mouseAngle = std::atan2(mMousePosition.y - projectile->getPosition().y, mMousePosition.x - projectile->getPosition().x);
 	float bulletRotation = std::atan2(mMousePosition.y, mMousePosition.x);
 	float mouse = std::atan2(mouseWorldPosition.y, mouseWorldPosition.x);
@@ -511,6 +573,15 @@ void Character::createPickup(SceneNode& node, const TextureHolder& textures) con
 	pickup->setPosition(getWorldPosition());
 	pickup->setVelocity(0.f, 0.f);
 	node.attachChild(std::move(pickup));
+}
+
+void Character::playLocalSound(CommandQueue& commands, SoundEffect::ID effect)
+{
+	Command command;
+	command.category = Category::SoundEffect;
+	command.action = derivedAction<SoundNode>(std::bind(&SoundNode::playSound, _1, effect, getWorldPosition()));
+
+	commands.push(command);
 }
 
 unsigned int Character::getCategory() const
@@ -674,11 +745,6 @@ void Character::splashBlood(sf::Vector2f impactPos)
 	std::unique_ptr<EmitterNode> blood(new EmitterNode(Particle::Blood));
 	blood->setPosition(impactPos);
 	attachChild(std::move(blood));
-
-	/*std::unique_ptr<EmitterNode> fire(new EmitterNode(Particle::Fire));
-	fire->setPosition(impactPos);
-	attachChild(std::move(fire));*/
-	
 }
 void Character::fire()
 {
@@ -756,18 +822,27 @@ void Character::changeGun(int gunNum)
 		mFireRateLevel = 8;
 		mCurrentAmmo = mGunInventoryList[HANDGUN]->currentAmmo;
 		mTotalAmmo = mGunInventoryList[HANDGUN]->totalAmmo;
+		mShootFireAnim1.setScale(sf::Vector2f(4.5f, 1.5f));		
+		mShootFireAnim2.setScale(sf::Vector2f(4.5f, 1.5f));		
+		mShootFireAnim3.setScale(sf::Vector2f(4.5f, 1.5f));		
 		break;
 	case 2:
 		mProjectileType = Projectile::Type::ShotgunBullet;
 		mFireRateLevel = 1;
 		mCurrentAmmo = mGunInventoryList[SHOTGUN]->currentAmmo;
 		mTotalAmmo = mGunInventoryList[SHOTGUN]->totalAmmo;
+		mShootFireAnim1.setScale(sf::Vector2f(4.5f, 3.5f));
+		mShootFireAnim2.setScale(sf::Vector2f(5.5f, 3.5f));
+		mShootFireAnim3.setScale(sf::Vector2f(4.5f, 3.5f));
 		break;
 	case 3:
 		mProjectileType = Projectile::Type::RifleBullet;
 		mFireRateLevel = 10;
 		mCurrentAmmo = mGunInventoryList[RIFLE]->currentAmmo;
 		mTotalAmmo = mGunInventoryList[RIFLE]->totalAmmo;
+		mShootFireAnim1.setScale(sf::Vector2f(2.5f, 3.5f));
+		mShootFireAnim2.setScale(sf::Vector2f(4.5f, 3.5f));
+		mShootFireAnim3.setScale(sf::Vector2f(2.5f, 3.5f));
 		break;
 		/*case 4:
 			std::cout << "KNIFE CHOOSE" << std::endl;

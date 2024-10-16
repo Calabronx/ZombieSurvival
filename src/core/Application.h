@@ -8,6 +8,8 @@
 #include "../input/InputHandler.h"
 #include "../state_machine/StateStack.h"
 #include "../util/FileSystem.h"
+#include "../sound/MusicPlayer.h"
+#include "../sound/SoundPlayer.h"
 
 class Application
 {
@@ -29,6 +31,8 @@ class Application
 		TextureHolder			mTextures;
 		FontHolder				mFonts;
 		InputHandler			mPlayer;
+		MusicPlayer				mMusic;
+		SoundPlayer				mSounds;
 
 		StateStack				mStateStack;
 

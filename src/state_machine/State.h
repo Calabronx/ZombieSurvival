@@ -6,6 +6,8 @@
 
 #include "StateIdentifiers.h"
 #include "../util/ResourceIdentifiers.h"
+#include "../sound/MusicPlayer.h"
+#include "../sound/SoundPlayer.h"
 
 namespace sf
 {
@@ -14,18 +16,21 @@ namespace sf
 
 class StateStack;
 class InputHandler;
+class MusicPlayer;
 
 class State
 {
 public:
 	typedef std::unique_ptr<State> Ptr;
 	struct Context {
-		Context(sf::RenderWindow& window,TextureHolder& textures,FontHolder& fonts,InputHandler& inputPlayer);
+		Context(sf::RenderWindow& window,TextureHolder& textures,FontHolder& fonts,InputHandler& inputPlayer, MusicPlayer& music, SoundPlayer& sound);
 
 		sf::RenderWindow*	window;
 		TextureHolder*		textures;
 		FontHolder*			fonts;
 		InputHandler*		inputPlayer;
+		MusicPlayer*		music;
+		SoundPlayer*		sounds;
 	};
 
 public:

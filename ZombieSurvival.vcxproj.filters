@@ -49,6 +49,12 @@
     <Filter Include="Source Files\src\graphics">
       <UniqueIdentifier>{5dc4f6a3-b20b-496d-97e8-9ea2ae409659}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\graphics\shaders">
+      <UniqueIdentifier>{14a3aeff-f6be-4f38-a9d8-b8fe25380391}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\sound">
+      <UniqueIdentifier>{4d268d31-49c4-469d-a98f-1fb14568858b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -131,6 +137,21 @@
     </ClCompile>
     <ClCompile Include="src\graphics\EmitterNode.cpp">
       <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\PostEffect.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\BloomEffect.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sound\MusicPlayer.cpp">
+      <Filter>Source Files\src\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sound\SoundPlayer.cpp">
+      <Filter>Source Files\src\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\SoundNode.cpp">
+      <Filter>Source Files\src\ecs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +248,21 @@
     <ClInclude Include="src\graphics\EmitterNode.h">
       <Filter>Source Files\src\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\graphics\PostEffect.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\BloomEffect.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sound\MusicPlayer.h">
+      <Filter>Source Files\src\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sound\SoundPlayer.h">
+      <Filter>Source Files\src\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\SoundNode.h">
+      <Filter>Source Files\src\ecs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\util\FileSystem.inl">
@@ -234,6 +270,21 @@
     </None>
     <None Include="src\util\Utility.inl">
       <Filter>Source Files\src\util</Filter>
+    </None>
+    <None Include="resources\shaders\Add.frag">
+      <Filter>Source Files\src\graphics\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\Brightness.frag">
+      <Filter>Source Files\src\graphics\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\DownSample.frag">
+      <Filter>Source Files\src\graphics\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\Fullpass.vert">
+      <Filter>Source Files\src\graphics\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\GuassianBlur.frag">
+      <Filter>Source Files\src\graphics\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -75,10 +75,11 @@ class Character : public Entity
 		virtual void		remove();
 
 		// zombie only methods
-		void guideTowardsPlayer(sf::Vector2f position);
+		void	guideTowardsPlayer(sf::Vector2f position);
 		bool isChasing() const;
 		bool isFiring() const;
 
+		void	playLocalSound(CommandQueue& commands, SoundEffect::ID effect);
 		void	increaseFireRate();
 		void	increaseAmmo(int gun);
 		void	splashBlood(sf::Vector2f impactPos);
@@ -136,6 +137,9 @@ private:
 		Animation		mZombieAttackAnim;
 		/*********************************/
 		Animation		mBloodAnim;
+		Animation		mShootFireAnim1;
+		Animation		mShootFireAnim2;
+		Animation		mShootFireAnim3;
 
 		sf::Vector2f	mCenter;
 		float			mDirectionAngle;
@@ -162,6 +166,7 @@ private:
 		sf::Vector2f	mZombieTargetDirection;
 		sf::Vector2f	mMousePosition;
 		sf::Vector2f	mGunPosition;
+		sf::Vector2f	mBulletLaunchPosition;
 		std::size_t		mCurrentFrame;
 
 		bool			mIsMoving;

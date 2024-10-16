@@ -41,6 +41,8 @@ class Animation : public sf::Drawable, public sf::Transformable
 		void setRepeating(bool flag);
 		bool isRepeating() const;
 
+		void setPosition(sf::Vector2f pos);
+
 		void restart();
 		bool isFinished() const;
 
