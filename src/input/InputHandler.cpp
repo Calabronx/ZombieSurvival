@@ -81,7 +81,7 @@ void InputHandler::handleRealTimeInput(CommandQueue& commands)
 
 void InputHandler::initializeActions()
 {
-	const float playerSpeed = 120.f;
+	const float playerSpeed = 90.f;
 
 	mActionBinding[MoveLeft].action = derivedAction<Character>(SurvivorMover(-playerSpeed, 0.f));
 	mActionBinding[MoveRight].action = derivedAction<Character>(SurvivorMover(+playerSpeed, 0.f));

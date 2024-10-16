@@ -4,6 +4,7 @@
 
 #include<SFML/Graphics/RenderWindow.hpp>
 #include<SFML/Graphics/Text.hpp>
+#include<SFML/Graphics/Sprite.hpp>
 #include<SFML/System/Time.hpp>
 #include "../input/InputHandler.h"
 #include "../state_machine/StateStack.h"
@@ -28,6 +29,7 @@ class Application
 		static const sf::Time		TimePerFrame;
 
 		sf::RenderWindow		mWindow;
+		sf::Sprite				mCrossHair;
 		TextureHolder			mTextures;
 		FontHolder				mFonts;
 		InputHandler			mPlayer;

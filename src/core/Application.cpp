@@ -16,6 +16,7 @@ Application::Application()
 	: mWindow(sf::VideoMode(1208, 768), "Zombies Survival", sf::Style::Close)
 	, mTextures()
 	, mFonts()
+	, mCrossHair()
 	, mPlayer()
 	, mMusic()
 	, mSounds()
@@ -24,11 +25,14 @@ Application::Application()
 	, mStatisticsUpdateTime()
 	, mStatisticsNumFrames(0)
 {
-	//mWindow.setMouseCursorVisible(false);
+	mWindow.setMouseCursorVisible(false);
 	mWindow.setKeyRepeatEnabled(false);
 
 	mFonts.load(Fonts::Main, "resources/Sansation.ttf");
-	mTextures.load(Textures::TitleScreen, "resources/textures/titleScreen.jpg");
+	mTextures.load(Textures::TitleScreen, "resources/textures/TitleScreen.jpg");
+	mTextures.load(Textures::Crosshair, "resources/textures/crosshair.png");
+	mCrossHair.setTexture(mTextures.get(Textures::Crosshair));
+	mCrossHair.setScale(0.12f, 0.12f);
 
 	mStatisticsText.setFont(mFonts.get(Fonts::Main));
 	mStatisticsText.setPosition(5.f, 5.f);
@@ -61,6 +65,8 @@ void Application::run()
 				mWindow.close();
 		}
 
+		mCrossHair.setPosition(static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow)));
+
 		updateStatistics(dt);
 		render();
 	}
@@ -91,6 +97,7 @@ void Application::render()
 
 	mWindow.setView(mWindow.getDefaultView());
 	mWindow.draw(mStatisticsText);
+	mWindow.draw(mCrossHair);
 
 	mWindow.display();
 }

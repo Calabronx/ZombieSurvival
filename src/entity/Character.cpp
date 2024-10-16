@@ -146,7 +146,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		mShootFireAnim1.setFrameSize(sf::Vector2i(64, 64));
 		mShootFireAnim1.setNumFrames(16);
 		mShootFireAnim1.setTexture(textures.get(Textures::ShootFire));
-		mShootFireAnim1.setDuration(sf::seconds(1));
+		mShootFireAnim1.setDuration(sf::seconds(0.5000));
 		mShootFireAnim1.setScale(sf::Vector2f(4.5f, 1.5f));
 		mShootFireAnim1.setRepeating(false);
 		centerOrigin(mShootFireAnim1);
@@ -155,7 +155,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		mShootFireAnim2.setFrameSize(sf::Vector2i(64, 64));
 		mShootFireAnim2.setNumFrames(16);
 		mShootFireAnim2.setTexture(textures.get(Textures::ShootFire));
-		mShootFireAnim2.setDuration(sf::seconds(1));
+		mShootFireAnim2.setDuration(sf::seconds(0.5000));
 		mShootFireAnim2.setScale(sf::Vector2f(4.5f, 3.5f));
 		mShootFireAnim2.setRepeating(false);
 		centerOrigin(mShootFireAnim2);
@@ -164,7 +164,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		mShootFireAnim3.setFrameSize(sf::Vector2i(64, 64));
 		mShootFireAnim3.setNumFrames(16);
 		mShootFireAnim3.setTexture(textures.get(Textures::ShootFire));
-		mShootFireAnim3.setDuration(sf::seconds(1));
+		mShootFireAnim3.setDuration(sf::seconds(0.5000));
 		mShootFireAnim3.setScale(sf::Vector2f(4.5f, 1.5f));
 		mShootFireAnim3.setRepeating(false);
 		centerOrigin(mShootFireAnim3);
@@ -305,6 +305,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 			mAction = MOVE;
 			mIsMoving = true;
 			checkGunAnimation(dt);
+			//playLocalSound(commands, SoundEffect::Step1); se escucha uno tras otro y suena mal          
 
 		}
 		else {
@@ -313,7 +314,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 		if (mIsReloading) {
 			//std::cout << "RELOAD! : ammo : " << mAmmo << std::endl;
-			commands.push(mReloadCommand);
+			
 			mAction = RELOAD;
 			checkGunAnimation(dt);
 		}
@@ -329,6 +330,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 		else if (mGunEquipped == 1 && mIsReloading || mGunEquipped == 2 && mIsReloading) {
 			mIsReloading = false;
 			mAction = IDLE;
+			//playLocalSound(commands, SoundEffect::HandgunReload);
 		}
 
 		checkGunAnimation(dt);
@@ -462,8 +464,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 		mShootFireAnim1.update(dt);
 		mShootFireAnim2.update(dt);
 		mShootFireAnim3.update(dt);
-		bool f = mShootFireAnim1.isFinished();
-		
+
 		std::unique_ptr<EmitterNode> smoke1(new EmitterNode(Particle::Smoke));
 		std::unique_ptr<EmitterNode> smoke2(new EmitterNode(Particle::Smoke));
 		std::unique_ptr<EmitterNode> smoke3(new EmitterNode(Particle::Smoke));
@@ -778,6 +779,7 @@ void Character::reload()
 		mGunInventoryList[HANDGUN]->totalAmmo -= (mCurrentAmmo - mGunInventoryList[HANDGUN]->currentAmmo) * -1;
 		mCurrentAmmo = mGunInventoryList[HANDGUN]->currentAmmo;
 		mTotalAmmo = mGunInventoryList[HANDGUN]->totalAmmo;
+		//playLocalSound()
 	}
 	else if (mGunEquipped == 2) {
 		if (mGunInventoryList[SHOTGUN]->totalAmmo <= 0)

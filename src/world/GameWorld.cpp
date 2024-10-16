@@ -46,6 +46,8 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& s
 	mPlayerAmmo.setFont(mFonts.get(Fonts::Main));
 	mPlayerAmmo.setPosition(sf::Vector2f(104.f, 7956.f));
 	mPlayerAmmo.setCharacterSize(20);
+	//mCrossHair.setTexture(mTextures.get(Textures::Crosshair));
+	//mCrossHair.setScale(0.12f, 0.12f);
 
 	//std::cout << "SPAWN  X : " << mSpawnPosition.x << "  Y: " << mSpawnPosition.y << std::endl;
 }
@@ -95,6 +97,7 @@ void GameWorld::draw()
 		mSceneTexture.draw(mSceneGraph);
 		mSceneTexture.draw(mPlayerHealth);
 		mSceneTexture.draw(mPlayerAmmo);
+		mSceneTexture.draw(mCrossHair);
 		mSceneTexture.display();
 		mBloomEffect.apply(mSceneTexture, mTarget);
 	}
@@ -104,6 +107,7 @@ void GameWorld::draw()
 		mWindow.draw(mSceneGraph);
 		mWindow.draw(mPlayerHealth);
 		mWindow.draw(mPlayerAmmo);
+		mWindow.draw(mCrossHair);
 
 	}
 }
@@ -137,7 +141,8 @@ void GameWorld::loadTextures()
 	mTextures.load(Textures::HandgunBullet, "resources/textures/bullets/Bullet.png");
 	mTextures.load(Textures::ShotgunBullet, "resources/textures/bullets/ShotgunBullet.png");
 	//mTextures.load(Textures::Background, "resources/textures/Tiles/Desert.png");
-	mTextures.load(Textures::Background, "resources/textures/Tiles/Asfalt1.jpg");
+	//mTextures.load(Textures::Background, "resources/textures/Tiles/Asfalt1.jpg");
+	mTextures.load(Textures::Background, "resources/textures/Tiles/ground3.jpg");
 
 	mTextures.load(Textures::HealthRefill, "resources/textures/HealthRefill.png");
 	mTextures.load(Textures::FireRate, "resources/textures/FireRate.png");
@@ -152,6 +157,8 @@ void GameWorld::loadTextures()
 	mTextures.load(Textures::ShootFire, "resources/textures/fire.png");
 
 	mTextures.load(Textures::Particle, "resources/textures/particle/particle.png");
+
+	//mTextures.load(Textures::Crosshair, "resources/textures/crosshair.png");
 }
 
 void GameWorld::buildScene()
@@ -407,35 +414,32 @@ void GameWorld::spawnEnemies()
 		std::unique_ptr<Character> enemy(new Character(spawn.type, mTextures, mFonts));
 		enemy->setPosition(spawn.x, spawn.y);
 		enemy->setScale(sf::Vector2f(0.300f, 0.300f));
-		enemy->setVelocity(40.f, 40.f);
+		enemy->setVelocity(90.f, 90.f);
 
 		if (mHordeLevel == 2) {
 			enemy->setHitpoints(enemy->getHitpoints() + 250);
-			std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
-			shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y - 450));
-			shotgun->setVelocity(0.f, 100.f);
-			mSceneLayers[Land]->attachChild(std::move(shotgun));
-			std::unique_ptr<Pickup> rifle(new Pickup(Pickup::RifleItem, mTextures));
-			rifle->setVelocity(0.f, 100.f);
-			rifle->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y - 470));
-			mSceneLayers[Land]->attachChild(std::move(rifle));
 			enemy->setHitpoints(enemy->getHitpoints() + 50);
+			enemy->setVelocity(sf::Vector2f(1900.f, 1900.f));
 
 		}
 		else if (mHordeLevel == 3) {
+			std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
+			shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 50, mSpawnPosition.y - 450));
+			shotgun->setVelocity(0.f, 100.f);
+			mSceneLayers[Land]->attachChild(std::move(shotgun));
 		}
 		else if (mHordeLevel == 4) {
 			enemy->setHitpoints(enemy->getHitpoints() + 290);
 		}
 		else if (mHordeLevel == 5) {
 			enemy->setHitpoints(enemy->getHitpoints() + 350);
+		}
+		else if (mHordeLevel == 6) {
+			enemy->setHitpoints(enemy->getHitpoints() + 550);
 			std::unique_ptr<Pickup> rifle(new Pickup(Pickup::RifleItem, mTextures));
 			rifle->setVelocity(0.f, 100.f);
 			rifle->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y - 450));
 			mSceneLayers[Land]->attachChild(std::move(rifle));
-		}
-		else if (mHordeLevel == 6) {
-			enemy->setHitpoints(enemy->getHitpoints() + 550);
 		}
 		else if (mHordeLevel == 7) {
 			enemy->setHitpoints(enemy->getHitpoints() + 750);
@@ -618,7 +622,6 @@ void GameWorld::handleCollisions()
 			}
 			else
 				zombie.chase();
-
 		}
 		else if (matchesCategories(pair, Category::PlayerSurvivor, Category::Pickup))
 		{

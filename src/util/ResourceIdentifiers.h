@@ -48,6 +48,7 @@ namespace Textures
 		Particle,
 		Blood,
 		ShootFire,
+		Crosshair
 
 	};
 }
@@ -77,6 +78,7 @@ namespace Music
 	{
 		MenuTheme,
 		MissionTheme,
+		AmbientWind
 	};
 }
 
@@ -85,12 +87,16 @@ namespace SoundEffect
 	enum ID
 	{
 		Gunfire,
+		HandgunReload,
+		ShotgunReload,
+		RifleReload,
 	/*	HandgunFire,
 		ShotgunFire,
 		RifleFire,*/
 		CollectPickup,
 		ZombieScream,
 		Damage,
+		Step1,
 		Button
 	};
 

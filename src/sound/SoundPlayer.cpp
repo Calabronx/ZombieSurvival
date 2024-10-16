@@ -18,6 +18,11 @@ SoundPlayer::SoundPlayer()
 {
     mSoundBuffers.load(SoundEffect::Gunfire, "resources/sounds/Gunfire.wav");
     mSoundBuffers.load(SoundEffect::CollectPickup, "resources/sounds/CollectPickup.wav");
+    mSoundBuffers.load(SoundEffect::Step1, "resources/sounds/step1.wav");
+    mSoundBuffers.load(SoundEffect::HandgunReload, "resources/sounds/HandgunReload.wav");
+    mSoundBuffers.load(SoundEffect::ShotgunReload, "resources/sounds/ShotgunReload.wav");
+    mSoundBuffers.load(SoundEffect::RifleReload, "resources/sounds/AK47_Reload.wav");
+    mSoundBuffers.load(SoundEffect::ZombieScream, "resources/sounds/zombieScream1.wav");
 
     // Listener points towards the screen (default in sfml)
     sf::Listener::setDirection(0.f, 0.f, -1.f);

@@ -8,7 +8,8 @@ GameState::GameState(StateStack& stack, Context context)
 {
     std::cout << "Game State started" << std::endl;
     mPlayer.setPlayerStatus(InputHandler::SurviveMode);
-    context.music->play(Music::MissionTheme);
+    //context.music->play(Music::MissionTheme);
+    context.music->play(Music::AmbientWind);
 }
 
 void GameState::draw()

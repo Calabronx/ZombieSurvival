@@ -11,7 +11,7 @@ std::vector<CharacterData> initializeCharacterData()
 	std::vector<CharacterData> data(Character::TypeCount);
 
 	//data[Character::Survivor].hitpoints = 500;
-	data[Character::Survivor].hitpoints = 999900;
+	data[Character::Survivor].hitpoints = 1500;
 	data[Character::Survivor].speed = 2.f;
 	data[Character::Survivor].fireInterval = sf::seconds(1);
 	data[Character::Survivor].texture = Textures::Survivor;
@@ -85,7 +85,7 @@ std::vector<WeaponData> initializeWeaponData()
 	data[Character::HANDGUN].id = 1;
 	data[Character::HANDGUN].maxAmmo = 16;
 	data[Character::HANDGUN].currentAmmo = 16;
-	data[Character::HANDGUN].totalAmmo = 80;
+	data[Character::HANDGUN].totalAmmo = 200;
 	data[Character::HANDGUN].available = true;
 
 	data[Character::SHOTGUN].id = 2;

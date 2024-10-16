@@ -80,6 +80,7 @@ class GameWorld : sf::NonCopyable
 		sf::View			mWorldView;
 		sf::Text			mPlayerHealth;
 		sf::Text			mPlayerAmmo;
+		sf::Sprite			mCrossHair;
 		TextureHolder		mTextures;
 		FontHolder&			mFonts;
 		SoundPlayer&	    mSounds;
