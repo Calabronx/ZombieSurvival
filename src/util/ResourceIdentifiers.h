@@ -48,8 +48,11 @@ namespace Textures
 		Particle,
 		Blood,
 		ShootFire,
-		Crosshair
+		Crosshair,
 
+		ButtonNormal,
+		ButtonSelected,
+		ButtonPressed
 	};
 }
 
@@ -69,6 +72,7 @@ namespace Fonts
 	enum ID
 	{
 		Main,
+		Label
 	};
 }
 

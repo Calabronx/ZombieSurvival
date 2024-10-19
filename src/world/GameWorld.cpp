@@ -150,15 +150,12 @@ void GameWorld::loadTextures()
 	mTextures.load(Textures::ShotgunAmmo, "resources/textures/ShotgunAmmo.png");
 	mTextures.load(Textures::RifleAmmo, "resources/textures/RifleAmmo.png");
 	mTextures.load(Textures::ShotgunItem, "resources/textures/shotgun_item.png");
-	//mTextures.load(Textures::RifleItem, "resources/textures/rifle_item.png");
 	mTextures.load(Textures::RifleItem, "resources/textures/rifle_item_1.png");
 
 	mTextures.load(Textures::Blood, "resources/textures/blood/blood splash.png");
 	mTextures.load(Textures::ShootFire, "resources/textures/fire.png");
 
 	mTextures.load(Textures::Particle, "resources/textures/particle/particle.png");
-
-	//mTextures.load(Textures::Crosshair, "resources/textures/crosshair.png");
 }
 
 void GameWorld::buildScene()

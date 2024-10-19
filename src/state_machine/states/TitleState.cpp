@@ -17,6 +17,7 @@ TitleState::TitleState(StateStack& stack, Context context)
 	mText.setString("Press any key to start");
 	centerOrigin(mText);
 	mText.setPosition(context.window->getView().getSize() / 2.f);
+	context.music->stop();
 }
 
 void TitleState::draw()
@@ -46,8 +47,7 @@ bool TitleState::handleEvent(const sf::Event& event)
 	if (event.type == sf::Event::KeyPressed)
 	{
 		requestStackPop();
-		//requestStackPush(States::Menu); por el momento no hay menu, asi que directamente pusheamos el Game State
-		requestStackPush(States::Game);
+		requestStackPush(States::Menu);
 	}
 
 	return true;

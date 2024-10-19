@@ -6,6 +6,7 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include "../../gui/Container.h"
 
 class PauseState : public State
 {
@@ -20,7 +21,7 @@ class PauseState : public State
 	private:
 		sf::Sprite	mBackgroundSprite;
 		sf::Text	mPausedText;
-		sf::Text	mInstructionText;
+		GUI::Container mGUIContainer;
 };
 
 #endif

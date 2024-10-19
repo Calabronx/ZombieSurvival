@@ -11,8 +11,9 @@ namespace States
 		Menu,
 		Game,
 		Loading,
+		Settings,
 		Pause,
-		GameOver
+		GameOver,
 	};
 }
 
