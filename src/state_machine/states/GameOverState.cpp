@@ -14,11 +14,13 @@ GameOverState::GameOverState(StateStack& stack, Context context)
     sf::Vector2f windowSize(context.window->getSize());
 
     mGameOverText.setFont(font);
-    if (context.inputPlayer->getPlayerStatus() == InputHandler::Dead)
+    if (context.inputPlayer->getPlayerStatus() == InputHandler::Dead) {
+        mGameOverText.setFillColor(sf::Color::Red);
         mGameOverText.setString("You are dead");
-    else
+    }
+    else {
         mGameOverText.setString("You have survived!");
-
+    }
     mGameOverText.setCharacterSize(70);
     centerOrigin(mGameOverText);
     mGameOverText.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
