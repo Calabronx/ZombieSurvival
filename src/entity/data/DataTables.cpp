@@ -3,6 +3,7 @@
 #include "../Projectile.h"
 #include "../Pickup.h"
 #include "../../graphics/Particle.h"
+#include "../../highscore/Score.h"
 
 using namespace std::placeholders;
 
@@ -116,6 +117,42 @@ std::vector<ParticleData> initializeParticleData()
 	data[Particle::Blood].color = sf::Color(255, 0, 0);
 	data[Particle::Blood].lifetime = sf::seconds(0.3f);
 
+
+	return data;
+}
+
+std::vector<ScoreData> initializeScoreData()
+{
+	std::vector<ScoreData> data(Score::ScoreCount);
+
+	data[Score::ZOMBIES_KILLED].id = 1;
+	data[Score::ZOMBIES_KILLED].name = "ZOMBIES KILLED";
+	data[Score::ZOMBIES_KILLED].value = 0;
+	
+	data[Score::PICKUP_ITEMS].id = 2;
+	data[Score::PICKUP_ITEMS].name = "ITEMS COLLECTED";
+	data[Score::PICKUP_ITEMS].value = 0;
+
+	data[Score::BULLETS_FIRED].id = 3;
+	data[Score::BULLETS_FIRED].name = "TOTAL BULLETS FIRED";
+	data[Score::BULLETS_FIRED].value = 0;
+
+	data[Score::DAMAGE_MADE].id = 4;
+	data[Score::DAMAGE_MADE].name = "DAMAGE MADE";
+	data[Score::DAMAGE_MADE].value = 0;
+
+	data[Score::DAMAGE_TAKEN].id = 5;
+	data[Score::DAMAGE_TAKEN].name = "DAMAGE TAKEN";
+	data[Score::DAMAGE_TAKEN].value = 0;
+	
+	data[Score::GUNS_COLLECTED].id = 6;
+	data[Score::GUNS_COLLECTED].name = "GUNS COLLECTED";
+	data[Score::GUNS_COLLECTED].value = 0;
+
+	data[Score::TOTAL_DEATHS].id = 7;
+	data[Score::TOTAL_DEATHS].name = "TOTAL DEATHS";
+	data[Score::TOTAL_DEATHS].value = 0;
+	
 
 	return data;
 }

@@ -11,6 +11,7 @@
 #include "../util/FileSystem.h"
 #include "../sound/MusicPlayer.h"
 #include "../sound/SoundPlayer.h"
+#include "../highscore/HighScore.h"
 
 class Application
 {
@@ -35,6 +36,7 @@ class Application
 		InputHandler			mPlayer;
 		MusicPlayer				mMusic;
 		SoundPlayer				mSounds;
+		HighScore				mHighScore;
 
 		StateStack				mStateStack;
 

@@ -1,5 +1,3 @@
-#include <SFML/Graphics.hpp>
-
 #include <iostream>
 #include "core/Application.h"
 

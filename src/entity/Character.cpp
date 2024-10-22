@@ -436,13 +436,8 @@ void Character::updateTexts()
 		/*mHealthDisplay->setString(toString(getHitpoints()) + " HP");
 		mHealthDisplay->setPosition(0.f, 95.f);
 		mHealthDisplay->setRotation(-getRotation());
-
-		mAmmoDisplay->setString("AMMO: " + toString(mCurrentAmmo));
-		mAmmoDisplay->setPosition(0.f, 150.f);
-		mAmmoDisplay->setRotation(-getRotation());*/
+		**/
 	}
-	
-
 }
 
 void Character::checkPickupDrop(CommandQueue& commands)
@@ -509,18 +504,11 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 void Character::createBullets(SceneNode& node, const TextureHolder& textures) const
 {
 	Projectile::Type type = mProjectileType;
-	//Projectile::Type type = Projectile::HandgunBullet;
 	float rotation = getRotation();
-	//std::cout << rotation << std::endl;
 
 	float xOffset = rotation >= 0.f && rotation >= 230 ? -0.2f : rotation < 230 && rotation >= 199 ? -0.4f
 		: rotation < 199 && rotation >= 130 ? -0.2f : rotation < 170 && rotation >= 110 ? 0.0f : 0.0;
-
 	float yOffset = rotation >= 0.f && rotation >= 230 ? 0.0f : rotation < 199 && rotation >= 170 ? 0.1f : rotation < 170 && rotation >= 110 ? 0.4f : 0.0;
-
-	//createProjectile(node, type, -0.2f, 0.0f, textures); // 316 - 253
-	//createProjectile(node, type, 0.2f, 0.0f, textures); // 253 - 230
-	//createProjectile(node, type, -0.4f, 0.0f, textures); // 214 - 199
 
 	if (mGunEquipped == 2) {
 		createProjectile(node, type, -0.2f, 0.0f, textures);

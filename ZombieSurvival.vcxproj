@@ -166,6 +166,7 @@
     <ClCompile Include="src\gui\Component.cpp" />
     <ClCompile Include="src\gui\Container.cpp" />
     <ClCompile Include="src\gui\Label.cpp" />
+    <ClCompile Include="src\highscore\HighScore.cpp" />
     <ClCompile Include="src\input\command\Command.cpp" />
     <ClCompile Include="src\input\command\CommandQueue.cpp" />
     <ClCompile Include="src\input\InputHandler.cpp" />
@@ -177,6 +178,7 @@
     <ClCompile Include="src\state_machine\StateStack.cpp" />
     <ClCompile Include="src\state_machine\states\GameOverState.cpp" />
     <ClCompile Include="src\state_machine\states\GameState.cpp" />
+    <ClCompile Include="src\state_machine\states\HighScoreState.cpp" />
     <ClCompile Include="src\state_machine\states\LoadingState.cpp" />
     <ClCompile Include="src\state_machine\states\MenuState.cpp" />
     <ClCompile Include="src\state_machine\states\PauseState.cpp" />
@@ -206,6 +208,8 @@
     <ClInclude Include="src\gui\Component.h" />
     <ClInclude Include="src\gui\Container.h" />
     <ClInclude Include="src\gui\Label.h" />
+    <ClInclude Include="src\highscore\HighScore.h" />
+    <ClInclude Include="src\highscore\Score.h" />
     <ClInclude Include="src\input\command\Command.h" />
     <ClInclude Include="src\input\command\CommandQueue.h" />
     <ClInclude Include="src\input\InputHandler.h" />
@@ -217,6 +221,7 @@
     <ClInclude Include="src\state_machine\StateStack.h" />
     <ClInclude Include="src\state_machine\states\GameOverState.h" />
     <ClInclude Include="src\state_machine\states\GameState.h" />
+    <ClInclude Include="src\state_machine\states\HighScoreState.h" />
     <ClInclude Include="src\state_machine\states\LoadingState.h" />
     <ClInclude Include="src\state_machine\states\MenuState.h" />
     <ClInclude Include="src\state_machine\states\PauseState.h" />

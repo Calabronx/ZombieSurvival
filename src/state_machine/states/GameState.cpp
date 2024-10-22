@@ -3,8 +3,9 @@
 
 GameState::GameState(StateStack& stack, Context context)
     : State(stack, context)
-    , mWorld(*context.window, *context.fonts, *context.sounds)
+    , mWorld(*context.window, *context.fonts, *context.sounds, *context.scores)
     , mPlayer(*context.inputPlayer)
+    , mHighScore(*context.scores)
 {
     std::cout << "Game State started" << std::endl;
     mPlayer.setPlayerStatus(InputHandler::SurviveMode);
@@ -24,12 +25,15 @@ bool GameState::update(sf::Time dt)
     if (!mWorld.hasAlivePlayer())
     {
         mPlayer.setPlayerStatus(InputHandler::Dead);
+        mHighScore.addScore(HighScore::TOTAL_DEATHS, 1);
+        mHighScore.printScores();
         requestStackPush(States::GameOver);
     }
     else if (mWorld.hasPlayerSurvived())
     {
         mPlayer.setPlayerStatus(InputHandler::Alive);
         requestStackPush(States::GameOver);
+
     }
 
     CommandQueue& commands = mWorld.getCommandQueue();

@@ -12,6 +12,7 @@
 #include "../input/command/CommandQueue.h"
 #include "../graphics/BloomEffect.h"
 #include "../sound/SoundPlayer.h"
+#include "../highscore/HighScore.h"
 
 namespace sf
 {
@@ -21,7 +22,7 @@ namespace sf
 class GameWorld : sf::NonCopyable
 {
 	public:
-		explicit GameWorld(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds);
+		explicit GameWorld(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds, HighScore& scores);
 		void update(sf::Time dt);
 		void draw();
 
@@ -84,6 +85,7 @@ class GameWorld : sf::NonCopyable
 		TextureHolder		mTextures;
 		FontHolder&			mFonts;
 		SoundPlayer&	    mSounds;
+		HighScore&			mHighScore;
 
 		SceneNode			mSceneGraph;
 		std::array<SceneNode*, LayerCount>	mSceneLayers;

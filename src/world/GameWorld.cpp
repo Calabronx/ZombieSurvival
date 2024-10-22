@@ -11,7 +11,7 @@
 #include "../graphics/PostEffect.h"
 #include "../ecs/SoundNode.h"
 
-GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds)
+GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds, HighScore& scores)
 	: mTarget(window)
 	, mWindow(window)
 	, mSceneTexture()
@@ -19,6 +19,7 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& s
 	, mFonts(fonts)
 	, mTextures()
 	, mSounds(sounds)
+	, mHighScore(scores)
 	, mSceneGraph()
 	, mSceneLayers()
 	, mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 8000.f)
@@ -37,7 +38,6 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& s
 	loadTextures();
 	buildScene();
 
-
 	mWorldView.setCenter(mSpawnPosition);
 	mPlayerHealth.setFont(mFonts.get(Fonts::Main));
 	mPlayerHealth.setPosition(sf::Vector2f(104.f, 7916.f));
@@ -46,10 +46,6 @@ GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& s
 	mPlayerAmmo.setFont(mFonts.get(Fonts::Main));
 	mPlayerAmmo.setPosition(sf::Vector2f(104.f, 7956.f));
 	mPlayerAmmo.setCharacterSize(20);
-	//mCrossHair.setTexture(mTextures.get(Textures::Crosshair));
-	//mCrossHair.setScale(0.12f, 0.12f);
-
-	//std::cout << "SPAWN  X : " << mSpawnPosition.x << "  Y: " << mSpawnPosition.y << std::endl;
 }
 
 void GameWorld::update(sf::Time dt)
@@ -64,12 +60,8 @@ void GameWorld::update(sf::Time dt)
 		addEnemies();
 
 	destroyEntitiesOutsideView();
-
 	//std::cout << "ZOMBIES ALIVE: " << mActiveEnemies.size() << std::endl;
-	//std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;
-	/*std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;*/
-	//std::cout << "PY VEC (X: " << mPlayerSurvivor->getPosition().x << ",Y: " << mPlayerSurvivor->getPosition().y << ")" << std::endl;
-	//std::cout << "PY Velocity VEC (X: " << mPlayerSurvivor->getVelocity().x << ",Y: " << mPlayerSurvivor->getVelocity().y << ")" << std::endl;
+
 	enemiesChaseIfClose();
 	// Forward commands to the scene graph
 	while (!mCommandQueue.isEmpty())
@@ -216,16 +208,8 @@ void GameWorld::addEnemies()
 			addEnemy(Character::Zombie, 70.f, 1400.f);
 			addEnemy(Character::Zombie, 70.f, 1400.f);
 			addEnemy(Character::Zombie, 70.f, 1600.f);
-		/*	addEnemy(Character::Zombie, 70.f, 1600.f);
-			addEnemy(Character::Zombie, 0.f, -500.f);
-			addEnemy(Character::Zombie, 0.f, -1000.f);
-			addEnemy(Character::Zombie, +100.f, -1100.f);
-			addEnemy(Character::Zombie, -100.f, -1100.f);*/
 			break;
 		case 2:
-			//addEnemy(Character::Zombie, 0.f, 500.f);
-			//addEnemy(Character::Zombie, 0.f, 1000.f);
-			//addEnemy(Character::Zombie, +200.f, 1100.f);
 			addEnemy(Character::Zombie, -200.f, 1100.f);
 			addEnemy(Character::Zombie, -90.f, 1400.f);
 			addEnemy(Character::Zombie, -90.f, 1600.f);
@@ -241,10 +225,6 @@ void GameWorld::addEnemies()
 			addEnemy(Character::Zombie, -2000.f, 0.f);
 			break;
 		case 3:
-			//addEnemy(Character::Zombie, 0.f, 500.f);
-			//addEnemy(Character::Zombie, 0.f, 1000.f);
-			//addEnemy(Character::Zombie, +200.f, 1100.f);
-			//addEnemy(Character::Zombie, -200.f, 1100.f);
 			addEnemy(Character::Zombie, -90.f, 1400.f);
 			addEnemy(Character::Zombie, -90.f, 1600.f);
 			addEnemy(Character::Zombie, 380.f, 1400.f);
@@ -263,12 +243,6 @@ void GameWorld::addEnemies()
 			addEnemy(Character::Zombie, 70.f, -1400.f);
 			break;
 		case 4:
-			//addEnemy(Character::Zombie, 0.f, 500.f);
-			//addEnemy(Character::Zombie, 0.f, 1000.f);
-			//addEnemy(Character::Zombie, +200.f, 1100.f);
-			//addEnemy(Character::Zombie, -200.f, 1100.f);
-			//addEnemy(Character::Zombie, -90.f, 1400.f);
-			//addEnemy(Character::Zombie, -90.f, 1600.f);
 			addEnemy(Character::Zombie, 380.f, 1400.f);
 			addEnemy(Character::Zombie, 390.f, 1600.f);
 			addEnemy(Character::Zombie, 2000.f, 0.f);
@@ -285,11 +259,6 @@ void GameWorld::addEnemies()
 			addEnemy(Character::Zombie, 70.f, -1400.f);
 			break;
 		case 5:
-			//addEnemy(Character::Zombie, 0.f, 1000.f);
-			//addEnemy(Character::Zombie, +200.f, 1100.f);
-			//addEnemy(Character::Zombie, -200.f, 1100.f);
-			//addEnemy(Character::Zombie, -90.f, 1400.f);
-			//addEnemy(Character::Zombie, -90.f, 1600.f);
 			addEnemy(Character::Zombie, 0.f, 500.f);
 			addEnemy(Character::Zombie, 380.f, 1400.f);
 			addEnemy(Character::Zombie, 390.f, 1600.f);
@@ -307,11 +276,6 @@ void GameWorld::addEnemies()
 			addEnemy(Character::Zombie, 70.f, -1400.f);
 			break;
 		case 6:
-			//addEnemy(Character::Zombie, 0.f, 1000.f);
-			//addEnemy(Character::Zombie, +200.f, 1100.f);
-			//addEnemy(Character::Zombie, -200.f, 1100.f);
-			//addEnemy(Character::Zombie, -90.f, 1400.f);
-			//addEnemy(Character::Zombie, -90.f, 1600.f);
 			addEnemy(Character::Zombie, 0.f, 500.f);
 			addEnemy(Character::Zombie, 380.f, 1400.f);
 			addEnemy(Character::Zombie, 390.f, 1600.f);
@@ -363,13 +327,8 @@ void GameWorld::addEnemies()
 			addEnemy(Character::Zombie, 70.f, -1400.f);
 			break;
 		case 9:
-			//addEnemy(Character::Zombie, 0.f, 500.f);
 			addEnemy(Character::Zombie, 0.f, 1000.f);
-			//addEnemy(Character::Zombie, +200.f, 1100.f);
-			//addEnemy(Character::Zombie, -200.f, 1100.f);
 			addEnemy(Character::Zombie, -90.f, 1400.f);
-			//addEnemy(Character::Zombie, -90.f, 1600.f);
-			//addEnemy(Character::Zombie, 380.f, 1400.f);
 			addEnemy(Character::Zombie, 390.f, 1600.f);
 			addEnemy(Character::Zombie, 2000.f, 0.f);
 			addEnemy(Character::Zombie, 2000.f, 0.f);
@@ -542,12 +501,7 @@ void GameWorld::adaptPlayerDirection()
 	float degrees = toDegree(mouseAngle) + 90.f;
 
 	mPlayerSurvivor->setMousePosition(mouseWorldPosition);
-	//mPlayerSurvivor->setDirectionAngle(mouseAngle);
 	mPlayerSurvivor->setRotation(degrees);
-
-	//std::cout << "MOUSE VEC (X: " << mousePosition.x << ",Y: " << mousePosition.y << ")" << std::endl;
-	//std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;
-	//std::cout << "MOUSE ROTATION : " << mouseAngle << std::endl;
 }
 
 sf::FloatRect GameWorld::getViewBounds() const
@@ -615,6 +569,7 @@ void GameWorld::handleCollisions()
 			if (d < limit) {
 				zombie.setVelocity(2.0f, 0.0f);
 				player.damage(1);
+				mHighScore.addScore(HighScore::DAMAGE_TAKEN, 1);
 				zombie.attack();
 			}
 			else
@@ -627,6 +582,8 @@ void GameWorld::handleCollisions()
 
 			pickup.apply(player);
 			pickup.destroy();
+			
+			mHighScore.addScore(HighScore::PICKUP_ITEMS, 1);
 			player.playLocalSound(mCommandQueue, SoundEffect::CollectPickup);
 		}
 		else if (matchesCategories(pair, Category::Zombie, Category::Projectile))
@@ -635,6 +592,10 @@ void GameWorld::handleCollisions()
 			auto& projectile = static_cast<Projectile&>(*pair.second);
 
 			zombie.damage(projectile.getDamage());
+			mHighScore.addScore(HighScore::DAMAGE_MADE, projectile.getDamage());
+			if (zombie.isDestroyed()) 
+				mHighScore.addScore(HighScore::ZOMBIES_KILLED, 1);
+
 			sf::Vector2f impactPos(projectile.getWorldPosition());
 			zombie.splashBlood(impactPos - zombie.getWorldPosition());
 			projectile.destroy();
@@ -682,8 +643,8 @@ void GameWorld::destroyEntitiesOutsideView()
 		{
 			if (!getBattlefieldBounds().intersects(e.getBoundingRect())) {
 				e.remove();
-				//std::cout << "entity destroyed" << std::endl;
 				mProjectiles++;
+				mHighScore.addScore(HighScore::BULLETS_FIRED, 1);
 			}
 		});
 

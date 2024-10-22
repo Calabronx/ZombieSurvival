@@ -45,7 +45,6 @@ bool GameOverState::update(sf::Time dt)
     if (mElapsedTime > sf::seconds(3))
     {
         requestStateClear();
-        //requestStackPush(States::Menu);
         requestStackPush(States::Title);
     }
     return false;

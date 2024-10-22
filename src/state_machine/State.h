@@ -8,6 +8,7 @@
 #include "../util/ResourceIdentifiers.h"
 #include "../sound/MusicPlayer.h"
 #include "../sound/SoundPlayer.h"
+#include "../highscore/HighScore.h"
 
 namespace sf
 {
@@ -23,7 +24,7 @@ class State
 public:
 	typedef std::unique_ptr<State> Ptr;
 	struct Context {
-		Context(sf::RenderWindow& window,TextureHolder& textures,FontHolder& fonts,InputHandler& inputPlayer, MusicPlayer& music, SoundPlayer& sound);
+		Context(sf::RenderWindow& window,TextureHolder& textures,FontHolder& fonts,InputHandler& inputPlayer, MusicPlayer& music, SoundPlayer& sound, HighScore& scores);
 
 		sf::RenderWindow*	window;
 		TextureHolder*		textures;
@@ -31,6 +32,7 @@ public:
 		InputHandler*		inputPlayer;
 		MusicPlayer*		music;
 		SoundPlayer*		sounds;
+		HighScore*			scores;
 	};
 
 public:

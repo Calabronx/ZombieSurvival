@@ -62,11 +62,18 @@ struct ParticleData
 	sf::Time	lifetime;
 };
 
+struct ScoreData {
+	size_t id;
+	size_t value;
+	std::string name;
+};
+
 std::vector<CharacterData> initializeCharacterData();
 std::vector<ProjectileData> initializeProjectileData();
 std::vector<PickupData> initializePickupData();
 std::vector<WeaponData> initializeWeaponData();
 std::vector<ParticleData> initializeParticleData();
+std::vector<ScoreData> initializeScoreData();
 #endif // !DATA_TABLES_H
 
 

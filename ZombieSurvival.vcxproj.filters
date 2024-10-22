@@ -58,6 +58,9 @@
     <Filter Include="Source Files\src\gui">
       <UniqueIdentifier>{bcea6ee4-5076-474d-95d5-154956af24bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\highscore">
+      <UniqueIdentifier>{c6bf12a7-baac-4227-b019-8fec45c6cf23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\entity\Entity.cpp">
@@ -169,6 +172,12 @@
       <Filter>Source Files\src</Filter>
     </ClCompile>
     <ClCompile Include="src\state_machine\states\SettingsState.cpp">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\highscore\HighScore.cpp">
+      <Filter>Source Files\src\highscore</Filter>
+    </ClCompile>
+    <ClCompile Include="src\state_machine\states\HighScoreState.cpp">
       <Filter>Source Files\src\state_machine\states</Filter>
     </ClCompile>
   </ItemGroup>
@@ -295,6 +304,15 @@
     </ClInclude>
     <ClInclude Include="src\state_machine\states\SettingsState.h">
       <Filter>Source Files\src\state_machine\states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\highscore\HighScore.h">
+      <Filter>Source Files\src\highscore</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\states\HighScoreState.h">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\highscore\Score.h">
+      <Filter>Source Files\src\highscore</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
