@@ -30,6 +30,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mReloadCommand()
 	, mTravelledDistance(0.f)
 	, mDirectionIndex(0)
+	, mAmmoFired(0)
 	, mGunPosition()
 	, mCurrentFrame(0)
 	, mElapsedFrameTime(sf::Time::Zero)
@@ -472,6 +473,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 
 		mIsFiring = false;
 		mAction = SHOOT;
+		mAmmoFired++;
 		decrementCurrentAmmo(mGunEquipped);
 		//std::cout << "FIRING" << std::endl;
 
@@ -691,6 +693,11 @@ int Character::decrementCurrentAmmo(int gunType)
 	}
 	std::cout << "AMMO: " << mCurrentAmmo << std::endl;
 	return 0;
+}
+
+int Character::getTotalAmmoFired() const
+{
+	return mAmmoFired;
 }
 
 void Character::guideTowardsPlayer(sf::Vector2f position)

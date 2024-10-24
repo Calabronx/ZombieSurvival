@@ -71,6 +71,7 @@ class Character : public Entity
 		int getCurrentAmmunition() const;
 		int getCurrentTotalAmmunition() const;
 		int decrementCurrentAmmo(int gunType);
+		int getTotalAmmoFired() const;
 		virtual bool		isMarkedForRemoval() const;
 		virtual void		remove();
 

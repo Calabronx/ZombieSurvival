@@ -644,7 +644,6 @@ void GameWorld::destroyEntitiesOutsideView()
 			if (!getBattlefieldBounds().intersects(e.getBoundingRect())) {
 				e.remove();
 				mProjectiles++;
-				mHighScore.addScore(HighScore::BULLETS_FIRED, 1);
 			}
 		});
 

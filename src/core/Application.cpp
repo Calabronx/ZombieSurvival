@@ -8,8 +8,9 @@
 #include "../state_machine/states/GameState.h"
 #include "../state_machine/states/PauseState.h"
 #include "../state_machine/states/GameOverState.h"
-#include "../util/Utility.h"
 #include "../state_machine/states/SettingsState.h"
+#include "../state_machine/states/HighScoreState.h"
+#include "../util/Utility.h"
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
@@ -130,4 +131,5 @@ void Application::registerStates()
 	mStateStack.registerState<PauseState>(States::Pause);
 	mStateStack.registerState<GameOverState>(States::GameOver);
 	mStateStack.registerState<SettingsState>(States::Settings);
+	mStateStack.registerState<HighScoreState>(States::HighScore);
 }

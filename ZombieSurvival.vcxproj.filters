@@ -308,11 +308,11 @@
     <ClInclude Include="src\highscore\HighScore.h">
       <Filter>Source Files\src\highscore</Filter>
     </ClInclude>
-    <ClInclude Include="src\state_machine\states\HighScoreState.h">
-      <Filter>Source Files\src\state_machine\states</Filter>
-    </ClInclude>
     <ClInclude Include="src\highscore\Score.h">
       <Filter>Source Files\src\highscore</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\states\HighScoreState.h">
+      <Filter>Source Files\src\state_machine\states</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

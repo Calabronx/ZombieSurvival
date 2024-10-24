@@ -14,6 +14,7 @@ namespace States
 		Settings,
 		Pause,
 		GameOver,
+		HighScore
 	};
 }
 

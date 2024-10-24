@@ -9,7 +9,7 @@
 class HighScore
 {
 	public:
-		enum ScoreID {
+		enum Type {
 			ZOMBIES_KILLED,
 			PICKUP_ITEMS,
 			BULLETS_FIRED,
@@ -19,16 +19,12 @@ class HighScore
 			TOTAL_DEATHS
 		};
 
-		struct Score {
-			size_t id;
-			size_t value;
-			std::string name;
-		};
-
 	public:
 		HighScore();
 
 		void addScore(size_t scoreID, size_t score);
+
+		std::unique_ptr<ScoreData> getScore(size_t scoreId);
 
 		void printScores() const;
 
