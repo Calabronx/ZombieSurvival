@@ -59,7 +59,7 @@ void GameWorld::update(sf::Time dt)
 	if (mActiveEnemies.size() == 0)
 		addEnemies();
 
-	destroyEntitiesOutsideView();
+	destroyEntitiesNotLongerUsed(dt);
 	//std::cout << "ZOMBIES ALIVE: " << mActiveEnemies.size() << std::endl;
 
 	enemiesChaseIfClose();
@@ -381,24 +381,23 @@ void GameWorld::spawnEnemies()
 		else if (mHordeLevel == 3) {
 			std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
 			shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 50, mSpawnPosition.y - 450));
-			shotgun->setVelocity(0.f, 100.f);
+			shotgun->setVelocity(0.f, 50.f);
 			mSceneLayers[Land]->attachChild(std::move(shotgun));
+			spawnGun(2);
 		}
 		else if (mHordeLevel == 4) {
 			enemy->setHitpoints(enemy->getHitpoints() + 290);
 		}
 		else if (mHordeLevel == 5) {
 			enemy->setHitpoints(enemy->getHitpoints() + 350);
+			spawnGun(2);
 		}
 		else if (mHordeLevel == 6) {
 			enemy->setHitpoints(enemy->getHitpoints() + 550);
-			std::unique_ptr<Pickup> rifle(new Pickup(Pickup::RifleItem, mTextures));
-			rifle->setVelocity(0.f, 100.f);
-			rifle->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y - 450));
-			mSceneLayers[Land]->attachChild(std::move(rifle));
 		}
 		else if (mHordeLevel == 7) {
 			enemy->setHitpoints(enemy->getHitpoints() + 750);
+			spawnGun(3);
 		}
 
 		else if (mHordeLevel == 8) {
@@ -407,15 +406,36 @@ void GameWorld::spawnEnemies()
 
 		else if (mHordeLevel == 9) {
 			enemy->setHitpoints(enemy->getHitpoints() + 1250);
+			spawnGun(3);
 		}
 		
 		//enemy->setRotation(90.f); 
 
 		mActiveEnemies.push_back(enemy.get());
 		mSceneLayers[Land]->attachChild(std::move(enemy));
+		
 
 		mEnemySpawnPoints.pop_back();
 
+	}
+}
+
+void GameWorld::spawnGun(int gun) {
+	if (mPlayerSurvivor->isGunInInventory(gun))
+		return;
+
+
+	if (gun == 2) {
+		std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
+		shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 50, mSpawnPosition.y - 450));
+		shotgun->setVelocity(0.f, 50.f);
+		mSceneLayers[Land]->attachChild(std::move(shotgun));
+	}
+	else if (gun == 3) {
+		std::unique_ptr<Pickup> rifle(new Pickup(Pickup::RifleItem, mTextures));
+		rifle->setVelocity(0.f, 50.f);
+		rifle->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y - 450));
+		mSceneLayers[Land]->attachChild(std::move(rifle));
 	}
 }
 
@@ -635,7 +655,7 @@ bool GameWorld::hasPlayerSurvived() const
 	return mActiveEnemies.size() == 0 && mLevelsFinished;
 }
 
-void GameWorld::destroyEntitiesOutsideView()
+void GameWorld::destroyEntitiesNotLongerUsed(sf::Time dt)
 {
 	Command command;
 	command.category = Category::Projectile;
@@ -645,6 +665,10 @@ void GameWorld::destroyEntitiesOutsideView()
 				e.remove();
 				mProjectiles++;
 			}
+
+			/*if (e.getCategory() == Category::Pickup && e.) {
+
+			}*/
 		});
 
 	mCommandQueue.push(command);

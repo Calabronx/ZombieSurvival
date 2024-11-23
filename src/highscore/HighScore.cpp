@@ -60,8 +60,8 @@ void HighScore::addScore(size_t scoreID, size_t score)
 
 std::unique_ptr<ScoreData> HighScore::getScore(size_t scoreId)
 {
-	std::unique_ptr<ScoreData> score(new ScoreData());
-	score = std::move(mScores[scoreId]);
+	std::unique_ptr<ScoreData> score(mScores[scoreId].get());
+
 	return score;
 }
 

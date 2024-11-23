@@ -39,12 +39,13 @@ class GameWorld : sf::NonCopyable
 		void spawnEnemies();
 		void spawnGun(int gunNum);
 		void enemiesChaseIfClose();
-		void destroyEntitiesOutsideView();
+		void destroyEntitiesNotLongerUsed(sf::Time dt);
 
 		void adaptPlayerPosition();
 		void adaptPlayerVelocity();
 		void adaptPlayerDirection();
 		void updateSounds();
+		void updateDifficulty();
 		//void setPlayerRef(InputHandler& input);
 
 		sf::FloatRect getViewBounds() const;

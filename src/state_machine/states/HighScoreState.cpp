@@ -1,5 +1,6 @@
 #include "HighScoreState.h"
 #include "../../util/Utility.h"
+#include "../../gui/Button.h"
 
 HighScoreState::HighScoreState(StateStack& stack, Context context)
 	: State(stack, context)
@@ -28,7 +29,7 @@ HighScoreState::HighScoreState(StateStack& stack, Context context)
 	mTitleTxt.setString("HIGH SCORES");
 	std::unique_ptr<ScoreData> zombiesKillScore(new ScoreData());
 	zombiesKillScore = context.scores->getScore(HighScore::ZOMBIES_KILLED);
-	mZombiesKilledTxt.setString("  ZOMBIES KILLED: " + toString(zombiesKillScore->value));
+	mZombiesKilledTxt.setString("ZOMBIES KILLED: " + toString(zombiesKillScore->value));
 	
 	std::unique_ptr<ScoreData> bulletsScore(new ScoreData());
 	bulletsScore = context.scores->getScore(HighScore::BULLETS_FIRED);
@@ -36,7 +37,7 @@ HighScoreState::HighScoreState(StateStack& stack, Context context)
 	
 	std::unique_ptr<ScoreData> itemsCollected(new ScoreData());
 	itemsCollected = context.scores->getScore(HighScore::PICKUP_ITEMS);
-	mItemsCollectedTxt.setString("	 ITEMS COLLECTED: " + toString(itemsCollected->value));
+	mItemsCollectedTxt.setString("ITEMS COLLECTED: " + toString(itemsCollected->value));
 	
 	std::unique_ptr<ScoreData> damageMade(new ScoreData());
 	damageMade = context.scores->getScore(HighScore::DAMAGE_MADE);
@@ -48,7 +49,7 @@ HighScoreState::HighScoreState(StateStack& stack, Context context)
 	
 	std::unique_ptr<ScoreData> gunsCollect(new ScoreData());
 	gunsCollect = context.scores->getScore(HighScore::GUNS_COLLECTED);
-	mGunsCollectedTxt.setString("	GUNS COLLECTED: " + toString(gunsCollect->value));
+	mGunsCollectedTxt.setString("GUNS COLLECTED: " + toString(gunsCollect->value));
 
 	std::unique_ptr<ScoreData> totalDeaths(new ScoreData());
 	totalDeaths = context.scores->getScore(HighScore::TOTAL_DEATHS);
@@ -80,6 +81,28 @@ HighScoreState::HighScoreState(StateStack& stack, Context context)
 	mDamageMadeTxt.setPosition(0.2f * windowSize.x, 0.6f * windowSize.y);
 	mDamageTakenTxt.setPosition(0.2f * windowSize.x, 0.7f * windowSize.y);
 	mTotalDeathsTxt.setPosition(0.2f * windowSize.x, 0.8f * windowSize.y);
+
+	auto retryButton = std::make_shared<GUI::Button>(*context.fonts, *context.textures);
+	retryButton->setPosition(0.5f * windowSize.x - 100, 0.4f * windowSize.y + 75);
+	retryButton->setText("Play again");
+	retryButton->setCallback([this]()
+		{
+			requestStateClear();
+			requestStackPush(States::Game);
+		});
+
+	auto backToMenuButton = std::make_shared<GUI::Button>(*context.fonts, *context.textures);
+	backToMenuButton->setPosition(0.5f * windowSize.x - 100, 0.4f * windowSize.y + 125);
+	backToMenuButton->setText("Back to menu");
+	backToMenuButton->setCallback([this]()
+		{
+			requestStateClear();
+			//requestStackPush(States::Menu);
+			requestStackPush(States::Title);
+		});
+
+	//mGUIContainer.pack(retryButton);
+	mGUIContainer.pack(backToMenuButton);
 }
 
 void HighScoreState::draw()
@@ -100,20 +123,16 @@ void HighScoreState::draw()
 	window.draw(mDamageMadeTxt);
 	window.draw(mDamageTakenTxt);
 	window.draw(mTotalDeathsTxt);
+	window.draw(mGUIContainer);
 }
 
 bool HighScoreState::update(sf::Time dt)
 {
-	mElapsedTime += dt;
-	if (mElapsedTime > sf::seconds(5))
-	{
-		requestStateClear();
-		requestStackPush(States::Title);
-	}
 	return false;
 }
 
 bool HighScoreState::handleEvent(const sf::Event& event)
 {
+	mGUIContainer.handleEvent(event);
 	return false;
 }

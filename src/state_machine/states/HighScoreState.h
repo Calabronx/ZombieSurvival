@@ -4,6 +4,7 @@
 
 #include "../State.h"
 #include "../../highscore/Score.h" // deberia usar esta estructura en esta clase
+#include "../../gui/Container.h"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
@@ -28,6 +29,7 @@ class HighScoreState : public State
 		sf::Text	mGunsCollectedTxt;
 		sf::Text	mTotalDeathsTxt;
 		sf::Time		mElapsedTime;
+		GUI::Container mGUIContainer;
 
 };
 #endif // !HIGHSCORE_H

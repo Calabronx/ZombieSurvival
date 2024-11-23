@@ -2,7 +2,7 @@
 #include "../util/FileSystem.h"
 
 #include<iostream>
-
+#include<SFML/Window/VideoMode.hpp>
 #include "../state_machine/states/TitleState.h"
 #include "../state_machine/states/MenuState.h"
 #include "../state_machine/states/GameState.h"
@@ -11,6 +11,7 @@
 #include "../state_machine/states/SettingsState.h"
 #include "../state_machine/states/HighScoreState.h"
 #include "../util/Utility.h"
+
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 

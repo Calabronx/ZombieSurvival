@@ -1,12 +1,19 @@
-#include <iostream>
 #include "core/Application.h"
+
+#include <stdexcept>
+#include <iostream>
 
 
 int main()
 {
-	std::cout << "arranca el programa";
-	Application game;
-	std::cout << "antes de ejectutar el programa";
-	game.run();
-	std::cout << "despues de ejectutar el programa";
+	try
+	{
+		Application game;
+		game.run();
+
+	}
+	catch (std::exception& e)
+	{
+		std::cout << "\nEXCEPTION: " << e.what() << std::endl;
+	}
 }
