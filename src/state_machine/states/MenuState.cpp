@@ -1,95 +1,70 @@
 #include "MenuState.h"
-
-#include<SFML/Window/Event.hpp>
-
-#include "../../util/FileSystem.h"
+#include "../../gui/Button.h"
 #include "../../util/Utility.h"
+#include "../../util/FileSystem.h"
+
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/View.hpp>
 
 MenuState::MenuState(StateStack& stack, Context context)
 	: State(stack, context)
-	, mOptions()
-	, mOptionIndex(0)
+	, mGUIContainer()
 {
 
 	sf::Texture& texture = context.textures->get(Textures::TitleScreen);
-	sf::Font& font = context.fonts->get(Fonts::Main);
+	mBackgroundSprite.setTexture(texture);
 
-	sf::Text playOption;
-	playOption.setFont(font);
-	playOption.setString("Play");
-	centerOrigin(playOption);
-	playOption.setPosition(context.window->getView().getSize() / 2.f);
-	mOptions.push_back(playOption);
+	auto playButton = std::make_shared<GUI::Button>(*context.fonts, *context.textures);
+	playButton->setPosition(100, 300);
+	playButton->setText("Play");
+	playButton->setCallback([this]()
+	{
+			requestStackPop();
+			requestStackPush(States::Game);
+	});
 
-	sf::Text exitOption;
-	exitOption.setFont(font);
-	exitOption.setString("Exit");
-	centerOrigin(exitOption);
-	exitOption.setPosition(playOption.getPosition() + sf::Vector2f(0.f, 30.f));
-	mOptions.push_back(exitOption);
+	auto settingsButton = std::make_shared<GUI::Button>(*context.fonts, *context.textures);
+	settingsButton->setPosition(100, 350);
+	settingsButton->setText("Settings");
+	settingsButton->setCallback([this]()
+	{
+			requestStackPush(States::Settings);
+	});
 
-	updateOptionText();
+	auto exitButton = std::make_shared<GUI::Button>(*context.fonts, *context.textures);
+	exitButton->setPosition(100, 400);
+	exitButton->setText("Exit");
+	exitButton->setCallback([this]()
+	{
+			requestStackPop();
+	});
+
+	mGUIContainer.pack(playButton);
+	mGUIContainer.pack(settingsButton);
+	mGUIContainer.pack(exitButton);
+	
+
+	//updateOptionText();
+	//context.music->play(Music::MenuTheme);
 }
 
 void MenuState::draw()
 {
+	sf::RenderWindow& window = *getContext().window;
+
+	window.setView(window.getDefaultView());
+	window.draw(mBackgroundSprite);
+	window.draw(mGUIContainer);
 }
 
 bool MenuState::update(sf::Time dt)
 {
-	return false;
+	return true;
 }
 
 bool MenuState::handleEvent(const sf::Event& event)
 {
-	if (event.type != sf::Event::KeyPressed)
-		return false;
-
-	if (event.key.code == sf::Keyboard::Return)
-	{
-		if (mOptionIndex == Play)
-		{
-			requestStackPop();
-			requestStackPush(States::Game);
-		}
-		else if (mOptionIndex == Exit)
-		{
-			requestStackPop();
-		}
-	}
-
-
-	if (event.key.code == sf::Keyboard::Up)
-	{
-		if (mOptionIndex > 0)
-			mOptionIndex--;
-		else
-			mOptionIndex = mOptions.size() - 1;
-
-		updateOptionText();
-	}
-
-	else if (event.key.code == sf::Keyboard::Down)
-	{
-		if (mOptionIndex < mOptions.size() - 1)
-			mOptionIndex++;
-		else
-			mOptionIndex = 0;
-
-		updateOptionText();
-	}
+	mGUIContainer.handleEvent(event);
 	return false;
 }
 
-void MenuState::updateOptionText()
-{
-	if (mOptions.empty())
-		return;
-
-	// White all texts
-	for (sf::Text& text : mOptions)
-		text.setFillColor(sf::Color::White);
-
-	// Red the selected text
-	mOptions[mOptionIndex].setFillColor(sf::Color::Red);
-}

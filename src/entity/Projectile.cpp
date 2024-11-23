@@ -3,6 +3,7 @@
 #include "../util/FileSystem.h"
 #include "../util/Utility.h"
 #include "../util/Category.h"
+#include "../graphics/EmitterNode.h"
 
 #include<vector>
 
@@ -14,14 +15,23 @@ namespace
 Projectile::Projectile(Type type, const TextureHolder& textures)
     : Entity(1)
     , mType(type)
-    , mSprite(textures.get(Table[type].texture))
+    , mSprite(textures.get(Table[type].texture), Table[type].textureRect)
 {
     centerOrigin(mSprite);
+
+    /*std::unique_ptr<EmitterNode> smoke(new EmitterNode(Particle::Smoke));
+    smoke->setPosition(0.f, getBoundingRect().height / 2.f);
+    attachChild(std::move(smoke));
+    
+    std::unique_ptr<EmitterNode> fire(new EmitterNode(Particle::Fire));
+    fire->setPosition(0.f, getBoundingRect().height / 2.f);
+    attachChild(std::move(fire));*/
+
+
 }
 
 unsigned int Projectile::getCategory() const
 {
-    //if (mType == HandgunBullet || mType == ShotgunBullet) // originalmente en el diseño, este if validaba que el tipo de projectil sea aliado o enemigo ( en un juego de aviones)
     return Category::Projectile;
 }
 

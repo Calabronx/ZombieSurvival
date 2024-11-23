@@ -18,10 +18,9 @@ class Projectile : public Entity
 	public:
 		enum Type
 		{
-			//HandgunBullet
-			//ShotgunBullet
 			HandgunBullet,
 			ShotgunBullet,
+			RifleBullet,
 			TypeCount
 		};
 

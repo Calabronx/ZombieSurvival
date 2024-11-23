@@ -6,47 +6,67 @@
 #include <memory>
 #include "../util/Utility.h"
 #include "../entity/Pickup.h"
+#include "../graphics/ParticleNode.h"
+#include "../graphics/EmitterNode.h"
+#include "../graphics/PostEffect.h"
+#include "../ecs/SoundNode.h"
 
-GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts)
-	: mWindow(window)
+GameWorld::GameWorld(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds, HighScore& scores)
+	: mTarget(window)
+	, mWindow(window)
+	, mSceneTexture()
 	, mWorldView(window.getDefaultView())
 	, mFonts(fonts)
 	, mTextures()
+	, mSounds(sounds)
+	, mHighScore(scores)
 	, mSceneGraph()
 	, mSceneLayers()
-	, mWorldBounds(0.f, 0.f, mWorldView.getSize().x + 5000.f, 5000.f)
+	, mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 8000.f)
 	, mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
 	, mScrollSpeed(-50.f)
+	, mHordeLevel(1)
+	, mLevelsFinished(false)
 	, mPlayerSurvivor(nullptr)
 	, mEnemySpawnPoints()
 	, mActiveEnemies()
+	, mPlayerHealth()
+	, mPlayerAmmo()
 {
+	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
+
 	loadTextures();
 	buildScene();
 
 	mWorldView.setCenter(mSpawnPosition);
-
+	mPlayerHealth.setFont(mFonts.get(Fonts::Main));
+	mPlayerHealth.setPosition(sf::Vector2f(104.f, 7916.f));
+	mPlayerHealth.setCharacterSize(20);
+	
+	mPlayerAmmo.setFont(mFonts.get(Fonts::Main));
+	mPlayerAmmo.setPosition(sf::Vector2f(104.f, 7956.f));
+	mPlayerAmmo.setCharacterSize(20);
 }
-//std::cout << "SPAWN  X : " << mSpawnPosition.x << "  Y: " << mSpawnPosition.y << std::endl;
 
 void GameWorld::update(sf::Time dt)
 {
 	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
 	mPlayerSurvivor->setVelocity(0.f, 0.f);
 
-	destroyEntitiesOutsideView();
+	mPlayerHealth.setString("LIFE: " + toString(mPlayerSurvivor->getHitpoints()));
+	mPlayerAmmo.setString("AMMO: " + toString(mPlayerSurvivor->getCurrentAmmunition()) + "/" + toString(mPlayerSurvivor->getCurrentTotalAmmunition()));
 
+	if (mActiveEnemies.size() == 0)
+		addEnemies();
+
+	destroyEntitiesNotLongerUsed(dt);
 	//std::cout << "ZOMBIES ALIVE: " << mActiveEnemies.size() << std::endl;
-	//std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;
-	/*std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;*/
-	//std::cout << "PY VEC (X: " << mPlayerSurvivor->getPosition().x << ",Y: " << mPlayerSurvivor->getPosition().y << ")" << std::endl;
+
 	enemiesChaseIfClose();
 	// Forward commands to the scene graph
 	while (!mCommandQueue.isEmpty())
 		mSceneGraph.onCommand(mCommandQueue.pop(), dt);
-
 	adaptPlayerVelocity();
-
 	adaptPlayerDirection();
 
 	handleCollisions();
@@ -54,15 +74,34 @@ void GameWorld::update(sf::Time dt)
 	mSceneGraph.removeWrecks();
 	spawnEnemies();
 
-
 	mSceneGraph.update(dt, mCommandQueue);
 	adaptPlayerPosition();
+
+	updateSounds();
 }
 
 void GameWorld::draw()
 {
-	mWindow.setView(mWorldView);
-	mWindow.draw(mSceneGraph);
+	if (PostEffect::isSupported())
+	{
+		mSceneTexture.clear();
+		mSceneTexture.setView(mWorldView);
+		mSceneTexture.draw(mSceneGraph);
+		mSceneTexture.draw(mPlayerHealth);
+		mSceneTexture.draw(mPlayerAmmo);
+		mSceneTexture.draw(mCrossHair);
+		mSceneTexture.display();
+		mBloomEffect.apply(mSceneTexture, mTarget);
+	}
+	else
+	{
+		mWindow.setView(mWorldView);
+		mWindow.draw(mSceneGraph);
+		mWindow.draw(mPlayerHealth);
+		mWindow.draw(mPlayerAmmo);
+		mWindow.draw(mCrossHair);
+
+	}
 }
 
 CommandQueue& GameWorld::getCommandQueue()
@@ -72,16 +111,43 @@ CommandQueue& GameWorld::getCommandQueue()
 
 void GameWorld::loadTextures()
 {
-	//mTextures.load(Textures::Survivor, "resources/textures/handgun/idle/survivor-idle_handgun_0.png");
 	mTextures.load(Textures::Survivor, "resources/textures/rifle/idle/survivor-idle_rifle_0.png");
-	//mTextures.load(Textures::Zombie, "resources/textures/zombiebasic.png");
-	mTextures.load(Textures::Zombie, "resources/textures/zombiebasic_first.png");
+
+	mTextures.load(Textures::HandgunIdle, "resources/textures/tds_zombie/hunter_gun_idle.png");
+	mTextures.load(Textures::HandgunMove, "resources/textures/tds_zombie/hunter_gun_move.png");
+	mTextures.load(Textures::HandgunShoot, "resources/textures/tds_zombie/hunter_gun_shoot.png");
+
+	mTextures.load(Textures::ShotgunIdle, "resources/textures/tds_zombie/hunter_shotgun_idle.png");
+	mTextures.load(Textures::ShotgunMove, "resources/textures/tds_zombie/hunter_shotgun_move.png");
+	mTextures.load(Textures::ShotgunShoot, "resources/textures/tds_zombie/hunter_shotgun_shoot.png");
+
+	mTextures.load(Textures::RifleIdle, "resources/textures/tds_zombie/hunter_rifle_idle.png");
+	mTextures.load(Textures::RifleMove, "resources/textures/tds_zombie/hunter_rifle_move.png");
+	mTextures.load(Textures::RifleShoot, "resources/textures/tds_zombie/hunter_shoot.png");
+	mTextures.load(Textures::RifleReload, "resources/textures/tds_zombie/hunter_rifle_reload.png");
+
+	mTextures.load(Textures::ZombieIdle, "resources/textures/tds_zombie/export/skeleton-idle_0.png");
+	mTextures.load(Textures::ZombieWalk, "resources/textures/tds_zombie/zombie_move.png");
+	mTextures.load(Textures::ZombieAttack, "resources/textures/tds_zombie/zombie_attack.png");
+
 	mTextures.load(Textures::HandgunBullet, "resources/textures/bullets/Bullet.png");
-	mTextures.load(Textures::Background, "resources/textures/Tiles/Desert.png");
+	mTextures.load(Textures::ShotgunBullet, "resources/textures/bullets/ShotgunBullet.png");
+	//mTextures.load(Textures::Background, "resources/textures/Tiles/Desert.png");
+	//mTextures.load(Textures::Background, "resources/textures/Tiles/Asfalt1.jpg");
+	mTextures.load(Textures::Background, "resources/textures/Tiles/ground3.jpg");
 
 	mTextures.load(Textures::HealthRefill, "resources/textures/HealthRefill.png");
 	mTextures.load(Textures::FireRate, "resources/textures/FireRate.png");
-	mTextures.load(Textures::FireSpread, "resources/textures/FireSpread.png");
+	mTextures.load(Textures::HandgunAmmo, "resources/textures/FireSpread.png");
+	mTextures.load(Textures::ShotgunAmmo, "resources/textures/ShotgunAmmo.png");
+	mTextures.load(Textures::RifleAmmo, "resources/textures/RifleAmmo.png");
+	mTextures.load(Textures::ShotgunItem, "resources/textures/shotgun_item.png");
+	mTextures.load(Textures::RifleItem, "resources/textures/rifle_item_1.png");
+
+	mTextures.load(Textures::Blood, "resources/textures/blood/blood splash.png");
+	mTextures.load(Textures::ShootFire, "resources/textures/fire.png");
+
+	mTextures.load(Textures::Particle, "resources/textures/particle/particle.png");
 }
 
 void GameWorld::buildScene()
@@ -102,38 +168,191 @@ void GameWorld::buildScene()
 	backgroundSprite->setPosition(mWorldBounds.left, mWorldBounds.top);
 	mSceneLayers[Background]->attachChild(std::move(backgroundSprite));
 
+	std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Smoke, mTextures));
+	mSceneLayers[Land]->attachChild(std::move(smokeNode));
+	
+	std::unique_ptr<ParticleNode> fireNode(new ParticleNode(Particle::Fire, mTextures));
+	mSceneLayers[Land]->attachChild(std::move(fireNode));
+	
+	std::unique_ptr<ParticleNode> bloodNode(new ParticleNode(Particle::Blood, mTextures));
+	mSceneLayers[Land]->attachChild(std::move(bloodNode));
 
-	std::unique_ptr<Pickup> healthItem(new Pickup(Pickup::HealthRefill, mTextures));
-	healthItem->setPosition(0.f, 0.f);
-
-	mSceneLayers[Land]->attachChild(std::move(healthItem));
+	std::unique_ptr<SoundNode> soundNode(new SoundNode(mSounds));
+	mSceneGraph.attachChild(std::move(soundNode));
 
 	// agregar jugador a la escena
 	std::unique_ptr<Character> player(new Character(Character::Survivor, mTextures, mFonts));
 	mPlayerSurvivor = player.get();
 	mPlayerSurvivor->setPosition(mSpawnPosition);
 	mPlayerSurvivor->setVelocity(0.f, 0.f);
-	mPlayerSurvivor->setScale(sf::Vector2f(0.400f, 0.400f));
+	mPlayerSurvivor->setScale(sf::Vector2f(0.300f, 0.300f));
 
 	//mPlayerSurvivor->setRotation(
 	//MOUSE VEC (X: 320,Y: 192)
-	sf::FloatRect gun(mPlayerSurvivor->getGunPosition(), sf::Vector2f(4, 2));
 	//mPlayerSurvivor->attachChild(gun);
 	mSceneLayers[Land]->attachChild(std::move(player));
 
-	addEnemies();
+	//addEnemies();
 }
 
 void GameWorld::addEnemies()
 {
-	addEnemy(Character::Zombie, 320.f, 5.f);
-	addEnemy(Character::Zombie, 0.f, 1400.f);
-	addEnemy(Character::Zombie, 0.f, 600.f);
+	switch (mHordeLevel) {
+		case 1:
+			addEnemy(Character::Zombie, 0.f, 500.f);
+			addEnemy(Character::Zombie, 0.f, 1000.f);
+			addEnemy(Character::Zombie, +100.f, 1100.f);
+			addEnemy(Character::Zombie, -100.f, 1100.f);
+			addEnemy(Character::Zombie, -70.f, 1400.f);
+			addEnemy(Character::Zombie, -70.f, 1600.f);
+			addEnemy(Character::Zombie, 70.f, 1400.f);
+			addEnemy(Character::Zombie, 70.f, 1400.f);
+			addEnemy(Character::Zombie, 70.f, 1600.f);
+			break;
+		case 2:
+			addEnemy(Character::Zombie, -200.f, 1100.f);
+			addEnemy(Character::Zombie, -90.f, 1400.f);
+			addEnemy(Character::Zombie, -90.f, 1600.f);
+			addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			break;
+		case 3:
+			addEnemy(Character::Zombie, -90.f, 1400.f);
+			addEnemy(Character::Zombie, -90.f, 1600.f);
+			addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, 0.f, -500.f);
+			addEnemy(Character::Zombie, 0.f, -1000.f);
+			addEnemy(Character::Zombie, +100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -70.f, -1400.f);
+			addEnemy(Character::Zombie, -70.f, -1600.f);
+			addEnemy(Character::Zombie, 70.f, -1400.f);
+			break;
+		case 4:
+			addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, 0.f, -500.f);
+			addEnemy(Character::Zombie, 0.f, -1000.f);
+			addEnemy(Character::Zombie, +100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -70.f, -1400.f);
+			addEnemy(Character::Zombie, -70.f, -1600.f);
+			addEnemy(Character::Zombie, 70.f, -1400.f);
+			break;
+		case 5:
+			addEnemy(Character::Zombie, 0.f, 500.f);
+			addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, 0.f, -500.f);
+			addEnemy(Character::Zombie, 0.f, -1000.f);
+			addEnemy(Character::Zombie, +100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -70.f, -1400.f);
+			addEnemy(Character::Zombie, -70.f, -1600.f);
+			addEnemy(Character::Zombie, 70.f, -1400.f);
+			break;
+		case 6:
+			addEnemy(Character::Zombie, 0.f, 500.f);
+			addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, 0.f, -500.f);
+			addEnemy(Character::Zombie, 0.f, -1000.f);
+			addEnemy(Character::Zombie, +100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -70.f, -1400.f);
+			addEnemy(Character::Zombie, -70.f, -1600.f);
+			addEnemy(Character::Zombie, 70.f, -1400.f);
+			break;
+		case 7:
+			addEnemy(Character::Zombie, 0.f, 500.f);
+			addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, 0.f, -500.f);
+			addEnemy(Character::Zombie, 0.f, -1000.f);
+			addEnemy(Character::Zombie, +100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -70.f, -1400.f);
+			addEnemy(Character::Zombie, -70.f, -1600.f);
+			addEnemy(Character::Zombie, 70.f, -1400.f);
+			break;
+		case 8:
+			addEnemy(Character::Zombie, 0.f, 500.f);
+			addEnemy(Character::Zombie, 380.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, 0.f, -500.f);
+			addEnemy(Character::Zombie, 0.f, -1000.f);
+			addEnemy(Character::Zombie, +100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -70.f, -1400.f);
+			addEnemy(Character::Zombie, -70.f, -1600.f);
+			addEnemy(Character::Zombie, 70.f, -1400.f);
+			break;
+		case 9:
+			addEnemy(Character::Zombie, 0.f, 1000.f);
+			addEnemy(Character::Zombie, -90.f, 1400.f);
+			addEnemy(Character::Zombie, 390.f, 1600.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, 2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, -2000.f, 0.f);
+			addEnemy(Character::Zombie, 0.f, -500.f);
+			addEnemy(Character::Zombie, 0.f, -1000.f);
+			addEnemy(Character::Zombie, +100.f, -1100.f);
+			addEnemy(Character::Zombie, -100.f, -1100.f);
+			addEnemy(Character::Zombie, -70.f, -1400.f);
+			addEnemy(Character::Zombie, -70.f, -1600.f);
+			addEnemy(Character::Zombie, 70.f, -1400.f);
+			break;
+		default:
+			mLevelsFinished = true;
+	}
+	mHordeLevel++;
 
 	std::sort(mEnemySpawnPoints.begin(), mEnemySpawnPoints.end(), [](SpawnPoint lhs, SpawnPoint rhs)
 		{
 			return lhs.y < rhs.y;
 		});
+	//std::cout << "mHorde level : " << mHordeLevel << std::endl;
 }
 
 void GameWorld::addEnemy(Character::Type type, float relX, float relY)
@@ -144,20 +363,79 @@ void GameWorld::addEnemy(Character::Type type, float relX, float relY)
 
 void GameWorld::spawnEnemies()
 {
-	while (!mEnemySpawnPoints.empty() && mEnemySpawnPoints.back().y > getBattlefieldBounds().top)
+	while (!mEnemySpawnPoints.empty())
 	{
 		SpawnPoint spawn = mEnemySpawnPoints.back();
 
 		std::unique_ptr<Character> enemy(new Character(spawn.type, mTextures, mFonts));
 		enemy->setPosition(spawn.x, spawn.y);
-		enemy->setVelocity(20.f, 20.f);
-		//enemy->setRotation(180.f); usar para modificar la rotacion del enemigo
+		enemy->setScale(sf::Vector2f(0.300f, 0.300f));
+		enemy->setVelocity(90.f, 90.f);
+
+		if (mHordeLevel == 2) {
+			enemy->setHitpoints(enemy->getHitpoints() + 250);
+			enemy->setHitpoints(enemy->getHitpoints() + 50);
+			enemy->setVelocity(sf::Vector2f(1900.f, 1900.f));
+
+		}
+		else if (mHordeLevel == 3) {
+			std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
+			shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 50, mSpawnPosition.y - 450));
+			shotgun->setVelocity(0.f, 50.f);
+			mSceneLayers[Land]->attachChild(std::move(shotgun));
+			spawnGun(2);
+		}
+		else if (mHordeLevel == 4) {
+			enemy->setHitpoints(enemy->getHitpoints() + 290);
+		}
+		else if (mHordeLevel == 5) {
+			enemy->setHitpoints(enemy->getHitpoints() + 350);
+			spawnGun(2);
+		}
+		else if (mHordeLevel == 6) {
+			enemy->setHitpoints(enemy->getHitpoints() + 550);
+		}
+		else if (mHordeLevel == 7) {
+			enemy->setHitpoints(enemy->getHitpoints() + 750);
+			spawnGun(3);
+		}
+
+		else if (mHordeLevel == 8) {
+			enemy->setHitpoints(enemy->getHitpoints() + 950);
+		}
+
+		else if (mHordeLevel == 9) {
+			enemy->setHitpoints(enemy->getHitpoints() + 1250);
+			spawnGun(3);
+		}
+		
+		//enemy->setRotation(90.f); 
 
 		mActiveEnemies.push_back(enemy.get());
 		mSceneLayers[Land]->attachChild(std::move(enemy));
+		
 
 		mEnemySpawnPoints.pop_back();
 
+	}
+}
+
+void GameWorld::spawnGun(int gun) {
+	if (mPlayerSurvivor->isGunInInventory(gun))
+		return;
+
+
+	if (gun == 2) {
+		std::unique_ptr<Pickup> shotgun(new Pickup(Pickup::ShotgunItem, mTextures));
+		shotgun->setPosition(sf::Vector2f(mSpawnPosition.x + 50, mSpawnPosition.y - 450));
+		shotgun->setVelocity(0.f, 50.f);
+		mSceneLayers[Land]->attachChild(std::move(shotgun));
+	}
+	else if (gun == 3) {
+		std::unique_ptr<Pickup> rifle(new Pickup(Pickup::RifleItem, mTextures));
+		rifle->setVelocity(0.f, 50.f);
+		rifle->setPosition(sf::Vector2f(mSpawnPosition.x + 300, mSpawnPosition.y - 450));
+		mSceneLayers[Land]->attachChild(std::move(rifle));
 	}
 }
 
@@ -176,13 +454,13 @@ void GameWorld::enemiesChaseIfClose()
 	enemyChase.category = Category::Zombie;
 	enemyChase.action = derivedAction<Character>([this](Character& enemyChaser, sf::Time)
 		{
-			if (!enemyChaser.isChasing())
+			if (enemyChaser.isAllied())
 				return;
 
 			float minDistance = std::numeric_limits<float>::max();
 			Character* closestEnemy = nullptr;
 
-			for (Character* zombie : mActiveEnemies)
+			/*for (Character* zombie : mActiveEnemies)
 			{
 				float enemyDistance = distance(*mPlayerSurvivor, *zombie);
 
@@ -191,10 +469,11 @@ void GameWorld::enemiesChaseIfClose()
 					closestEnemy = zombie;
 					minDistance = enemyDistance;
 				}
-			}
+			}*/
 
-			if (closestEnemy)
-				enemyChaser.guideTowardsPlayer(mPlayerSurvivor->getWorldPosition());
+			//if (closestEnemy)
+			enemyChaser.guideTowardsPlayer(mPlayerSurvivor->getWorldPosition());
+
 		});
 
 	mCommandQueue.push(enemyCollector);
@@ -204,62 +483,15 @@ void GameWorld::enemiesChaseIfClose()
 
 void GameWorld::adaptPlayerPosition()
 {
-	sf::FloatRect viewBounds(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
+	sf::FloatRect viewBounds = getViewBounds();
 	const float borderDistance = 40.f;
-	const float playerVelocity = 0.10f;
+
 	sf::Vector2f position = mPlayerSurvivor->getPosition();
-	sf::Vector2f viewPosition = viewBounds.getPosition();
-
-	if (position.x < mWorldBounds.getSize().x || position.x < 0 || position.y < mWorldBounds.getSize().y || position.y < 0) {
-		//std::cout << "inside of bounds" << std::endl;
-		//std::cout << "out of bounds" << std::endl;
-		// el jugador es mantenido dentro de los limites del juego
-		//mPlayerSurvivor->stop(true);
-		position.x = std::max(position.x, mWorldView.getCenter().x);
-		position.x = std::min(position.x, mWorldView.getCenter().x);
-		position.y = std::max(position.y, mWorldView.getCenter().y);
-		position.y = std::min(position.y, mWorldView.getCenter().y);
-		sf::Vector2f delta(mPlayerSurvivor->getVelocity().x * playerVelocity, mPlayerSurvivor->getVelocity().y * playerVelocity);
-
-		if (mPlayerSurvivor->getBoundingRect().intersects(mWorldBounds)) {
-			//std::cout << "intersect bound" << std::endl;
-		}
-
-
-		if (viewBounds.intersects(mWorldBounds)) {
-			//std::cout << "camera inside boundaries" << std::endl;
-			//mPlayerSurvivor->stop(false);
-		}
-		else {
-			//std::cout << "camera outside boundaries" << std::endl;
-			//mPlayerSurvivor->stop(true);
-		}
-		//mWorldView.setCenter(delta);
-	}
-	else {
-		// la camara sigue al jugador
-	}
-
-	sf::Vector2f delta(mPlayerSurvivor->getVelocity().x * playerVelocity, mPlayerSurvivor->getVelocity().y * playerVelocity);
-	if (viewPosition.x < mWorldBounds.getSize().x - 400 || viewPosition.x < 0 || viewPosition.y < mWorldBounds.getSize().y - 400 || viewPosition.y < 0) {
-		//std::cout << "out" << std::endl;
-		mWorldView.move(delta);
-	}
-
-	position.x = std::max(position.x, mWorldBounds.left + borderDistance);
-	position.x = std::min(position.x, mWorldBounds.left + mWorldBounds.width - borderDistance);
-	position.y = std::max(position.y, mWorldBounds.top + borderDistance);
-	position.y = std::min(position.y, mWorldBounds.top + mWorldBounds.height - borderDistance);
-
-
-
-
-	//sf::Vector2f view(mWorldView.getCenter().x, mWorldView.getCenter().y);
-	//mWorldView.move(view);
-	//mPlayerSurvivor->setPosition(position);
-	//std::cout << "pos: " << position.x << " " << position.y << std::endl;
+	position.x = std::max(position.x, viewBounds.left + borderDistance);
+	position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
+	position.y = std::max(position.y, viewBounds.top + borderDistance);
+	position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
 	mPlayerSurvivor->setPosition(position);
-	//mWorldView.setCenter(position);
 
 }
 
@@ -269,14 +501,6 @@ void GameWorld::adaptPlayerVelocity()
 
 	if (velocity.x != 0.f && velocity.y != 0.f)
 		mPlayerSurvivor->setVelocity(velocity / std::sqrt(2.f));
-
-
-
-
-	//std::cout << "view: " << mWorldView.getCenter().x << " " << mWorldView.getCenter().y << std::endl;
-	//std::cout << "bounds: " << mWorldBounds.getSize().x << " " << mWorldBounds.getSize().y << std::endl;
-
-
 
 	mPlayerSurvivor->move(sf::Vector2f(0.f, 0.f));
 }
@@ -288,7 +512,7 @@ void GameWorld::adaptPlayerDirection()
 	const int ROTATION_DEGREE = 360;
 	sf::Vector2i playerPosition(mPlayerSurvivor->getPosition().x, mPlayerSurvivor->getPosition().y);
 	sf::Vector2i mousePosition = sf::Mouse::getPosition(mWindow);
-	sf::Vector2f mouseWorldPosition = mWindow.mapPixelToCoords(mousePosition, mWorldView);
+	sf::Vector2f mouseWorldPosition = mTarget.mapPixelToCoords(mousePosition, mWorldView);
 
 	float mouseAngle = -atan2(mouseWorldPosition.x - playerPosition.x, mouseWorldPosition.y - playerPosition.y); // angle in degrees of rotation of sprite
 	float rotate = mouseAngle;
@@ -297,12 +521,7 @@ void GameWorld::adaptPlayerDirection()
 	float degrees = toDegree(mouseAngle) + 90.f;
 
 	mPlayerSurvivor->setMousePosition(mouseWorldPosition);
-	//mPlayerSurvivor->setDirectionAngle(mouseAngle);
 	mPlayerSurvivor->setRotation(degrees);
-
-	//std::cout << "MOUSE VEC (X: " << mousePosition.x << ",Y: " << mousePosition.y << ")" << std::endl;
-	//std::cout << "PLAYER ROTATION : " << mPlayerSurvivor->getRotation() << std::endl;
-	//std::cout << "MOUSE ROTATION : " << mouseAngle << std::endl;
 }
 
 sf::FloatRect GameWorld::getViewBounds() const
@@ -314,8 +533,8 @@ sf::FloatRect GameWorld::getBattlefieldBounds() const
 {
 	// Devuelve los bounds de la vista del juego, deberia adaptarlo para que los enemigos salgan en distintas posiciones fuera de la vista
 	sf::FloatRect bounds = getViewBounds();
-	//bounds.top -= 100.f;
-	//bounds.height += 100.f;
+	bounds.top -= 100.f;
+	bounds.height += 100.f;
 	return bounds;
 }
 
@@ -352,8 +571,29 @@ void GameWorld::handleCollisions()
 			auto& player = static_cast<Character&>(*pair.first);
 			auto& zombie = static_cast<Character&>(*pair.second);
 
-			player.damage(zombie.getHitpoints());
-			std::cout << "Zombie collision with player " << std::endl;
+			const float borderDistance = 100.f;
+
+			sf::Vector2f playerPos = player.getPosition();
+			sf::Vector2f zombiePos = zombie.getPosition();
+
+			sf::Vector2f diff;
+			diff.x = playerPos.x - zombiePos.x;
+			diff.y = playerPos.y - zombiePos.y;
+
+			player.splashBlood(player.getPosition());
+
+			float limit = 60;
+
+			float d = length(diff);
+
+			if (d < limit) {
+				zombie.setVelocity(2.0f, 0.0f);
+				player.damage(1);
+				mHighScore.addScore(HighScore::DAMAGE_TAKEN, 1);
+				zombie.attack();
+			}
+			else
+				zombie.chase();
 		}
 		else if (matchesCategories(pair, Category::PlayerSurvivor, Category::Pickup))
 		{
@@ -362,6 +602,9 @@ void GameWorld::handleCollisions()
 
 			pickup.apply(player);
 			pickup.destroy();
+			
+			mHighScore.addScore(HighScore::PICKUP_ITEMS, 1);
+			player.playLocalSound(mCommandQueue, SoundEffect::CollectPickup);
 		}
 		else if (matchesCategories(pair, Category::Zombie, Category::Projectile))
 		{
@@ -369,25 +612,71 @@ void GameWorld::handleCollisions()
 			auto& projectile = static_cast<Projectile&>(*pair.second);
 
 			zombie.damage(projectile.getDamage());
+			mHighScore.addScore(HighScore::DAMAGE_MADE, projectile.getDamage());
+			if (zombie.isDestroyed()) 
+				mHighScore.addScore(HighScore::ZOMBIES_KILLED, 1);
+
+			sf::Vector2f impactPos(projectile.getWorldPosition());
+			zombie.splashBlood(impactPos - zombie.getWorldPosition());
 			projectile.destroy();
-			std::cout << zombie.getHitpoints() << " HP of zombie" << std::endl;
+			
+		}
+		else if (matchesCategories(pair, Category::Zombie, Category::Zombie))
+		{
+			auto& zombie = static_cast<Character&>(*pair.first);
+			auto& zombie_2 = static_cast<Character&>(*pair.second);
+
+			sf::Vector2f zombiePos = zombie_2.getPosition();
+			sf::Vector2f zombiePos_2 = zombie.getPosition();
+			sf::Vector2f diff;
+
+			diff.x = zombiePos_2.x - zombiePos.x;
+			diff.y = zombiePos_2.y - zombiePos.y;
+
+			float limit = 20;
+			float d = length(diff);
+
+			//std::cout << d << std::endl;
+
+			if (d < limit)
+				zombie.setVelocity(0.0f, 10.0f);
 
 		}
 	}
 }
 
-void GameWorld::destroyEntitiesOutsideView()
+bool GameWorld::hasAlivePlayer() const
+{
+	return !mPlayerSurvivor->isMarkedForRemoval();
+}
+
+bool GameWorld::hasPlayerSurvived() const
+{
+	return mActiveEnemies.size() == 0 && mLevelsFinished;
+}
+
+void GameWorld::destroyEntitiesNotLongerUsed(sf::Time dt)
 {
 	Command command;
 	command.category = Category::Projectile;
 	command.action = derivedAction<Entity>([this](Entity& e, sf::Time)
 		{
 			if (!getBattlefieldBounds().intersects(e.getBoundingRect())) {
-				e.destroy();
-				std::cout << "entity destroyed" << std::endl;
+				e.remove();
+				mProjectiles++;
 			}
+
+			/*if (e.getCategory() == Category::Pickup && e.) {
+
+			}*/
 		});
 
 	mCommandQueue.push(command);
+}
+
+void GameWorld::updateSounds()
+{
+	mSounds.setListenerPosition(mPlayerSurvivor->getWorldPosition());
+	mSounds.removeStoppedSounds();
 }
 

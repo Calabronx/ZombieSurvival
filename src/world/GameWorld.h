@@ -10,6 +10,9 @@
 #include "../ecs/SceneNode.h"
 #include "../entity/Character.h"
 #include "../input/command/CommandQueue.h"
+#include "../graphics/BloomEffect.h"
+#include "../sound/SoundPlayer.h"
+#include "../highscore/HighScore.h"
 
 namespace sf
 {
@@ -19,11 +22,14 @@ namespace sf
 class GameWorld : sf::NonCopyable
 {
 	public:
-		explicit GameWorld(sf::RenderWindow& window, FontHolder& fonts);
+		explicit GameWorld(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds, HighScore& scores);
 		void update(sf::Time dt);
 		void draw();
 
         CommandQueue& getCommandQueue();
+
+		bool	hasAlivePlayer() const;
+		bool	hasPlayerSurvived() const;
 
 	private:
 		void loadTextures();
@@ -31,12 +37,16 @@ class GameWorld : sf::NonCopyable
 		void addEnemies();
 		void addEnemy(Character::Type type, float relX, float relY);
 		void spawnEnemies();
+		void spawnGun(int gunNum);
 		void enemiesChaseIfClose();
-		void destroyEntitiesOutsideView();
+		void destroyEntitiesNotLongerUsed(sf::Time dt);
 
 		void adaptPlayerPosition();
 		void adaptPlayerVelocity();
 		void adaptPlayerDirection();
+		void updateSounds();
+		void updateDifficulty();
+		//void setPlayerRef(InputHandler& input);
 
 		sf::FloatRect getViewBounds() const;
 		sf::FloatRect getBattlefieldBounds() const;
@@ -66,10 +76,17 @@ class GameWorld : sf::NonCopyable
 		};
 
 	private:
+		sf::RenderTarget&	mTarget;
+		sf::RenderTexture	mSceneTexture;
 		sf::RenderWindow& mWindow;
 		sf::View			mWorldView;
+		sf::Text			mPlayerHealth;
+		sf::Text			mPlayerAmmo;
+		sf::Sprite			mCrossHair;
 		TextureHolder		mTextures;
 		FontHolder&			mFonts;
+		SoundPlayer&	    mSounds;
+		HighScore&			mHighScore;
 
 		SceneNode			mSceneGraph;
 		std::array<SceneNode*, LayerCount>	mSceneLayers;
@@ -77,10 +94,15 @@ class GameWorld : sf::NonCopyable
 		sf::FloatRect	mWorldBounds;
 		sf::Vector2f	mSpawnPosition;
 		float mScrollSpeed;
+		int	  mHordeLevel;
+		int	  mProjectiles;
+		bool  mLevelsFinished;
 		Character*		    mPlayerSurvivor;
         CommandQueue    mCommandQueue;
 		std::vector<SpawnPoint> mEnemySpawnPoints;
 		std::vector<Character*> mActiveEnemies;
+
+		BloomEffect				mBloomEffect;
 
 
 };

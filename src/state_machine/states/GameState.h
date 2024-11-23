@@ -18,7 +18,8 @@ public:
 
 private:
 	GameWorld		mWorld;
-	InputHandler	mPlayer;
+	InputHandler&	mPlayer;
+	HighScore&		mHighScore;
 };
 #endif // !GAME_STATE_H
 

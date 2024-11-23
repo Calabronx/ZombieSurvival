@@ -20,6 +20,8 @@ class FileSystem
 				Resource&			get(Identifier id);
 				const Resource&		get(Identifier id) const;
 
+				std::size_t			size() const;
+
 		private:
 				void				insertResource(Identifier id, std::unique_ptr<Resource> resource);
 

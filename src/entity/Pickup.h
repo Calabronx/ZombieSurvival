@@ -15,8 +15,12 @@ public:
 	enum Type
 	{
 		HealthRefill,
-		FireSpread,
+		HandgunAmmo,
+		ShotgunAmmo,
+		RifleAmmo,
 		FireRate,
+		ShotgunItem,
+		RifleItem,
 		TypeCount
 	};
 
@@ -27,7 +31,6 @@ public:
 	virtual sf::FloatRect getBoundingRect() const;
 
 	void apply(Character& player) const;
-
 protected:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 

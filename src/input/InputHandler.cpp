@@ -21,12 +21,18 @@ struct SurvivorMover
 };
 
 InputHandler::InputHandler()
+	: mCurrentPlayerStatus(SurviveMode)
 {
 	// Set initial key bindings
 	mKeyBinding[sf::Keyboard::A] = MoveLeft;
 	mKeyBinding[sf::Keyboard::D] = MoveRight;
 	mKeyBinding[sf::Keyboard::W] = MoveUp;
 	mKeyBinding[sf::Keyboard::S] = MoveDown;
+	mKeyBinding[sf::Keyboard::R] = Reload;
+	mKeyBinding[sf::Keyboard::Num1] = EquipHandgun;
+	mKeyBinding[sf::Keyboard::Num2] = EquipShotgun;
+	mKeyBinding[sf::Keyboard::Num3] = EquipRifle;
+	mKeyBinding[sf::Keyboard::Num4] = EquipKnife;
 	mMouseBinding[sf::Mouse::Left] = Fire;
 
 	initializeActions();
@@ -75,7 +81,7 @@ void InputHandler::handleRealTimeInput(CommandQueue& commands)
 
 void InputHandler::initializeActions()
 {
-	const float playerSpeed = 200.f;
+	const float playerSpeed = 90.f;
 
 	mActionBinding[MoveLeft].action = derivedAction<Character>(SurvivorMover(-playerSpeed, 0.f));
 	mActionBinding[MoveRight].action = derivedAction<Character>(SurvivorMover(+playerSpeed, 0.f));
@@ -83,6 +89,11 @@ void InputHandler::initializeActions()
 	mActionBinding[MoveDown].action = derivedAction<Character>(SurvivorMover(0.f, +playerSpeed));
 	mActionBinding[MoveAim].action = derivedAction<Character>([](Character& c, sf::Time) { c.moveAim(); });
 	mActionBinding[Fire].action = derivedAction<Character>([](Character& c, sf::Time) { c.fire();  });
+	mActionBinding[Reload].action = derivedAction<Character>([](Character& c, sf::Time) { c.reload(); });
+	mActionBinding[EquipHandgun].action = derivedAction<Character>([](Character& c, sf::Time) {c.changeGun(1); });
+	mActionBinding[EquipShotgun].action = derivedAction<Character>([](Character& c, sf::Time) {c.changeGun(2); });
+	mActionBinding[EquipRifle].action = derivedAction<Character>([](Character& c, sf::Time) {c.changeGun(3); });
+	mActionBinding[EquipKnife].action = derivedAction<Character>([](Character& c, sf::Time) {c.changeGun(4); });
 }
 
 bool InputHandler::isRealtimeAction(Action action)
@@ -95,6 +106,7 @@ bool InputHandler::isRealtimeAction(Action action)
 	case MoveUp:
 	case MoveAim:
 	case Fire:
+	case Reload:
 		return true;
 	default:
 		return false;
@@ -126,4 +138,14 @@ sf::Keyboard::Key InputHandler::getAssignedKey(Action action) const
 	}
 
 	return sf::Keyboard::Unknown;
+}
+
+void InputHandler::setPlayerStatus(PlayerStatus status)
+{
+	mCurrentPlayerStatus = status;
+}
+
+InputHandler::PlayerStatus  InputHandler::getPlayerStatus() const
+{
+	return mCurrentPlayerStatus;
 }

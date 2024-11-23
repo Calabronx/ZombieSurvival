@@ -46,11 +46,23 @@
     <Filter Include="Source Files\src\entity\data">
       <UniqueIdentifier>{434d98ed-f798-4276-b712-87e6c563f246}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\graphics">
+      <UniqueIdentifier>{5dc4f6a3-b20b-496d-97e8-9ea2ae409659}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\graphics\shaders">
+      <UniqueIdentifier>{14a3aeff-f6be-4f38-a9d8-b8fe25380391}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\sound">
+      <UniqueIdentifier>{4d268d31-49c4-469d-a98f-1fb14568858b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\gui">
+      <UniqueIdentifier>{bcea6ee4-5076-474d-95d5-154956af24bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\highscore">
+      <UniqueIdentifier>{c6bf12a7-baac-4227-b019-8fec45c6cf23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
     <ClCompile Include="src\entity\Entity.cpp">
       <Filter>Source Files\src\entity</Filter>
     </ClCompile>
@@ -116,6 +128,57 @@
     </ClCompile>
     <ClCompile Include="src\entity\Pickup.cpp">
       <Filter>Source Files\src\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\state_machine\states\GameOverState.cpp">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Animation.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\ParticleNode.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\EmitterNode.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\PostEffect.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\BloomEffect.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sound\MusicPlayer.cpp">
+      <Filter>Source Files\src\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sound\SoundPlayer.cpp">
+      <Filter>Source Files\src\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\SoundNode.cpp">
+      <Filter>Source Files\src\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\Component.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\Container.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\Button.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\Label.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\state_machine\states\SettingsState.cpp">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\highscore\HighScore.cpp">
+      <Filter>Source Files\src\highscore</Filter>
+    </ClCompile>
+    <ClCompile Include="src\state_machine\states\HighScoreState.cpp">
+      <Filter>Source Files\src\state_machine\states</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -197,6 +260,60 @@
     <ClInclude Include="src\entity\Pickup.h">
       <Filter>Source Files\src\entity</Filter>
     </ClInclude>
+    <ClInclude Include="src\state_machine\states\GameOverState.h">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Animation.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Particle.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\ParticleNode.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\EmitterNode.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\PostEffect.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\BloomEffect.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sound\MusicPlayer.h">
+      <Filter>Source Files\src\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sound\SoundPlayer.h">
+      <Filter>Source Files\src\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\SoundNode.h">
+      <Filter>Source Files\src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gui\Component.h">
+      <Filter>Source Files\src\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gui\Container.h">
+      <Filter>Source Files\src\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gui\Button.h">
+      <Filter>Source Files\src\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gui\Label.h">
+      <Filter>Source Files\src\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\states\SettingsState.h">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\highscore\HighScore.h">
+      <Filter>Source Files\src\highscore</Filter>
+    </ClInclude>
+    <ClInclude Include="src\highscore\Score.h">
+      <Filter>Source Files\src\highscore</Filter>
+    </ClInclude>
+    <ClInclude Include="src\state_machine\states\HighScoreState.h">
+      <Filter>Source Files\src\state_machine\states</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\util\FileSystem.inl">
@@ -204,6 +321,21 @@
     </None>
     <None Include="src\util\Utility.inl">
       <Filter>Source Files\src\util</Filter>
+    </None>
+    <None Include="resources\shaders\Add.frag">
+      <Filter>Source Files\src\graphics\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\Brightness.frag">
+      <Filter>Source Files\src\graphics\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\DownSample.frag">
+      <Filter>Source Files\src\graphics\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\Fullpass.vert">
+      <Filter>Source Files\src\graphics\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\GuassianBlur.frag">
+      <Filter>Source Files\src\graphics\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -9,5 +9,7 @@ namespace Category
         Zombie               = 1 << 3,
         Pickup                  = 1 << 4,
         Projectile   = 1 << 5,
+        ParticleSystem = 1 << 7,
+        SoundEffect             = 1 << 8
     };
 }
